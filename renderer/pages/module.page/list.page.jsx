@@ -17,7 +17,7 @@ export default function ModuleListPage() {
             {
                 [1, 2, 3, 4, 5].map(i =>
                     <Card key={i} className="w:full p:0!">
-                        <Button onClick={() => console.log('test')} className="justify-content:space-between m:0! p:0!" appearance="subtle">
+                        <Button as="div" className="justify-content:space-between m:0! p:0!" appearance="subtle">
                             <div className="flex aspect:1/1 min-w:86 max-w:86 overflow:hidden flex align-items:center justify-content:center bg:gray/.2">
                                 {/* <img className="w:full h:full obj:cover"
                                     src="file:///C:\Users\Miles\OneDrive\圖片\Saved Pictures\46e8086bc7c27edaec02f765dd2727dfcfc78e3c.jpg"
@@ -41,7 +41,7 @@ export default function ModuleListPage() {
                             </div>
                             <Menu hasIcons={true}>
                                 <MenuTrigger disableButtonEnhancement>
-                                    <Button appearance="transparent" onClick={event => { event.stopPropagation() }} icon={optionsIcon} />
+                                    <Button as="div" appearance="transparent" onClick={event => { event.stopPropagation() }} icon={optionsIcon} />
                                 </MenuTrigger>
 
                                 <MenuPopover>

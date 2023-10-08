@@ -17,8 +17,7 @@ export default function SwitchThemeButton() {
     return (
         <Menu hasIcons={true}>
             <MenuTrigger disableButtonEnhancement>
-                <Button icon={themeContext.current === 'dark' ? darkThemeIcon : lightThemeIcon}>
-                </Button>
+                <Button icon={themeContext.current === 'dark' ? darkThemeIcon : lightThemeIcon} />
             </MenuTrigger>
             
             <MenuPopover>
