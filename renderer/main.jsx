@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import {
-    createBrowserRouter,
+    createHashRouter,
     RouterProvider,
     Navigate
 } from 'react-router-dom'
@@ -14,7 +14,7 @@ import SourcePage from './pages/source.page'
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement)
 
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         path: '/',
         element: <App />,
