@@ -1,32 +1,51 @@
 {
-    "name": "soku-mod-manager",
-    "version": "0.0.0",
-    "scripts": {
-        "dev:vite": "set BROWSER=none && vite",
-        "dev:electron": "wait-on tcp:5173 && electron .",
-        "wait-dev:vite": "wait-on tcp:5173",
-        "build": "vite build",
-        "serve": "vite preview",
-        "lint": "eslint ."
+  "name": "soku-mod-manager",
+  "description": "Soku mod manager",
+  "version": "0.0.0",
+  "author": "Miles",
+  "scripts": {
+    "dev:vite": "set BROWSER=none && vite",
+    "dev:electron": "wait-on tcp:5173 && electron .",
+    "wait-dev:vite": "wait-on tcp:5173",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "eslint .",
+    "pack": "electron-builder --dir"
+  },
+  "dependencies": {
+    "@fluentui/react-components": "^9.34.1",
+    "@master/css": "^1.37.8",
+    "@master/css.react": "^2.0.0-beta.174",
+    "electron-is-dev": "^2.0.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0"
+},
+"devDependencies": {
+    "@vitejs/plugin-react-swc": "^3.0.0",
+    "electron": "^26.3.0",
+    "electron-builder": "^24.6.4",
+    "eslint": "^8.29.0",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.0.0",
+    "wait-on": "^7.0.1"
+  },
+  "main": "app/main.js",
+  "build": {
+    "appId": "com.soku-mod-manager.app",
+    "productName": "SokuModManager",
+    "directories": {
+      "output": "pack"
     },
-    "dependencies": {
-        "@fluentui/react-components": "^9.34.1",
-        "@master/css": "^1.37.8",
-        "@master/css.react": "^2.0.0-beta.174",
-        "electron-is-dev": "^2.0.0",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-router-dom": "^6.16.0"
-    },
-    "devDependencies": {
-        "@vitejs/plugin-react-swc": "^3.0.0",
-        "electron": "^26.3.0",
-        "eslint": "^8.29.0",
-        "eslint-plugin-react": "^7.31.11",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "typescript": "^5.0.4",
-        "vite": "^4.0.0",
-        "wait-on": "^7.0.1"
-    },
-    "main": "app/main.js"
+    "files": [
+      "**/*",
+      "!.vscode",
+      "renderer/",
+      "dist/"
+    ],
+    "asar": false
+  }
 }
