@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soku Mod Manager</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #202020;
+                color: white;
+            }
+        }
+        
+    </style>
+</head>
+
+<body class="bg:#202020@dark color:white@dark bg:white@light color:black@light ~background|.2s|ease-out">
+    <div id="root" class="h:full"></div>
+    <script type="module" src="main.jsx"></script>
+</body>
+
+</html>
