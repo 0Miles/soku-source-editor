@@ -36,6 +36,11 @@ const router = createHashRouter([
     },
 ])
 
+// init theme
+const isDark = matchMedia?.('(prefers-color-scheme:dark)').matches
+document.documentElement.classList.toggle('dark', isDark)
+document.documentElement.classList.toggle('light', !isDark)
+
 root.render(
     <React.StrictMode>
         <ThemeProvider>

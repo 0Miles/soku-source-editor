@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, nativeTheme } = require('electron')
 const path = require('node:path')
 const isDev = require('electron-is-dev')
 
@@ -15,6 +15,7 @@ function createWindow() {
         }
     })
 
+    nativeTheme.themeSource = 'system'
 
     // and load the index.html of the app.
     if (isDev) {
