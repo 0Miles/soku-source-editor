@@ -41,8 +41,8 @@ export default function App() {
                     </div>
                 </div>
                 <div onClick={() => toggleSidebar(false)} className={`fixed z:999 left:310 top:0 h:full w:full {opacity:0;pointer-events:none}@sm ${showSidebar ? 'block' : 'hide'}`}></div>
-                <div className="flex flex:col flex:1">
-                    <h1 className="mx:8 my:16 font-weight:normal user-select:none">{title}</h1>
+                <div className="flex flex:col flex:1 align-items:center">
+                    <h1 className="w:full max-w:960 px:8 py:16 font-weight:normal user-select:none justify-content:start">{title}</h1>
                     <div className="
                                 max-w:960
                                 w:full h:full 
