@@ -1,13 +1,18 @@
 
-import { useEffect, createContext, useState, useRef } from 'react'
+import { useEffect, createContext, useState } from 'react'
 
 const MatchMediaDark = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
+// init theme
+const storageTheme = localStorage.getItem('theme') ?? 'system'
+const isDark = storageTheme === 'system' ? MatchMediaDark.matches : storageTheme === 'dark'
+document.documentElement.classList.toggle('dark', isDark)
+document.documentElement.classList.toggle('light', !isDark)
 
 export const ThemeContext = createContext()
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') ?? 'system')
-    const [current, setCurrent] = useState(document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+    const [theme, setTheme] = useState(storageTheme ?? 'system')
+    const [current, setCurrent] = useState(isDark ? 'dark' : 'light')
 
     const switchTheme = (value) => {
         if (value && value !== theme) {
@@ -16,12 +21,13 @@ export const ThemeProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        document.documentElement.classList.toggle('dark', current === 'dark')
-        document.documentElement.classList.toggle('light', current === 'light')
+        const isDark = current === 'dark'
+        document.documentElement.classList.toggle('dark', isDark)
+        document.documentElement.classList.toggle('light', !isDark)
     }, [current])
 
-
     useEffect(() => {
+        ipcRenderer.invoke('switch-native-theme', theme)
         localStorage.setItem('theme', theme)
         if (theme === 'system') {
             const isDark = MatchMediaDark?.matches
@@ -29,7 +35,7 @@ export const ThemeProvider = ({ children }) => {
         } else {
             setCurrent(theme)
         }
-
+        
         const onSystemThemeChange = (matchMediaDark) => {
             if (theme === 'system') {
                 setCurrent(matchMediaDark.matches ? 'dark' : 'light')

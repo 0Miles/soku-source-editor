@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, nativeTheme } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 const path = require('node:path')
 const isDev = require('electron-is-dev')
 
@@ -15,8 +15,6 @@ function createWindow() {
         }
     })
 
-    nativeTheme.themeSource = 'system'
-
     // and load the index.html of the app.
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173/');
@@ -27,6 +25,12 @@ function createWindow() {
         mainWindow.loadFile('dist/index.html');
     }
 }
+
+ipcMain.handle('switch-native-theme', (_, message) => {
+    if (['dark', 'light', 'system'].includes(message)){
+        nativeTheme.themeSource = message
+    }
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
