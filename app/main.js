@@ -12,9 +12,10 @@ function createWindow() {
         minHeight:400,
         webPreferences: {
             preload: path.join(__dirname, 'main-preload.js'),
+            webSecurity: false
         }
     })
-
+    mainWindow.removeMenu()
     // and load the index.html of the app.
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173/');

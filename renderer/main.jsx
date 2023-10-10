@@ -5,13 +5,14 @@ import {
     RouterProvider,
     Navigate
 } from 'react-router-dom'
-import '@master/css'
 import App from './app'
 import ModuleListPage from './pages/module/list.page'
 import { ThemeProvider } from './theme'
 import SourcePage from './pages/source.page'
 import ModuleEditPage from './pages/module/edit.page'
 import ModuleInfoPage from './pages/module/info.page'
+import '@master/css'
+import './i18n'
 
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement)

@@ -9,6 +9,7 @@ import {
 } from '@fluentui/react-components'
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import PageContainer from '../../common/page-container'
 import optionsIcon from '../../icons/options.icon'
 import plusIcon from '../../icons/plus.icon'
@@ -18,6 +19,7 @@ import trashIcon from '../../icons/trash.icon'
 export default function ModuleListPage() {
     const navigate = useNavigate()
     const location = useLocation()
+    const { t } = useTranslation()
     const [layersCount, setLayersCount] = useState(2)
 
     useEffect(() => {
@@ -64,8 +66,8 @@ export default function ModuleListPage() {
 
                                         <MenuPopover>
                                             <MenuList onClick={event => { event.stopPropagation() }}>
-                                                <MenuItem icon={pencilIcon}>Edit</MenuItem>
-                                                <MenuItem icon={trashIcon}>Delete</MenuItem>
+                                                <MenuItem icon={pencilIcon}>{t('Edit')}</MenuItem>
+                                                <MenuItem icon={trashIcon}>{t('Delete')}</MenuItem>
                                             </MenuList>
                                         </MenuPopover>
                                     </Menu>

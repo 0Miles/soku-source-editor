@@ -8,11 +8,13 @@ import {
     MenuItem,
     MenuPopover
 } from '@fluentui/react-components'
+import { useTranslation } from 'react-i18next'
 import darkThemeIcon from '../icons/dark-theme.icon'
 import lightThemeIcon from '../icons/light-theme.icon'
 
 export default function SwitchThemeButton() {
     const themeContext = useContext(ThemeContext)
+    const { t } = useTranslation()
 
     return (
         <Menu hasIcons={true}>
@@ -22,9 +24,9 @@ export default function SwitchThemeButton() {
             
             <MenuPopover>
                 <MenuList>
-                    <MenuItem onClick={() => themeContext.switchTheme('light')} icon={lightThemeIcon}>Light </MenuItem>
-                    <MenuItem onClick={() => themeContext.switchTheme('dark')} icon={darkThemeIcon}>Dark</MenuItem>
-                    <MenuItem onClick={() => themeContext.switchTheme('system')} icon={'💻'}>System</MenuItem>
+                    <MenuItem onClick={() => themeContext.switchTheme('light')} icon={lightThemeIcon}>{t('Light')} </MenuItem>
+                    <MenuItem onClick={() => themeContext.switchTheme('dark')} icon={darkThemeIcon}>{t('Dark')}</MenuItem>
+                    <MenuItem onClick={() => themeContext.switchTheme('system')} icon={'💻'}>{t('System')}</MenuItem>
                 </MenuList>
             </MenuPopover>
         </Menu>

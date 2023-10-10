@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import SwitchThemeButton from './switch-theme.button'
 import {
-    Select,
     TabList,
     Tab
 } from '@fluentui/react-components'
 import { useNavigate, useLocation } from 'react-router-dom'
-
+import { useTranslation } from 'react-i18next'
+import ChangeLanguageSelect from './change-language.select'
 import modIcon from '../icons/mod.icon'
 import sourceIcon from '../icons/source.icon'
 
 export default function Sidebar() {
     const navigate = useNavigate()
     const location = useLocation()
+    const { t } = useTranslation()
     const [selectedTab, setSelectedTab] = useState('module')
 
     useEffect(() => {
@@ -24,14 +25,8 @@ export default function Sidebar() {
     
     return <>
         <div className="mb:16 flex">
-            <Select className="flex flex:1 mr:4">
-                <option key="english">
-                    English
-                </option>
-            </Select>
-            <div className="flex">
-                <SwitchThemeButton />
-            </div>
+            <ChangeLanguageSelect className="flex flex:1 mr:4" />
+            <SwitchThemeButton />
         </div>
         <TabList className="
                         {my:2;p:8;~background|.1s}>button
@@ -46,8 +41,8 @@ export default function Sidebar() {
             defaultSelectedValue={selectedTab}
             selectedValue={selectedTab}
             vertical>
-            <Tab value="module" icon={modIcon}>Module</Tab>
-            <Tab value="source" icon={sourceIcon}>Source</Tab>
+            <Tab value="module" icon={modIcon}>{t('Module')}</Tab>
+            <Tab value="source" icon={sourceIcon}>{t('Source')}</Tab>
         </TabList>
     </>
 }

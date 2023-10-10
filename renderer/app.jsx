@@ -9,8 +9,10 @@ import {
 } from '@fluentui/react-components'
 import { ThemeContext } from './theme'
 import menuIcon from './icons/menu.icon'
+import { useTranslation } from 'react-i18next'
 
 export default function App() {
+    const { t, i18n } = useTranslation()
     const themeContext = useContext(ThemeContext)
     const [showSidebar, setShowSidebar] = useState(false)
     const location = useLocation()
