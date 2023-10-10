@@ -7,9 +7,11 @@ import {
 } from 'react-router-dom'
 import '@master/css'
 import App from './app'
-import ModuleListPage from './pages/module.page/list.page'
+import ModuleListPage from './pages/module/list.page'
 import { ThemeProvider } from './theme'
 import SourcePage from './pages/source.page'
+import ModuleEditPage from './pages/module/edit.page'
+import ModuleInfoPage from './pages/module/info.page'
 
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement)
@@ -18,7 +20,6 @@ const router = createHashRouter([
     {
         path: '/',
         element: <App />,
-
         children: [
             {
                 path: '',
@@ -26,7 +27,21 @@ const router = createHashRouter([
             },
             {
                 path: 'module',
-                element: <ModuleListPage />
+                element: <ModuleListPage />,
+                children: [
+                    {
+                        path: 'new',
+                        element: <ModuleEditPage />
+                    },
+                    {
+                        path: 'edit/:modId',
+                        element: <ModuleEditPage />
+                    },
+                    {
+                        path: 'info/:modId',
+                        element: <ModuleInfoPage />
+                    }
+                ]
             },
             {
                 path: 'source',
