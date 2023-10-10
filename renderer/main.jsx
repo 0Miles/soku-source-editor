@@ -35,11 +35,11 @@ const router = createHashRouter([
                         element: <ModuleEditPage />
                     },
                     {
-                        path: 'edit/:modId',
+                        path: 'edit/:modName',
                         element: <ModuleEditPage />
                     },
                     {
-                        path: 'info/:modId',
+                        path: 'info/:modName',
                         element: <ModuleInfoPage />
                     }
                 ]

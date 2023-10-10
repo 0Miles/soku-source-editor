@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { useEffect, useCallback, useContext, useState } from 'react'
-import Sidebar from './common/sidebar'
+import { useCallback, useContext, useState } from 'react'
 import {
     FluentProvider,
     webLightTheme,
@@ -8,22 +7,15 @@ import {
     Button
 } from '@fluentui/react-components'
 import { ThemeContext } from './theme'
+import Sidebar from './common/sidebar'
+import Breadcrumbs from './common/breadcrumbs'
+
 import menuIcon from './icons/menu.icon'
-import { useTranslation } from 'react-i18next'
 
 export default function App() {
-    const { t, i18n } = useTranslation()
     const themeContext = useContext(ThemeContext)
     const [showSidebar, setShowSidebar] = useState(false)
     const location = useLocation()
-    const [title, setTitle] = useState('Module')
-
-    useEffect(() => {
-        const tab = location?.pathname?.split('/')?.[1]
-        if (tab) {
-            setTitle(tab[0].toUpperCase() + tab.substring(1))
-        }
-    }, [location])
 
     const toggleSidebar = useCallback((forceValue = null) => {
         if (forceValue !== null) {
@@ -42,10 +34,18 @@ export default function App() {
                         <Sidebar />
                     </div>
                 </div>
-                <div onClick={() => toggleSidebar(false)} className={`fixed z:999 left:310 top:0 h:full w:full {opacity:0;pointer-events:none}@sm ${showSidebar ? 'block' : 'hide'}`}></div>
-                <div className="flex flex:col flex:1 align-items:center">
-                    <div className="flex flex:col flex:auto w:full max-w:960 overflow:hidden">
-                        <h1 className="px:24 pt:20 pb:16 font-weight:normal user-select:none justify-content:start">{title}</h1>
+                <div onClick={() => toggleSidebar(false)}
+                     className={`
+                        fixed z:999 left:310 top:0
+                        h:full w:full 
+                        {opacity:0;pointer-events:none}@sm
+                        ${showSidebar ? 'block' : 'hide'}`}>
+                </div>
+                <div className="flex flex:col flex:1 w:0 align-items:center">
+                    <div className="flex flex:col flex:1 w:full max-w:960 overflow:hidden">
+                        <div className="w:full px:24 pt:8 pb:16">
+                            <Breadcrumbs />
+                        </div>
                         <Outlet />
                     </div>
                 </div>
