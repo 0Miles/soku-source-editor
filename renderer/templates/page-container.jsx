@@ -2,8 +2,8 @@ export default function PageContainer({ children, className }) {
     return (
         <div className={`
                     ${className ?? ''}
-                    w:full h:full 
-                    px:24 py:10 pr:42@<sm 
+                    h:full 
+                    px:24 pb:24 pr:42@<sm 
                     overflow-y:auto
                     hide::-webkit-scrollbar-button
                     {bg:white;w:12}::-webkit-scrollbar@light
