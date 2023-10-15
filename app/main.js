@@ -3,6 +3,8 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 const path = require('node:path')
 const isDev = require('electron-is-dev')
 
+const getMods = require("./common/get-mods")
+
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
@@ -30,6 +32,15 @@ function createWindow() {
 ipcMain.handle('switch-native-theme', (_, message) => {
     if (['dark', 'light', 'system'].includes(message)){
         nativeTheme.themeSource = message
+    }
+})
+
+ipcMain.handle('get', (event, message) => {
+    if (Array.isArray(message) && message.length > 0) {
+        switch(message[0]) {
+            case 'mods':
+                return getMods()
+        }
     }
 })
 

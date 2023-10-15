@@ -10,7 +10,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint .",
-    "pack": "electron-builder --dir"
+    "pack": "npm run build && electron-builder --dir"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.34.1",
