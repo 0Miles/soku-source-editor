@@ -87,7 +87,7 @@ export default function ModuleListPage() {
                     )
                 }
 
-                <Button className="mb:16">
+                <Button className="mb:16 min-h:80">
                     {plusIcon}
                 </Button>
             </div>
