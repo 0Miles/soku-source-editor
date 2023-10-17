@@ -1,4 +1,7 @@
+import Temp from '../temp'
 
 export const getMods = async () => {
-    return await ipcRenderer.invoke('get', ['mods'])
+    const data = await ipcRenderer.invoke('get', ['mods'])
+    Temp['mods'] = data
+    return data
 }
