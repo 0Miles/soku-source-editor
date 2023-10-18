@@ -44,7 +44,7 @@ export default function ModuleListPage() {
         {
             !loading &&
             <>
-                <div className="my:10 grid grid-cols:1 gap:10 w:full">
+                <div className="my:10 grid grid-cols:1 gap:6 w:full">
                     {
                         !!mods?.length &&
                         mods.map((mod, index) =>
@@ -68,14 +68,14 @@ export default function ModuleListPage() {
                                     </>
                                 }
                                 content={
-                                    <>
+                                    <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
                                         <div className="f:18">
                                             {mod.name}
                                         </div>
                                         <div>
                                             {mod.desc}
                                         </div>
-                                    </>
+                                    </div>
                                 }
                                 options={
                                     <>

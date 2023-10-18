@@ -13,12 +13,12 @@ export default function ListItemButton({href, icon, content, options}) {
     const navigate = useNavigate()
     
     return (
-        <Card className="w:full p:0!">
-            <Button as="div" onClick={() => { navigate(href) }} className="justify-content:space-between m:0! p:0! b:0!" appearance="subtle">
+        <div className="flex flex:col p:0! r:3 bg:#2f2f30@dark bg:#eeeeee@light user-select:none">
+            <Button as="div" onClick={() => { navigate(href) }} className="justify-content:space-between m:0! p:0! b:0! cursor:auto!" appearance="subtle">
                 <div className="flex aspect:1/1 flex:0|0|80px h:full overflow:hidden align-items:center justify-content:center">
                     {icon}
                 </div>
-                <div className="flex flex:1 w:0 flex:col text-align:left mx:16 py:8 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
+                <div className="flex flex:1 w:0 px:16 py:8">
                     {content}
                 </div>
                 <Menu hasIcons={true}>
@@ -33,6 +33,6 @@ export default function ListItemButton({href, icon, content, options}) {
                     </MenuPopover>
                 </Menu>
             </Button>
-        </Card>
+        </div>
     )
 }
