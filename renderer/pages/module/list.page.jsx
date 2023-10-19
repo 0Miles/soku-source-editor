@@ -3,7 +3,6 @@ import {
     MenuItem,
     Spinner
 } from '@fluentui/react-components'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getMods } from '../../common/api'
 import { useMemo, useState } from 'react'
@@ -17,7 +16,6 @@ import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
 
 export default function ModuleListPage() {
-    const navigate = useNavigate()
     const { t } = useTranslation()
 
     const [loading, setLoading] = useState(false)

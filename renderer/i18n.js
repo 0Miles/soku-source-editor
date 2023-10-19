@@ -1,7 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
-import en from './languages/en.json'
 import zhHant from './languages/zh-hant.json'
 import zhHans from './languages/zh-hans.json'
 
@@ -45,7 +44,7 @@ i18n.use(initReactI18next)
         lng: storageLang,
         resources: {
             en: {
-                translation: en
+                translation: {}
             },
             'zh-Hant': {
                 translation: zhHant

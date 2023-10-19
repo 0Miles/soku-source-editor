@@ -3,6 +3,9 @@ import {
     Button
 } from '@fluentui/react-components'
 
+import chevronUpIcon from '../icons/chevron-up.icon'
+import chevronDownIcon from '../icons/chevron-down.icon'
+
 export default function CollapsibleButton({ icon, body, content, defaultOpen }) {
 
     const [open, setOpen] = useState(defaultOpen ?? false)
@@ -23,18 +26,10 @@ export default function CollapsibleButton({ icon, body, content, defaultOpen }) 
                 </div>
                 <div className="m:16">
                     {
-                        !open &&
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M6 9l6 6l6 -6"></path>
-                        </svg>
+                        !open && chevronDownIcon
                     }
                     {
-                        open &&
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M6 15l6 -6l6 6"></path>
-                        </svg>
+                        open && chevronUpIcon
                     }
                 </div>
             </Button>
@@ -44,7 +39,7 @@ export default function CollapsibleButton({ icon, body, content, defaultOpen }) 
             <div className={`
                     bg:#2f2f30>div@dark bg:#eeeeee>div@light
                     {mt:2;p:16;pl:65;pr:50}>div
-                    r:0|0|3|3 overflow:hidden
+                    r:0|0|3|3 overflow:hidden user-select:none
                     @transition-down|.3s|cubic-bezier(0.14,1,0.34,1)
                 `}>
                 {content}
