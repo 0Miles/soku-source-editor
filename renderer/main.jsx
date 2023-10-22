@@ -9,8 +9,8 @@ import { ThemeProvider } from './theme'
 import App from './app'
 import ModuleListPage from './pages/module.page/list.page'
 import ModuleInfoPage from './pages/module.page/info.page'
-import SourcePage from './pages/source.page/list.page'
-import ModuleEditPage from './pages/module.page/edit.page'
+import SourceListPage from './pages/source.page/list.page'
+import SettingListPage from './pages/setting.page/list.page'
 import '@master/css'
 import './i18n'
 
@@ -31,14 +31,6 @@ const router = createHashRouter([
                 element: <ModuleListPage />,
                 children: [
                     {
-                        path: 'new',
-                        element: <ModuleEditPage />
-                    },
-                    {
-                        path: 'edit/:modName',
-                        element: <ModuleEditPage />
-                    },
-                    {
                         path: 'info/:modName',
                         element: <ModuleInfoPage />
                     }
@@ -46,7 +38,11 @@ const router = createHashRouter([
             },
             {
                 path: 'source',
-                element: <SourcePage />
+                element: <SourceListPage />
+            },
+            {
+                path: 'setting',
+                element: <SettingListPage />
             }
         ]
     },

@@ -25,5 +25,6 @@
     "Export compressed file": "匯出壓縮檔",
     "Generates a zip file that can be imported in SokuLauncher": "產生可在 SokuLauncher 導入的 zip 檔案",
     "Export": "匯出",
-    "Add version": "新增版本"
+    "Add version": "新增版本",
+    "Setting": "設定"
 }
