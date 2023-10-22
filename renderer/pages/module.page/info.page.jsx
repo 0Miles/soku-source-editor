@@ -155,7 +155,7 @@ export default function ModuleInfoPage() {
                         (version, selectMode) => {
                             return <CollapsibleButton
                                 allowOpen={!selectMode}
-                                className={`flex:1 ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
+                                className={`w:full ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
                                 icon={boxIcon}
                                 body={<>
                                     <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">

@@ -24,14 +24,16 @@ const getJsonInfo = (dirname, filename) => {
 
 const getSubdirJsonInfos = (dirname, filename) => {
     const data = []
-    const elements = fs.readdirSync(dirname, { encoding: 'utf-8'})
-    for (const element of elements) {
-        const elementFullPath = path.join(dirname, element)
-        const elementInfo = fs.statSync(elementFullPath)
-        if (elementInfo.isDirectory()) {
-            const jsonInfo = getJsonInfo(elementFullPath, filename)
-            if (jsonInfo) {
-                data.push(jsonInfo)
+    if (fs.existsSync(dirname)) {
+        const elements = fs.readdirSync(dirname, { encoding: 'utf-8'})
+        for (const element of elements) {
+            const elementFullPath = path.join(dirname, element)
+            const elementInfo = fs.statSync(elementFullPath)
+            if (elementInfo.isDirectory()) {
+                const jsonInfo = getJsonInfo(elementFullPath, filename)
+                if (jsonInfo) {
+                    data.push(jsonInfo)
+                }
             }
         }
     }
@@ -49,14 +51,18 @@ const findFileAndGetUri = (dirname, regex) => {
 
 module.exports = (dirname) => {
     if (!dirname) {
-        dirname = process.cwd()
+        dirname = path.resolve(process.cwd(), 'modules')
     }
-    const modInfos = getSubdirJsonInfos(dirname, 'mod.json')
-    
-    for (const modInfo of modInfos) {
-        modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
-        modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
-        modInfo.versions = getSubdirJsonInfos(modInfo.dirname, 'version.json')
+    if (fs.existsSync(dirname)) {
+        const modInfos = getSubdirJsonInfos(dirname, 'mod.json')
+        
+        for (const modInfo of modInfos) {
+            modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
+            modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
+            modInfo.versions = getSubdirJsonInfos(path.resolve(modInfo.dirname, 'versions'), 'version.json')
+        }
+        return modInfos
+    } else {
+        return []
     }
-    return modInfos
 }

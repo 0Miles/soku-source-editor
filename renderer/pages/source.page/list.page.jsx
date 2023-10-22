@@ -1,5 +1,5 @@
 import { Spinner } from '@fluentui/react-components'
-import PageContainer from '../templates/page-container'
+import PageContainer from '../../templates/page-container'
 
 export default function SourcePage(props) {
     return <>
