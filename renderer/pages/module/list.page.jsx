@@ -43,7 +43,7 @@ export default function ModuleListPage() {
         {
             !loading &&
             <>
-                <div className="my:10 grid grid-cols:1 gap:6 w:full">
+                <div className="mb:8 grid grid-cols:1 gap:8 w:full">
                     {
                         !!mods?.length &&
                         mods.map((modInfo, index) =>
@@ -86,7 +86,7 @@ export default function ModuleListPage() {
                         )
                     }
                 </div>
-                <Button className="w:full min-h:80" appearance="subtle">
+                <Button className="w:full min-h:80 cursor:auto!" appearance="subtle">
                     {plusIcon}
                 </Button>
             </>

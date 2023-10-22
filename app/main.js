@@ -14,6 +14,7 @@ function createWindow() {
         minHeight:400,
         webPreferences: {
             preload: path.join(__dirname, 'main-preload.js'),
+            allowRunningInsecureContent: false,
             webSecurity: false
         }
     })

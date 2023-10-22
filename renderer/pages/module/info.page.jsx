@@ -2,7 +2,7 @@ import {
     Spinner,
     Button
 } from '@fluentui/react-components'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PageContainer from '../../templates/page-container'
@@ -21,6 +21,7 @@ import CollapsibleButton from '../../common/collapsible.button'
 import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
+import SelectableList from '../../common/selectable-list'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -37,13 +38,15 @@ export default function ModuleInfoPage() {
     const [loading, setLoading] = useState(false)
     const [modInfo, setModInfo] = useState(null)
     const [open, setOpen] = useState(false)
+    const selectedVersionRef = useRef([])
 
     useMemo(() => {
         (async () => {
             if (!Temp['mods']) {
                 setLoading(true)
                 const data = await getMods()
-                setModInfo(data.find(x => x.name === modName))
+                const modInfo = data.find(x => x.name === modName)
+                setModInfo(modInfo)
                 setLoading(false)
             } else {
                 setModInfo(Temp['mods'].find(x => x.name === modName))
@@ -145,15 +148,14 @@ export default function ModuleInfoPage() {
                         }
                     </Button>
                 </div>
-                <div className="mt:16 f:bold">
-                    {t('Versions')}
-                </div>
-                <div className="my:6 grid grid-cols:1 gap:6 w:full">
-                    {
-                        modInfo?.versions &&
-                        modInfo.versions.map((version, i) =>
-                            <CollapsibleButton
-                                key={i}
+
+                <SelectableList
+                    items={modInfo?.versions}
+                    itemTemplate={
+                        (version, selectMode) => {
+                            return <CollapsibleButton
+                                allowOpen={!selectMode}
+                                className={`flex:1 ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
                                 icon={boxIcon}
                                 body={<>
                                     <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
@@ -169,7 +171,7 @@ export default function ModuleInfoPage() {
                                     <div>
                                         <div className="flex align-items:center justify-content:space-between mb:16">
                                             <div className="">
-                                                { t('Content')}
+                                                {t('Content')}
                                             </div>
                                             <Button>{t('Edit')}</Button>
                                         </div>
@@ -230,12 +232,20 @@ export default function ModuleInfoPage() {
                                 </>
                                 }
                             />
-                        )
+                        }
                     }
-                </div>
-                <Button className="w:full min-h:80" appearance="subtle">
-                    {plusIcon}
-                </Button>
+                    toolbar={
+                        <Button icon={plusIcon} >{t('Add version')}</Button>
+                    }
+                    selectModeToolbar={
+                        <Button icon={trashIcon}>{t('Delete')}</Button>
+                    }
+                    selectedChange={
+                        (selected) => {
+                            selectedVersionRef.current = selected
+                        }
+                    }
+                />
             </>
         }
     </PageContainer>

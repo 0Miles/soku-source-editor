@@ -6,18 +6,18 @@ import {
 import chevronUpIcon from '../icons/chevron-up.icon'
 import chevronDownIcon from '../icons/chevron-down.icon'
 
-export default function CollapsibleButton({ icon, body, content, defaultOpen }) {
+export default function CollapsibleButton({ icon, body, content, defaultOpen, className, allowOpen=true }) {
 
     const [open, setOpen] = useState(defaultOpen ?? false)
 
-    return (<div>
+    return (<div className={className}>
         <div className={`
-                ${open ? 'r:3|3|0|0' : 'r:3'}
+                ${allowOpen && open ? 'r:3|3|0|0' : 'r:3'}
                 flex flex:col p:0! overflow:hidden
                 bg:#2f2f30@dark bg:#eeeeee@light
                 user-select:none
             `}>
-            <Button as="div" onClick={() => { setOpen(!open) }} className="justify-content:space-between m:0! p:0! b:0! r:0! cursor:auto!" appearance="subtle">
+            <Button as="div" onClick={() => { allowOpen && setOpen(!open) }} className="justify-content:space-between m:0! p:0! b:0! r:0! cursor:auto!" appearance="subtle">
                 <div className="flex aspect:1/1 flex:0|0|65px h:full overflow:hidden align-items:center justify-content:center my:4">
                     {icon}
                 </div>
@@ -26,16 +26,16 @@ export default function CollapsibleButton({ icon, body, content, defaultOpen }) 
                 </div>
                 <div className="m:16">
                     {
-                        !open && chevronDownIcon
+                        !(allowOpen && open) && chevronDownIcon
                     }
                     {
-                        open && chevronUpIcon
+                        allowOpen && open && chevronUpIcon
                     }
                 </div>
             </Button>
         </div>
         {
-            open &&
+            allowOpen && open &&
             <div className={`
                     bg:#2f2f30>div@dark bg:#eeeeee>div@light
                     {mt:2;p:16;pl:65;pr:50}>div
