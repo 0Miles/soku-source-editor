@@ -14,9 +14,10 @@ import plusIcon from '../../icons/plus.icon'
 import pencilIcon from '../../icons/pencil.icon'
 import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
+import I18nProperty from '../../common/i18n-property'
 
 export default function ModuleListPage() {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
     const [mods, setMods] = useState([])
@@ -45,20 +46,20 @@ export default function ModuleListPage() {
                 <div className="my:10 grid grid-cols:1 gap:6 w:full">
                     {
                         !!mods?.length &&
-                        mods.map((mod, index) =>
+                        mods.map((modInfo, index) =>
                             <ListItemButton
                                 key={index}
-                                href={`/module/info/${mod.name}`}
+                                href={`/module/info/${modInfo.name}`}
                                 icon={
                                     <>
                                         {
-                                            !!mod.icon &&
+                                            !!modInfo.icon &&
                                             <img className="w:full h:full obj:cover"
-                                                src={mod.icon}
+                                                src={modInfo.icon}
                                             />
                                         }
                                         {
-                                            !mod.icon &&
+                                            !modInfo.icon &&
                                             <div className="flex w:full h:full align-items:center justify-content:center bg:gray/.2">
                                                 {gearIcon}
                                             </div>
@@ -68,10 +69,10 @@ export default function ModuleListPage() {
                                 content={
                                     <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
                                         <div className="f:18">
-                                            {mod.name}
+                                            {modInfo.name}
                                         </div>
                                         <div>
-                                            {mod.desc}
+                                            <I18nProperty root={modInfo} property={'description'} i18nProperty={'i18nDescription'} lang={i18n.language} />
                                         </div>
                                     </div>
                                 }

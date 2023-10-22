@@ -20,6 +20,7 @@ import chevronDownIcon from '../../icons/chevron-down.icon'
 import CollapsibleButton from '../../common/collapsible.button'
 import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
+import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -31,7 +32,7 @@ const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
     const { modName } = useParams()
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
     const [modInfo, setModInfo] = useState(null)
@@ -82,7 +83,7 @@ export default function ModuleInfoPage() {
                                 {modInfo.name}
                             </div>
                             <div className="my:8 font-weight:normal">
-                                {modInfo.description}
+                                <I18nProperty root={modInfo} property={'description'} i18nProperty={'i18nDescription'} lang={i18n.language} />
                             </div>
                         </div>
                         <Button className="abs top:60 right:35" icon={pencilIcon}></Button>
@@ -212,7 +213,7 @@ export default function ModuleInfoPage() {
                                         <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                                             {
                                                 HTMLReactParser(
-                                                    marked.parse(version.notes)
+                                                    marked.parse(getI18nProperty(version, 'notes', 'i18nNotes', i18n.language))
                                                 )
                                             }
                                         </div>

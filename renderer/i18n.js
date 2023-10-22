@@ -43,9 +43,7 @@ i18n.use(initReactI18next)
         fallbackLng: 'en',
         lng: storageLang,
         resources: {
-            en: {
-                translation: {}
-            },
+            en: null,
             'zh-Hant': {
                 translation: zhHant
             },
