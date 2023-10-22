@@ -15,7 +15,6 @@ import menuIcon from './icons/menu.icon'
 export default function App() {
     const themeContext = useContext(ThemeContext)
     const [showSidebar, setShowSidebar] = useState(false)
-    const location = useLocation()
 
     const toggleSidebar = useCallback((forceValue = null) => {
         if (forceValue !== null) {
@@ -31,7 +30,7 @@ export default function App() {
                 <div className="flex h:full flex:col user-select:none>*">
                     <Button onClick={() => toggleSidebar()} appearance="transparent" className="translate(10,16) hide!@sm" icon={menuIcon}></Button>
                     <div className={`flex flex:col h:full min-w:310 max-w:310 p:16 mr:-16 bg:#202020@dark bg:white@light ml:0 z:999 abs@<sm ~margin-left|.15s|ease-in ${showSidebar ? 'ml:0 box-shadow:0|0|5|3|gray/.3@<sm@light box-shadow:0|0|5|3|black/.3@<sm@dark' : 'ml:-310@<sm'}`}>
-                        <Sidebar />
+                        <Sidebar onTabChange={() => toggleSidebar(false)} />
                     </div>
                 </div>
                 <div onClick={() => toggleSidebar(false)}

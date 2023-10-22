@@ -10,7 +10,7 @@ import ChangeLanguageSelect from './change-language.select'
 import modIcon from '../icons/mod.icon'
 import sourceIcon from '../icons/source.icon'
 
-export default function Sidebar() {
+export default function Sidebar({ onTabChange }) {
     const navigate = useNavigate()
     const location = useLocation()
     const { t } = useTranslation()
@@ -18,10 +18,11 @@ export default function Sidebar() {
 
     useEffect(() => {
         const tab = location?.pathname?.split('/')?.[1]
-        if (tab) {
+        if (tab !== selectedTab) {
             setSelectedTab(tab)
+            onTabChange && onTabChange(tab)
         }
-    }, [location])
+    }, [location, onTabChange, selectedTab])
     
     return <>
         <div className="mb:16 flex">
