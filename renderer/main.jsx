@@ -10,6 +10,7 @@ import App from './app'
 import ModuleListPage from './pages/module.page/list.page'
 import ModuleInfoPage from './pages/module.page/info.page'
 import SourceListPage from './pages/source.page/list.page'
+import SourceInfoPage from './pages/source.page/info.page'
 import SettingListPage from './pages/setting.page/list.page'
 import '@master/css'
 import './i18n'
@@ -38,7 +39,13 @@ const router = createHashRouter([
             },
             {
                 path: 'source',
-                element: <SourceListPage />
+                element: <SourceListPage />,
+                children: [
+                    {
+                        path: 'info/:sourceName',
+                        element: <SourceInfoPage />
+                    }
+                ]
             },
             {
                 path: 'setting',

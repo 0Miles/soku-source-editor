@@ -45,7 +45,7 @@ export default function Breadcrumbs() {
             let title
             switch (link) {
                 case '/module/info/':
-                case '/module/edit/':
+                case '/source/info/':
                     i++
                     link += originPaths[i] + '/'
                     title = firstLetterCap(originPaths[i])
@@ -83,9 +83,7 @@ export default function Breadcrumbs() {
                         <MenuList>
                             {
                                 abbrPaths.map((path, index) => (
-                                    <>
-                                        <MenuItem key={'path-menu-item-' + index} onClick={() => { navigate(path.link) }}>{path.title}</MenuItem>
-                                    </>
+                                    <MenuItem key={'path-menu-item-' + index} onClick={() => { navigate(path.link) }}>{path.title}</MenuItem>
                                 ))
                             }
                         </MenuList>
