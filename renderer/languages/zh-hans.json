@@ -10,7 +10,7 @@
     "Author": "作者",
     "Module Priority": "模组优先度",
     "Repository": "储存库",
-    "No repository configured": "未设定储存库",
+    "No repository configured": "未设置储存库",
     "Unknown": "未知",
     "Versions": "版本",
     "Not yet released": "尚未发布",
@@ -25,5 +25,8 @@
     "Export compressed file": "导出压缩包",
     "Generates a zip file that can be imported in SokuLauncher": "生成可在 SokuLauncher 导入的 zip 文件",
     "Export": "导出",
-    "Add version": "新增版本"
+    "Add version": "新增版本",
+    "Setting": "设置",
+    "Synced": "已同步",
+    "Not mod source": "非模组来源"
 }

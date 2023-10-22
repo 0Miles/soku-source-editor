@@ -7,7 +7,7 @@ const getJsonInfo = (dirname, filename) => {
 
     if (fs.existsSync(jsonInfoFilename)) {
         try {
-            const jsonString = fs.readFileSync(jsonInfoFilename)
+            const jsonString = fs.readFileSync(jsonInfoFilename, { encoding: 'utf-8'})
             const info = JSON.parse(jsonString)
             if (info) {
                 info.dirname = dirname
@@ -49,13 +49,13 @@ const findFileAndGetUri = (dirname, regex) => {
     return fileName
 }
 
-module.exports = (dirname) => {
-    if (!dirname) {
-        dirname = path.resolve(process.cwd(), 'modules')
-    }
+const getMods = (modsDirname, base = process.cwd()) => {
+    
+    const dirname = path.resolve(base, modsDirname ?? 'modules')
+    
     if (fs.existsSync(dirname)) {
         const modInfos = getSubdirJsonInfos(dirname, 'mod.json')
-        
+
         for (const modInfo of modInfos) {
             modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
             modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
@@ -65,4 +65,49 @@ module.exports = (dirname) => {
     } else {
         return []
     }
+}
+
+const checkSourceInfo = (dirname) => {
+    const sourceInfoFilename = path.resolve(dirname, 'soku-mod-source.json')
+    if (fs.existsSync(sourceInfoFilename)) {
+        const jsonString = fs.readFileSync(sourceInfoFilename, { encoding: 'utf-8' })
+        return JSON.parse(jsonString)
+    } else {
+        return null
+    }
+}
+
+const getSources = (sourcesDirname, base = process.cwd()) => {
+    
+    const dirname = path.resolve(base, sourcesDirname ?? 'sources')
+
+    if (fs.existsSync(dirname)) {
+        const data = []
+        const elements = fs.readdirSync(dirname, { encoding: 'utf-8' })
+        for (const element of elements) {
+            const elementFullPath = path.join(dirname, element)
+            const elementInfo = fs.statSync(elementFullPath)
+            if (elementInfo.isDirectory()) {
+                const sourceInfo = checkSourceInfo(elementFullPath)
+                data.push({
+                    name: element,
+                    isSource: !!sourceInfo,
+                    info: sourceInfo,
+                    branch: 'main',
+                    sync: {
+                        waitPush: 0,
+                        waitPull: 0
+                    }
+                })
+            }
+        }
+        return data
+    } else {
+        return []
+    }
+}
+
+module.exports = {
+    getMods,
+    getSources
 }
