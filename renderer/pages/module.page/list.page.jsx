@@ -72,7 +72,7 @@ export default function ModuleListPage() {
                                             {modInfo.name}
                                         </div>
                                         <div>
-                                            <I18nProperty root={modInfo} property={'description'} i18nProperty={'i18nDescription'} lang={i18n.language} />
+                                            <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
                                         </div>
                                     </div>
                                 }

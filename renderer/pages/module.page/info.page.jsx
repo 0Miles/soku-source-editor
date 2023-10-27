@@ -86,7 +86,7 @@ export default function ModuleInfoPage() {
                                 {modInfo.name}
                             </div>
                             <div className="my:8 font-weight:normal">
-                                <I18nProperty root={modInfo} property={'description'} i18nProperty={'i18nDescription'} lang={i18n.language} />
+                                <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
                             </div>
                         </div>
                         <Button className="abs top:60 right:35" icon={pencilIcon}></Button>
@@ -215,7 +215,7 @@ export default function ModuleInfoPage() {
                                         <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                                             {
                                                 HTMLReactParser(
-                                                    marked.parse(getI18nProperty(version, 'notes', 'i18nNotes', i18n.language))
+                                                    marked.parse(getI18nProperty(version, 'notes', i18n.language))
                                                 )
                                             }
                                         </div>
