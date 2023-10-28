@@ -85,10 +85,10 @@ export default function ModuleListPage() {
                             />
                         )
                     }
+                    <Button className="w:full min-h:80 cursor:auto!" appearance="subtle">
+                        {plusIcon}
+                    </Button>
                 </div>
-                <Button className="w:full min-h:80 cursor:auto!" appearance="subtle">
-                    {plusIcon}
-                </Button>
             </>
         }
     </MultiLevelPageContainer>

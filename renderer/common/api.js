@@ -11,3 +11,8 @@ export const getSources = async () => {
     Temp['sources'] = data
     return data
 }
+
+export const cloneModSource = async (url) => {
+    const repo = await ipcRenderer.invoke('get', ['cloneModSource', url])
+    return repo
+}
