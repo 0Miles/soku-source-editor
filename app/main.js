@@ -18,7 +18,7 @@ ipcMain.handle('get', (_, message) => {
             case 'sources':
                 return getSources()
             case 'cloneModSource':
-                return cloneModSource(message[1])
+                return cloneModSource(message[1], message[2])
         }
     }
 })

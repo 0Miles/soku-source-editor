@@ -13,9 +13,7 @@ import {
     Label
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { getSources } from '../../common/api'
-import { useCallback, useMemo, useState } from 'react'
-import Temp from '../../temp'
+import { useCallback, useMemo, useState, useContext } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 import ListItemButton from '../../common/list-item.button'
 
@@ -25,31 +23,24 @@ import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
 import { cloneModSource } from '../../common/api'
+import { DataContext } from '../../data'
+import AddSourceDialog from './compontents/add-source.dialog'
 
 export default function SourceListPage() {
+    const { sources, refreshSources } = useContext(DataContext)
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
-    const [sources, setSources] = useState([])
-    const [sourceUrl, setSourceUrl] = useState('')
-
-    const addSource = useCallback(async () => {
-        const repo = await cloneModSource(sourceUrl)
-        console.log(repo)
-    }, [sourceUrl])
 
     useMemo(() => {
         (async () => {
-            if (!Temp['sources']) {
+            if (!sources) {
                 setLoading(true)
-                const data = await getSources()
-                setSources(data)
+                await refreshSources()
                 setLoading(false)
-            } else {
-                setSources(Temp['sources'])
             }
         })()
-    }, [])
+    }, [refreshSources, sources])
 
     return <MultiLevelPageContainer>
         {
@@ -158,29 +149,7 @@ export default function SourceListPage() {
                             />
                         )
                     }
-                    <Dialog>
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button onClick={() => { setSourceUrl('') }} className="w:full min-h:80 cursor:auto!" appearance="subtle">
-                                {plusIcon}
-                            </Button>
-                        </DialogTrigger>
-                        <DialogSurface>
-                            <DialogBody>
-                                <DialogTitle className="user-select:none">{t('Add source')}</DialogTitle>
-                                <DialogContent>
-                                    <div className="flex flex:col mb:16">
-                                        <Input onChange={(_, data) => { setSourceUrl(data.value)}} id="repoUrl" appearance="filled-darker" placeholder="https://github.com/{owner}/{repo}.git" required />
-                                    </div>
-                                </DialogContent>
-                                <DialogActions className="user-select:none">
-                                    <DialogTrigger disableButtonEnhancement>
-                                        <Button appearance="secondary">{t('Cancel')}</Button>
-                                    </DialogTrigger>
-                                    <Button onClick={addSource} appearance="primary">{t('Add')}</Button>
-                                </DialogActions>
-                            </DialogBody>
-                        </DialogSurface>
-                    </Dialog>
+                    <AddSourceDialog></AddSourceDialog>
                 </div>
             </>
         }

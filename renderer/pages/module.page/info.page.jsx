@@ -2,11 +2,10 @@ import {
     Spinner,
     Button
 } from '@fluentui/react-components'
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PageContainer from '../../templates/page-container'
-import Temp from '../../temp'
 import { getMods } from '../../common/api'
 
 import plusIcon from '../../icons/plus.icon'
@@ -22,6 +21,7 @@ import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
+import { DataContext } from '../../data'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -32,6 +32,7 @@ renderer.link = (href, title, text) => {
 const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
+    const { localMods, refreshLocalMods } = useContext(DataContext)
     const { modName } = useParams()
     const { t, i18n } = useTranslation()
 
@@ -42,17 +43,15 @@ export default function ModuleInfoPage() {
 
     useMemo(() => {
         (async () => {
-            if (!Temp['mods']) {
+            if (!localMods) {
                 setLoading(true)
-                const data = await getMods()
-                const modInfo = data.find(x => x.name === modName)
-                setModInfo(modInfo)
+                await refreshLocalMods()
                 setLoading(false)
             } else {
-                setModInfo(Temp['mods'].find(x => x.name === modName))
+                setModInfo(localMods.find(x => x.name === modName))
             }
         })()
-    }, [modName])
+    }, [localMods, modName, refreshLocalMods])
 
     return <PageContainer>
         {

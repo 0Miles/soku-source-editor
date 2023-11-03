@@ -1,18 +1,15 @@
-import Temp from '../temp'
 
-export const getMods = async () => {
-    const data = await ipcRenderer.invoke('get', ['mods'])
-    Temp['mods'] = data
+export const getMods = async (path) => {
+    const data = await ipcRenderer.invoke('get', ['mods', path])
     return data
 }
 
 export const getSources = async () => {
     const data = await ipcRenderer.invoke('get', ['sources'])
-    Temp['sources'] = data
     return data
 }
 
-export const cloneModSource = async (url) => {
-    const repo = await ipcRenderer.invoke('get', ['cloneModSource', url])
+export const cloneModSource = async (url, customName) => {
+    const repo = await ipcRenderer.invoke('get', ['cloneModSource', url, customName])
     return repo
 }

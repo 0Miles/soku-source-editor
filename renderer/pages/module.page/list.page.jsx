@@ -5,8 +5,7 @@ import {
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { getMods } from '../../common/api'
-import { useMemo, useState } from 'react'
-import Temp from '../../temp'
+import { useMemo, useState, useContext } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 import ListItemButton from '../../common/list-item.button'
 
@@ -15,8 +14,10 @@ import pencilIcon from '../../icons/pencil.icon'
 import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
+import { DataContext } from '../../data'
 
 export default function ModuleListPage() {
+    const { localMods, refreshLocalMods } = useContext(DataContext)
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
@@ -24,16 +25,15 @@ export default function ModuleListPage() {
 
     useMemo(() => {
         (async () => {
-            if (!Temp['mods']) {
+            if (!localMods) {
                 setLoading(true)
-                const data = await getMods()
-                setMods(data)
+                await refreshLocalMods()
                 setLoading(false)
             } else {
-                setMods(Temp['mods'])
+                setMods(localMods)
             }
         })()
-    }, [])
+    }, [localMods, refreshLocalMods])
 
     return <MultiLevelPageContainer>
         {

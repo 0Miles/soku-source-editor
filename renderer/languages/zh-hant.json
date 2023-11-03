@@ -31,5 +31,10 @@
     "Not mod source": "非模組來源",
     "Add source": "新增來源",
     "Add": "新增",
-    "Cancel": "取消"
+    "Cancel": "取消",
+    "Repository URL": "儲存庫位置",
+    "Name": "名稱",
+    "Getting source repository": "正在取得來源儲存庫",
+    "An error occurred": "發生錯誤",
+    "OK": "確定"
 }
