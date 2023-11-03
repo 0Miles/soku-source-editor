@@ -7,6 +7,38 @@ const cloneModSource = async (url, customName) => {
     return await git.clone(url, customName ? path.resolve(sourceDir, customName) : undefined)
 }
 
+const getGit = (sourceName) => {
+    const sourceDir = path.resolve(process.cwd(), 'sources', sourceName)
+    return simpleGit(sourceDir)
+}
+
+const pullAndMerge = async (sourceName, branch, git) => {
+    if (!git) {
+        git = getGit(sourceName)
+    }
+    if (!branch) {
+        const status = await git.status()
+        branch = status.current
+    }
+    await git.pull('origin', branch, { '--strategy-option': 'theirs' })
+}
+
+const sync = async (sourceName, branch, git) => {
+    if (!git) {
+        git = getGit(sourceName)
+    }
+    if (!branch) {
+        const status = await git.status()
+        branch = status.current
+    }
+    await git.fetch()
+    await pullAndMerge(sourceName, branch, git)
+    await git.push('origin', branch)
+}
+
 module.exports = {
-    cloneModSource
+    cloneModSource,
+    getGit,
+    pullAndMerge,
+    sync
 }

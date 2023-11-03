@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const url = require('url')
+const { getGit } = require('./git-utils')
 
 const getJsonInfo = (dirname, filename) => {
     const jsonInfoFilename = path.resolve(dirname, filename)
@@ -77,7 +78,7 @@ const checkSourceInfo = (dirname) => {
     }
 }
 
-const getSources = (sourcesDirname, base = process.cwd()) => {
+const getSources = async (sourcesDirname, base = process.cwd()) => {
     
     const dirname = path.resolve(base, sourcesDirname ?? 'sources')
 
@@ -89,14 +90,17 @@ const getSources = (sourcesDirname, base = process.cwd()) => {
             const elementInfo = fs.statSync(elementFullPath)
             if (elementInfo.isDirectory()) {
                 const sourceInfo = checkSourceInfo(elementFullPath)
+                const git = getGit(element)
+                const status = await git.status()
+
                 data.push({
                     name: element,
                     isSource: !!sourceInfo,
                     info: sourceInfo,
-                    branch: 'main',
+                    branch: status.current,
                     sync: {
-                        waitPush: 0,
-                        waitPull: 0
+                        waitPull: status.behind,
+                        waitPush: status.ahead
                     }
                 })
             }

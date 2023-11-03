@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
 const { getMods, getSources } = require('./common/dir-utils')
-const { cloneModSource } = require('./common/git-utils')
+const { cloneModSource, sync } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
     if (['dark', 'light', 'system'].includes(message)) {
@@ -10,7 +10,7 @@ ipcMain.handle('switch-native-theme', (_, message) => {
     }
 })
 
-ipcMain.handle('get', (_, message) => {
+ipcMain.handle('get', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mods':
@@ -18,7 +18,9 @@ ipcMain.handle('get', (_, message) => {
             case 'sources':
                 return getSources()
             case 'cloneModSource':
-                return cloneModSource(message[1], message[2])
+                return await cloneModSource(message[1], message[2])
+            case 'sync':
+                return await sync(message[1], message[2])
         }
     }
 })
