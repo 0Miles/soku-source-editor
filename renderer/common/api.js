@@ -9,6 +9,11 @@ export const getSources = async () => {
     return data
 }
 
+export const deleteSource = async (sourceName) => {
+    const data = await ipcRenderer.invoke('delete', ['source', sourceName])
+    return data
+}
+
 export const cloneModSource = async (url, customName) => {
     const repo = await ipcRenderer.invoke('git', ['cloneModSource', url, customName])
     return repo

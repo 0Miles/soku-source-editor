@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useMemo, useState, useContext } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 
-import { DataContext } from '../../data'
+import { DataContext } from '../../contexts/data'
 import AddSourceDialog from './compontents/add-source.dialog'
 import SourceListItem from './compontents/source.list-item'
 

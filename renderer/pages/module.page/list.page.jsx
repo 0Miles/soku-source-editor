@@ -14,10 +14,10 @@ import pencilIcon from '../../icons/pencil.icon'
 import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
-import { DataContext } from '../../data'
+import { DataContext } from '../../contexts/data'
 
 export default function ModuleListPage() {
-    const { localMods, refreshLocalMods } = useContext(DataContext)
+    const { currentMods, refreshCurrentMods } = useContext(DataContext)
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
@@ -25,15 +25,15 @@ export default function ModuleListPage() {
 
     useMemo(() => {
         (async () => {
-            if (!localMods) {
+            if (!currentMods) {
                 setLoading(true)
-                await refreshLocalMods()
+                await refreshCurrentMods()
                 setLoading(false)
             } else {
-                setMods(localMods)
+                setMods(currentMods)
             }
         })()
-    }, [localMods, refreshLocalMods])
+    }, [currentMods, refreshCurrentMods])
 
     return <MultiLevelPageContainer>
         {

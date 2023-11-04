@@ -21,7 +21,7 @@ import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
-import { DataContext } from '../../data'
+import { DataContext } from '../../contexts/data'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -32,7 +32,7 @@ renderer.link = (href, title, text) => {
 const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
-    const { localMods, refreshLocalMods } = useContext(DataContext)
+    const { currentMods, refreshCurrentMods } = useContext(DataContext)
     const { modName } = useParams()
     const { t, i18n } = useTranslation()
 
@@ -43,15 +43,15 @@ export default function ModuleInfoPage() {
 
     useMemo(() => {
         (async () => {
-            if (!localMods) {
+            if (!currentMods) {
                 setLoading(true)
-                await refreshLocalMods()
+                await refreshCurrentMods()
                 setLoading(false)
             } else {
-                setModInfo(localMods.find(x => x.name === modName))
+                setModInfo(currentMods.find(x => x.name === modName))
             }
         })()
-    }, [localMods, modName, refreshLocalMods])
+    }, [currentMods, modName, refreshCurrentMods])
 
     return <PageContainer>
         {

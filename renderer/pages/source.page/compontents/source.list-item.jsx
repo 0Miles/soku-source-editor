@@ -1,15 +1,19 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useContext } from 'react'
 import {
     Button,
     MenuItem,
     Spinner
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
+import { deleteSource } from '../../../common/api'
 import ListItemButton from "../../../common/list-item.button"
-import pencilIcon from '../../../icons/pencil.icon'
 import trashIcon from '../../../icons/trash.icon'
+import { DataContext } from '../../../contexts/data'
+import { useMessageBox, MessageBoxButtons, DialogResult, MessageBoxIcon } from '../../../contexts/message-box'
 
 export default function SourceListItem({ sourceInfo }) {
+    const { showMessageBox } = useMessageBox()
+    const { refreshSources } = useContext(DataContext)
     const { t, i18n } = useTranslation()
     const [isSyncing, setIsSyncing] = useState(false)
     const [gitStatus, setGitStatus] = useState()
@@ -25,6 +29,24 @@ export default function SourceListItem({ sourceInfo }) {
         const status = await ipcRenderer.invoke('git', ['fetch', sourceInfo.name, sourceInfo.branch])
         setGitStatus(status)
     }, [sourceInfo.branch, sourceInfo.name])
+
+    const deleteThisSource = async () => {
+        if (
+            await showMessageBox(
+                t('Delete source'),
+                <div>
+                    { t('Do you want to delete the source') }
+                    <span className="p:4 mx:4 r:3 bg:gray-10@dark bg:gray-90@light">{sourceInfo.name}</span>
+                    ?
+                </div>,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) === DialogResult.Yes
+        ) {
+
+            await deleteSource(sourceInfo.name)
+            refreshSources()
+        }
+    }
 
     useMemo(() => {
         refreshGitStatus()
@@ -135,8 +157,7 @@ export default function SourceListItem({ sourceInfo }) {
         }
         options={
             <>
-                <MenuItem icon={pencilIcon}>{t('Edit')}</MenuItem>
-                <MenuItem icon={trashIcon}>{t('Delete')}</MenuItem>
+                <MenuItem onClick={deleteThisSource} icon={trashIcon}>{t('Delete')}</MenuItem>
             </>
         }
     />

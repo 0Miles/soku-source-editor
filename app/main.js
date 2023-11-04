@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getSources } = require('./common/dir-utils')
+const { getMods, getSources, deleteSource } = require('./common/dir-utils')
 const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
@@ -30,6 +30,15 @@ ipcMain.handle('git', async (_, message) => {
                 return await sync(message[1], message[2])
             case 'fetch':
                 return await fetchStatus(message[1], message[2])
+        }
+    }
+})
+
+ipcMain.handle('delete', async (_, message) => {
+    if (Array.isArray(message) && message.length > 0) {
+        switch (message[0]) {
+            case 'source':
+                return await deleteSource(message[1])
         }
     }
 })

@@ -36,5 +36,11 @@
     "Name": "名称",
     "Getting source repository": "正在取得来源储存库",
     "An error occurred": "发生错误",
-    "OK": "确认"
+    "OK": "确认",
+    "Abort": "中止",
+    "Retry": "重试",
+    "Ignore": "忽略",
+    "Containue": "继续",
+    "Yes": "是",
+    "No": "否"
 }

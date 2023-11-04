@@ -1,30 +1,31 @@
 
 import { createContext, useState } from 'react'
-import { getMods, getSources } from './common/api'
+import { getMods, getSources } from '../common/api'
 
 export const DataContext = createContext()
 
 export const DataProvider = ({ children }) => {
     const [sources, setSources] = useState()
-    const [localMods, setLocalMods] = useState()
+    const [currentSource, setCurrentSource] = useState('example')
+    const [currentMods, setCurrentMods] = useState()
 
     const refreshSources = async () => {
         const data = await getSources()
         setSources(data)
     }
 
-    const refreshLocalMods = async () => {
-        const data = await getMods()
-        setLocalMods(data)
+    const refreshCurrentMods = async () => {
+        const data = await getMods(`sources/${currentSource}/modules`)
+        setCurrentMods(data)
     }
 
     return (
         <DataContext.Provider
             value={{
                 sources,
-                localMods,
+                currentMods,
                 refreshSources,
-                refreshLocalMods
+                refreshCurrentMods
             }}
         >
             {children}

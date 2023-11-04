@@ -36,5 +36,13 @@
     "Name": "名稱",
     "Getting source repository": "正在取得來源儲存庫",
     "An error occurred": "發生錯誤",
-    "OK": "確定"
+    "OK": "確定",
+    "Abort": "中止",
+    "Retry": "重試",
+    "Ignore": "忽略",
+    "Containue": "繼續",
+    "Yes": "是",
+    "No": "否",
+    "Delete source": "刪除來源",
+    "Do you want to delete the source": "是否要刪除來源"
 }

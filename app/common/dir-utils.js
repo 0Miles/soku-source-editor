@@ -77,9 +77,9 @@ const checkSourceInfo = (dirname) => {
     }
 }
 
-const getSources = async (sourcesDirname, base = process.cwd()) => {
+const getSources = async (base = process.cwd()) => {
     
-    const dirname = path.resolve(base, sourcesDirname ?? 'sources')
+    const dirname = path.resolve(base, 'sources')
 
     if (fs.existsSync(dirname)) {
         const data = []
@@ -103,7 +103,15 @@ const getSources = async (sourcesDirname, base = process.cwd()) => {
     }
 }
 
+const deleteSource = (sourceName, base = process.cwd()) => {
+    const dirname = path.resolve(base, 'sources', sourceName)
+    if (fs.existsSync(dirname)) {
+        fs.rmSync(dirname, { recursive: true, force: true })
+    }
+}
+
 module.exports = {
     getMods,
-    getSources
+    getSources,
+    deleteSource
 }

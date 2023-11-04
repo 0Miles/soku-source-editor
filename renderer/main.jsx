@@ -5,8 +5,9 @@ import {
     RouterProvider,
     Navigate
 } from 'react-router-dom'
-import { ThemeProvider } from './theme'
-import { DataProvider } from './data'
+import { ThemeProvider } from './contexts/theme'
+import { DataProvider } from './contexts/data'
+
 import App from './app'
 import ModuleListPage from './pages/module.page/list.page'
 import ModuleInfoPage from './pages/module.page/info.page'

@@ -17,7 +17,7 @@ import { useContext, useMemo, useState } from 'react'
 
 import plusIcon from '../../../icons/plus.icon'
 import { cloneModSource } from '../../../common/api'
-import { DataContext } from '../../../data'
+import { DataContext } from '../../../contexts/data'
 
 export default function AddSourceDialog() {
     const { t } = useTranslation()
@@ -120,10 +120,8 @@ export default function AddSourceDialog() {
                     {
                         !isCloning && !errorMsg &&
                         <>
-                            <DialogTrigger>
-                                <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
-                            </DialogTrigger>
                             <Button onClick={addSource} appearance="primary" disabled={!validRepoUrl}>{t('Add')}</Button>
+                            <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
                         </>
                     }
                     {
