@@ -27,7 +27,7 @@ export const ModSourceProvider = ({ children }) => {
     }
 
     const addSource = async (sourceUrl, sourceName) => {
-        await cloneModSource(sourceUrl, sourceName)
+        await api.cloneModSource(sourceUrl, sourceName)
         if (!sources?.length) {
             changePrimarySource(sourceName)
         }
@@ -35,7 +35,11 @@ export const ModSourceProvider = ({ children }) => {
 
     const deleteSource = async (sourceName) => {
         if (sourceName === primarySourceName) {
-            changePrimarySource()
+            if (sources?.length > 1) {
+                changePrimarySource(sources.find(x => x.name !== sourceName).name)
+            } else {
+                changePrimarySource()
+            }
         }
         await api.deleteSource(sourceName)
     }
