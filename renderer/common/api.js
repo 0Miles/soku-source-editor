@@ -10,6 +10,6 @@ export const getSources = async () => {
 }
 
 export const cloneModSource = async (url, customName) => {
-    const repo = await ipcRenderer.invoke('get', ['cloneModSource', url, customName])
+    const repo = await ipcRenderer.invoke('git', ['cloneModSource', url, customName])
     return repo
 }
