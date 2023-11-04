@@ -42,5 +42,7 @@
     "Ignore": "忽略",
     "Containue": "继续",
     "Yes": "是",
-    "No": "否"
+    "No": "否",
+    "Delete source": "删除来源",
+    "Do you want to delete the source": "是否要删除来源"
 }
