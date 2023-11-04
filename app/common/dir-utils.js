@@ -32,6 +32,7 @@ const getSubdirJsonInfos = (dirname, filename) => {
             if (elementInfo.isDirectory()) {
                 const jsonInfo = getJsonInfo(elementFullPath, filename)
                 if (jsonInfo) {
+                    jsonInfo.createdAt = elementInfo.birthtimeMs
                     data.push(jsonInfo)
                 }
             }
@@ -54,17 +55,33 @@ const getMods = (modsDirname, base = process.cwd()) => {
     const dirname = path.resolve(base, modsDirname ?? 'modules')
     
     if (fs.existsSync(dirname)) {
-        const modInfos = getSubdirJsonInfos(dirname, 'mod.json')
+        const modInfos = getSubdirJsonInfos(dirname, 'mod.json').sort((a, b) => a.createdAt - b.createdAt)
 
         for (const modInfo of modInfos) {
             modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
             modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
             modInfo.versions = getSubdirJsonInfos(path.resolve(modInfo.dirname, 'versions'), 'version.json')
+                .sort((a, b) => compareVersions(b.version, a.version))
         }
         return modInfos
     } else {
         return []
     }
+}
+
+const compareVersions = (a, b) => {
+    const aParts = a.match(/\d+/g)
+    const bParts = b.match(/\d+/g)
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i] ?? 0
+        const bPart = bParts[i] ?? 0
+        if (aPart < bPart) {
+            return -1
+        } else if (aPart > bPart) {
+            return 1
+        }
+    }
+    return 0
 }
 
 const checkSourceInfo = (dirname) => {
@@ -82,21 +99,25 @@ const getSources = async (base = process.cwd()) => {
     const dirname = path.resolve(base, 'sources')
 
     if (fs.existsSync(dirname)) {
-        const data = []
-        const elements = fs.readdirSync(dirname, { encoding: 'utf-8' })
-        for (const element of elements) {
-            const elementFullPath = path.join(dirname, element)
-            const elementInfo = fs.statSync(elementFullPath)
-            if (elementInfo.isDirectory()) {
-                const sourceInfo = checkSourceInfo(elementFullPath)
-
-                data.push({
-                    name: element,
+        const data = fs.readdirSync(dirname, { encoding: 'utf-8' })
+            .map(elementName => {
+                const fullPath = path.join(dirname, elementName)
+                return {
+                    name: elementName,
+                    stat: fs.statSync(fullPath),
+                    fullPath
+                }
+            })
+            .filter(x => x.stat.isDirectory())
+            .sort((a, b) => a.stat.birthtimeMs - b.stat.birthtimeMs)
+            .map(element => {
+                const sourceInfo = checkSourceInfo(element.fullPath)
+                return {
+                    name: element.name,
                     isSource: !!sourceInfo,
                     info: sourceInfo
-                })
-            }
-        }
+                }
+            })
         return data
     } else {
         return []
