@@ -191,9 +191,9 @@ export const MessageBoxProvider = ({ children }) => {
                 </DialogSurface>
             </Dialog>
         </MessageBoxContext.Provider>
-    );
-};
+    )
+}
 
 export const useMessageBox = () => {
-    return useContext(MessageBoxContext);
-};
+    return useContext(MessageBoxContext)
+}

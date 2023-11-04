@@ -1,20 +1,23 @@
-
 export const getMods = async (path) => {
-    const data = await ipcRenderer.invoke('get', ['mods', path])
-    return data
+    return await ipcRenderer.invoke('get', ['mods', path])
 }
 
 export const getSources = async () => {
-    const data = await ipcRenderer.invoke('get', ['sources'])
-    return data
-}
-
-export const deleteSource = async (sourceName) => {
-    const data = await ipcRenderer.invoke('delete', ['source', sourceName])
-    return data
+    return await ipcRenderer.invoke('get', ['sources'])
 }
 
 export const cloneModSource = async (url, customName) => {
-    const repo = await ipcRenderer.invoke('git', ['cloneModSource', url, customName])
-    return repo
+    return  await ipcRenderer.invoke('git', ['cloneModSource', url, customName])
+}
+
+export const gitSync = async (sourceName, sourceBranch) => {
+    return await ipcRenderer.invoke('git', ['sync', sourceName, sourceBranch])
+}
+
+export const gitFetchStatus = async (sourceName, sourceBranch) => {
+    return await ipcRenderer.invoke('git', ['fetch', sourceName, sourceBranch])
+}
+
+export const deleteSource = async (sourceName) => {
+    await ipcRenderer.invoke('delete', ['source', sourceName])
 }

@@ -6,7 +6,7 @@ import {
     Navigate
 } from 'react-router-dom'
 import { ThemeProvider } from './contexts/theme'
-import { DataProvider } from './contexts/data'
+import { ModSourceProvider } from './contexts/mod-source'
 
 import App from './app'
 import ModuleListPage from './pages/module.page/list.page'
@@ -60,9 +60,9 @@ const router = createHashRouter([
 root.render(
     <React.StrictMode>
         <ThemeProvider>
-            <DataProvider>
+            <ModSourceProvider>
                 <RouterProvider router={router} />
-            </DataProvider>
+            </ModSourceProvider>
         </ThemeProvider>
     </React.StrictMode>
 )

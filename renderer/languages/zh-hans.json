@@ -44,5 +44,9 @@
     "Yes": "是",
     "No": "否",
     "Delete source": "删除来源",
-    "Do you want to delete the source": "是否要删除来源"
+    "Do you want to delete the source": "是否要删除来源",
+    "No primary source set": "未设置主要来源",
+    "You must first add at least one source and set a primary source": "必须先新增至少一个来源，并且设置主要来源",
+    "Set up now": "立刻设定",
+    "Set as primary": "设定为主要"
 }

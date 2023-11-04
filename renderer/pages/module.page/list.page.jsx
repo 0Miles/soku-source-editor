@@ -4,8 +4,7 @@ import {
     Spinner
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { getMods } from '../../common/api'
-import { useMemo, useState, useContext } from 'react'
+import { useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 import ListItemButton from '../../common/list-item.button'
 
@@ -14,10 +13,12 @@ import pencilIcon from '../../icons/pencil.icon'
 import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
-import { DataContext } from '../../contexts/data'
+import { useModSource } from '../../contexts/mod-source'
+import { useNavigate } from 'react-router-dom'
 
 export default function ModuleListPage() {
-    const { currentMods, refreshCurrentMods } = useContext(DataContext)
+    const navigate = useNavigate()
+    const { currentMods, refreshCurrentMods, primarySourceName } = useModSource()
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
@@ -37,11 +38,25 @@ export default function ModuleListPage() {
 
     return <MultiLevelPageContainer>
         {
-            loading &&
+            !primarySourceName &&
+            <div className="flex align-items:center justify-content:space-between r:3 p:16 bg:#2f2f30@dark bg:#eeeeee@light user-select:none justify-content:space-between ">
+                <div className="flex:1">
+                    <div className="f:16">
+                        {t('No primary source set')}
+                    </div>
+                    <div className="mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
+                        {t('You must first add at least one source and set a primary source')}
+                    </div>
+                </div>
+                <Button appearance="primary" onClick={() => { navigate('/source') }}>{t('Set up now')}</Button>
+            </div>
+        }
+        {
+            !!primarySourceName && loading &&
             <Spinner />
         }
         {
-            !loading &&
+            !!primarySourceName && !loading &&
             <>
                 <div className="mb:8 grid grid-cols:1 gap:8 w:full">
                     {

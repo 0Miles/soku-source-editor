@@ -2,11 +2,10 @@ import {
     Spinner,
     Button
 } from '@fluentui/react-components'
-import { useState, useMemo, useRef, useContext } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PageContainer from '../../templates/page-container'
-import { getMods } from '../../common/api'
 
 import plusIcon from '../../icons/plus.icon'
 import pencilIcon from '../../icons/pencil.icon'
@@ -21,7 +20,7 @@ import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
-import { DataContext } from '../../contexts/data'
+import { useModSource } from '../../contexts/mod-source'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -32,7 +31,7 @@ renderer.link = (href, title, text) => {
 const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
-    const { currentMods, refreshCurrentMods } = useContext(DataContext)
+    const { currentMods, refreshCurrentMods } = useModSource()
     const { modName } = useParams()
     const { t, i18n } = useTranslation()
 
@@ -203,7 +202,7 @@ export default function ModuleInfoPage() {
                                     <div className="flex align-items:center justify-content:space-between">
                                         <div className="mr:16">
                                             {t('Release on Github')}
-                                            <div className="font-weight:normal color:#AAA@dark">
+                                            <div className="font-weight:normal font-weight:normal mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
                                                 {t(`Requires logging in and setting up the module's Github Repository`)}
                                             </div>
                                         </div>
@@ -222,7 +221,7 @@ export default function ModuleInfoPage() {
                                     <div className="flex align-items:center justify-content:space-between">
                                         <div className="mr:16">
                                             {t('Export compressed file')}
-                                            <div className="font-weight:normal color:#AAA@dark">
+                                            <div className="font-weight:normal mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
                                                 {t('Generates a zip file that can be imported in SokuLauncher')}
                                             </div>
                                         </div>

@@ -23,7 +23,7 @@ export default function ListItemButton({href, icon, content, options}) {
                 </div>
                 <Menu hasIcons={true}>
                     <MenuTrigger disableButtonEnhancement>
-                        <Button as="div" appearance="transparent" onClick={event => { event.stopPropagation() }} icon={optionsIcon} />
+                        <Button as="div" className="cursor:auto!" appearance="transparent" onClick={event => { event.stopPropagation() }} icon={optionsIcon} />
                     </MenuTrigger>
 
                     <MenuPopover>

@@ -2,15 +2,15 @@ import {
     Spinner
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useMemo, useState, useContext } from 'react'
+import { useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 
-import { DataContext } from '../../contexts/data'
+import { useModSource } from '../../contexts/mod-source'
 import AddSourceDialog from './compontents/add-source.dialog'
 import SourceListItem from './compontents/source.list-item'
 
 export default function SourceListPage() {
-    const { sources, refreshSources } = useContext(DataContext)
+    const { sources, refreshSources } = useModSource()
     const { t } = useTranslation()
 
     const [loading, setLoading] = useState(false)

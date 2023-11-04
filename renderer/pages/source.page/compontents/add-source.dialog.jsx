@@ -1,6 +1,5 @@
 import {
     Button,
-    MenuItem,
     Spinner,
     Dialog,
     DialogTrigger,
@@ -13,15 +12,14 @@ import {
     Label
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useContext, useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import plusIcon from '../../../icons/plus.icon'
-import { cloneModSource } from '../../../common/api'
-import { DataContext } from '../../../contexts/data'
+import { useModSource } from '../../../contexts/mod-source'
 
 export default function AddSourceDialog() {
     const { t } = useTranslation()
-    const { sources, refreshSources } = useContext(DataContext)
+    const { sources, refreshSources, addSource } = useModSource()
     const [sourceUrl, setSourceUrl] = useState('')
     const [open, setOpen] = useState(false)
     const [isCloning, setIsCloning] = useState(false)
@@ -30,10 +28,10 @@ export default function AddSourceDialog() {
     const [recommendedName, setRecommendedName] = useState('')
     const [validRepoUrl, setValidRepoUrl] = useState(false)
 
-    const addSource = async () => {
+    const addSourceButtonHandle = async () => {
         setIsCloning(true)
         try {
-            await cloneModSource(sourceUrl, customName ? customName : recommendedName)
+            await addSource(sourceUrl, customName ? customName : recommendedName)
             await refreshSources()
             setOpen(false)
         }
@@ -120,7 +118,7 @@ export default function AddSourceDialog() {
                     {
                         !isCloning && !errorMsg &&
                         <>
-                            <Button onClick={addSource} appearance="primary" disabled={!validRepoUrl}>{t('Add')}</Button>
+                            <Button onClick={addSourceButtonHandle} appearance="primary" disabled={!validRepoUrl}>{t('Add')}</Button>
                             <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
                         </>
                     }
