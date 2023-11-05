@@ -48,7 +48,7 @@ export default function Breadcrumbs() {
                 case '/source/info/':
                     i++
                     link += originPaths[i] + '/'
-                    title = firstLetterCap(originPaths[i])
+                    title = originPaths[i]
                     break
                 default:
                     title = t(firstLetterCap(originPaths[i]))
