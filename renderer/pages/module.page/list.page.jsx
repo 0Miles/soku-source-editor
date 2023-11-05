@@ -15,6 +15,7 @@ import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
 import { useNavigate } from 'react-router-dom'
+import ControlItem from '../../common/control-item'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
@@ -39,17 +40,13 @@ export default function ModuleListPage() {
     return <MultiLevelPageContainer>
         {
             !primarySourceName &&
-            <div className="flex align-items:center justify-content:space-between r:3 p:16 bg:#2f2f30@dark bg:#eeeeee@light user-select:none justify-content:space-between ">
-                <div className="flex:1">
-                    <div className="f:16">
-                        {t('No primary source set')}
-                    </div>
-                    <div className="mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
-                        {t('You must first add at least one source and set a primary source')}
-                    </div>
-                </div>
-                <Button appearance="primary" onClick={() => { navigate('/source') }}>{t('Set up now')}</Button>
-            </div>
+            <ControlItem
+                title={t('No primary source set')}
+                desc={t('You must first add at least one source and set a primary source')}
+                control={
+                    <Button appearance="primary" onClick={() => { navigate('/source') }}>{t('Set up now')}</Button>
+                }
+            ></ControlItem>
         }
         {
             !!primarySourceName && loading &&

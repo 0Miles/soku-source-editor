@@ -156,11 +156,11 @@ export default function ModuleInfoPage() {
                                 className={`w:full ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
                                 icon={boxIcon}
                                 body={<>
-                                    <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
-                                        <div className="f:18">
+                                    <div className="flex:1 w:0 {my:2;line-height:1rem;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
+                                        <div className="f:16">
                                             v{version.version}
                                         </div>
-                                        <div className="f:12 line-height:12px">
+                                        <div className="f:12 color:#CFCFCF@dark color:#565656@light">
                                             {t('Not yet released')}
                                         </div>
                                     </div>
@@ -168,7 +168,7 @@ export default function ModuleInfoPage() {
                                 content={<>
                                     <div>
                                         <div className="flex align-items:center justify-content:space-between mb:16">
-                                            <div className="">
+                                            <div>
                                                 {t('Content')}
                                             </div>
                                             <Button>{t('Edit')}</Button>
@@ -177,13 +177,13 @@ export default function ModuleInfoPage() {
                                             <div className="grid-col:1">
                                                 {t('Main file')}:
                                             </div>
-                                            <div className="grid-col:3 f:16 color:#AAA@dark user-select:text">
+                                            <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
                                                 {version.main}
                                             </div>
                                             <div className="grid-col:1">
                                                 {t('Config files')}:
                                             </div>
-                                            <div className="grid-col:3 f:16 color:#AAA@dark user-select:text">
+                                            <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
                                                 {
                                                     !!version.configFiles?.length &&
                                                     version.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
@@ -192,7 +192,7 @@ export default function ModuleInfoPage() {
                                             <div className="grid-col:1">
                                                 {t('Location')}:
                                             </div>
-                                            <div className="grid-col:3 f:14 color:#AAA@dark user-select:text">
+                                            <div className="grid-col:3 f:14 color:#CFCFCF@dark user-select:text">
                                                 {
                                                     version.dirname
                                                 }
@@ -200,16 +200,18 @@ export default function ModuleInfoPage() {
                                         </div>
                                     </div>
                                     <div className="flex align-items:center justify-content:space-between">
-                                        <div className="mr:16">
-                                            {t('Release on Github')}
-                                            <div className="font-weight:normal font-weight:normal mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
+                                        <div className="mr:16 my:2>div">
+                                            <div>
+                                                {t('Release on Github')}
+                                            </div>
+                                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                                                 {t(`Requires logging in and setting up the module's Github Repository`)}
                                             </div>
                                         </div>
                                         <Button disabled>{t('Release')}</Button>
                                     </div>
                                     <div>
-                                        <div className=" mb:16">{t('Release Notes')}</div>
+                                        <div className="mb:16">{t('Release Notes')}</div>
                                         <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                                             {
                                                 HTMLReactParser(
@@ -219,9 +221,11 @@ export default function ModuleInfoPage() {
                                         </div>
                                     </div>
                                     <div className="flex align-items:center justify-content:space-between">
-                                        <div className="mr:16">
-                                            {t('Export compressed file')}
-                                            <div className="font-weight:normal mt:4 f:12 line-height:1rem color:#AAA@dark color:#565656@light">
+                                        <div className="mr:16 my:2>div">
+                                            <div>
+                                                {t('Export compressed file')}
+                                            </div>
+                                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                                                 {t('Generates a zip file that can be imported in SokuLauncher')}
                                             </div>
                                         </div>
@@ -233,7 +237,7 @@ export default function ModuleInfoPage() {
                         }
                     }
                     toolbar={
-                        <Button icon={plusIcon} >{t('Add version')}</Button>
+                        <Button icon={plusIcon}>{t('Add version')}</Button>
                     }
                     selectModeToolbar={
                         <Button icon={trashIcon}>{t('Delete')}</Button>

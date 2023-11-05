@@ -43,7 +43,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                         <path d="M11 18l9 0"></path>
                     </svg>} />
             </div>
-            <div className="my:8 grid grid-cols:1 gap:8 w:full">
+            <div className="my:8 grid grid-cols:1 gap:4 w:full">
                 {
                     items &&
                     items.map((item, i) =>

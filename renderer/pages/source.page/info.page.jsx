@@ -1,12 +1,31 @@
-import { Spinner } from '@fluentui/react-components'
+import { Button, Spinner } from '@fluentui/react-components'
 import PageContainer from '../../templates/page-container'
+import MultiLevelPageContainer from '../../templates/multi-level-page-container'
+import { useModSource } from '../../contexts/mod-source'
+import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
+import SourceListItem from './compontents/source.list-item'
+import AddSourceDialog from './compontents/add-source.dialog'
+import ControlItem from '../../common/control-item'
 
 export default function SourceInfoPage() {
-    return <>
-        <PageContainer>
-            <div className="@transition-up|.3s|cubic-bezier(0.14,1,0.34,1) w:full">
-                <Spinner />
-            </div>
-        </PageContainer>
-    </>
+    const { sources, refreshSources } = useModSource()
+    const { t } = useTranslation()
+
+    const [loading, setLoading] = useState(false)
+
+    return <MultiLevelPageContainer level={3}>
+        {
+            loading &&
+            <Spinner />
+        }
+        {
+            !loading &&
+            <>
+                <div className="flex flex:col">
+                    
+                </div>
+            </>
+        }
+    </MultiLevelPageContainer>
 }
