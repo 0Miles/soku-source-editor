@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import SourceListItem from './compontents/source.list-item'
 import AddSourceDialog from './compontents/add-source.dialog'
-import ControlItem from '../../common/control-item'
+import CommonItem from '../../common/common-item'
 
 export default function SourceInfoPage() {
     const { sources, refreshSources } = useModSource()
@@ -23,7 +23,13 @@ export default function SourceInfoPage() {
             !loading &&
             <>
                 <div className="flex flex:col">
-                    
+                    <CommonItem
+                        title={t('No primary source set')}
+                        desc={t('You must first add at least one source and set a primary source')}
+                        footer={
+                            <Button onClick={() => { navigate('/source') }}>{t('Set up now')}</Button>
+                        }
+                    ></CommonItem>
                 </div>
             </>
         }

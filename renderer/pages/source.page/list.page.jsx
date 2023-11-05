@@ -33,7 +33,7 @@ export default function SourceListPage() {
         {
             !loading &&
             <>
-                <div className="mb:8 grid grid-cols:1 gap:8 w:full">
+                <div className="mb:8 grid grid-cols:1 gap:4 w:full">
                     {
                         !!sources?.length &&
                         sources.map((sourceInfo, index) =>

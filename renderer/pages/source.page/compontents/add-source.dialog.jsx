@@ -73,7 +73,7 @@ export default function AddSourceDialog() {
 
     return <Dialog open={open}>
         <DialogTrigger>
-            <Button onClick={openDialog} className="w:full min-h:80 cursor:auto!" appearance="subtle">
+            <Button onClick={openDialog} className="w:full min-h:70 cursor:auto!" appearance="subtle">
                 {plusIcon}
             </Button>
         </DialogTrigger>

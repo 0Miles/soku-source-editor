@@ -15,7 +15,7 @@ import boxIcon from '../../icons/box.icon'
 import chevronUpIcon from '../../icons/chevron-up.icon'
 import chevronDownIcon from '../../icons/chevron-down.icon'
 
-import CollapsibleButton from '../../common/collapsible.button'
+import CollapsibleItem from '../../common/collapsible-item'
 import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
@@ -151,20 +151,12 @@ export default function ModuleInfoPage() {
                     items={modInfo?.versions}
                     itemTemplate={
                         (version, selectMode) => {
-                            return <CollapsibleButton
+                            return <CollapsibleItem
                                 allowOpen={!selectMode}
                                 className={`w:full ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
                                 icon={boxIcon}
-                                body={<>
-                                    <div className="flex:1 w:0 {my:2;line-height:1rem;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
-                                        <div className="f:16">
-                                            v{version.version}
-                                        </div>
-                                        <div className="f:12 color:#CFCFCF@dark color:#565656@light">
-                                            {t('Not yet released')}
-                                        </div>
-                                    </div>
-                                </>}
+                                title={`v${version.version}`}
+                                desc={t('Not yet released')}
                                 content={<>
                                     <div>
                                         <div className="flex align-items:center justify-content:space-between mb:16">

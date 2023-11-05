@@ -6,16 +6,14 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
-import ListItemButton from '../../common/list-item.button'
 
 import plusIcon from '../../icons/plus.icon'
-import pencilIcon from '../../icons/pencil.icon'
-import trashIcon from '../../icons/trash.icon'
+import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
 import { useNavigate } from 'react-router-dom'
-import ControlItem from '../../common/control-item'
+import CommonItem from '../../common/common-item'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
@@ -40,13 +38,13 @@ export default function ModuleListPage() {
     return <MultiLevelPageContainer>
         {
             !primarySourceName &&
-            <ControlItem
+            <CommonItem
                 title={t('No primary source set')}
                 desc={t('You must first add at least one source and set a primary source')}
-                control={
+                footer={
                     <Button appearance="primary" onClick={() => { navigate('/source') }}>{t('Set up now')}</Button>
                 }
-            ></ControlItem>
+            ></CommonItem>
         }
         {
             !!primarySourceName && loading &&
@@ -55,13 +53,14 @@ export default function ModuleListPage() {
         {
             !!primarySourceName && !loading &&
             <>
-                <div className="mb:8 grid grid-cols:1 gap:8 w:full">
+                <div className="mb:8 grid grid-cols:1 gap:4 w:full">
                     {
                         !!mods?.length &&
                         mods.map((modInfo, index) =>
-                            <ListItemButton
+                            <CommonItem
                                 key={index}
-                                href={`/module/info/${modInfo.name}`}
+                                onClick={() => navigate(`/module/info/${modInfo.name}`)}
+                                fullIcon="true"
                                 icon={
                                     <>
                                         {
@@ -72,32 +71,19 @@ export default function ModuleListPage() {
                                         }
                                         {
                                             !modInfo.icon &&
-                                            <div className="flex w:full h:full align-items:center justify-content:center bg:gray/.2">
+                                            <div className="flex w:full h:full justify-content:center align-items:center bg:gray/.2">
                                                 {gearIcon}
                                             </div>
                                         }
                                     </>
                                 }
-                                content={
-                                    <div className="flex:1 w:0 {my:2;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
-                                        <div className="f:18">
-                                            {modInfo.name}
-                                        </div>
-                                        <div>
-                                            <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
-                                        </div>
-                                    </div>
-                                }
-                                options={
-                                    <>
-                                        <MenuItem icon={pencilIcon}>{t('Edit')}</MenuItem>
-                                        <MenuItem icon={trashIcon}>{t('Delete')}</MenuItem>
-                                    </>
-                                }
+                                title={modInfo.name}
+                                desc={<I18nProperty root={modInfo} property={'description'} lang={i18n.language} />}
+                                end={chevronRightIcon}
                             />
                         )
                     }
-                    <Button className="w:full min-h:80 cursor:auto!" appearance="subtle">
+                    <Button className="w:full min-h:70 cursor:auto!" appearance="subtle">
                         {plusIcon}
                     </Button>
                 </div>
