@@ -48,5 +48,7 @@
     "No primary source set": "未設定主要來源",
     "You must first add at least one source and set a primary source": "必須先新增至少一個來源，並設定主要來源",
     "Set up now": "立刻設定",
-    "Set as primary": "設定為主要"
+    "Set as primary": "設定為主要",
+    "General": "一般",
+    "Sync": "同步"
 }

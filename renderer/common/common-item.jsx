@@ -2,10 +2,10 @@
 export default function CommonItem({ icon, fullIcon, title, desc, footer, end, onClick }) {
 
     return (
-        <div onClick={onClick} className="min-h:68 flex flex:1 my:2>div align-items:center justify-content:space-between r:3 user-select:none justify-content:space-between bg:#2f2f30@dark bg:#2f2f30:active@dark bg:#383838:hover@dark bg:#eeeeee@light bg:#eeeeee:active@light bg:#f5f5f5:hover@light">
+        <div onClick={onClick} className="min-h:68 flex flex:1 align-items:center justify-content:space-between r:3 user-select:none justify-content:space-between bg:#2f2f30@dark bg:#2f2f30:active@dark bg:#383838:hover@dark bg:#eeeeee@light bg:#eeeeee:active@light bg:#f5f5f5:hover@light">
             {
                 !!icon && !fullIcon &&
-                <div className="w:24 ml:16 overflow:clip">
+                <div className="w:24 ml:16 mt:4 overflow:clip">
                     {icon}
                 </div>
             }
@@ -34,7 +34,7 @@ export default function CommonItem({ icon, fullIcon, title, desc, footer, end, o
             }
             {
                 !!end &&
-                <div className="mr:12">
+                <div className="mr:12 mt:4">
                     {end}
                 </div>
             }

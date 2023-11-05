@@ -12,16 +12,25 @@ import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
+    const location = useLocation()
     const { currentMods, refreshCurrentMods, primarySourceName } = useModSource()
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
     const [mods, setMods] = useState([])
+    const [level, setLevel] = useState(
+        useMemo(() => {
+            if (location.pathname.startsWith('/source')) {
+                return 4
+            }
+            return 1
+        }, [location])
+    )
 
     useMemo(() => {
         (async () => {
@@ -35,7 +44,7 @@ export default function ModuleListPage() {
         })()
     }, [currentMods, refreshCurrentMods])
 
-    return <MultiLevelPageContainer>
+    return <MultiLevelPageContainer level={level}>
         {
             !primarySourceName &&
             <CommonItem
@@ -59,7 +68,7 @@ export default function ModuleListPage() {
                         mods.map((modInfo, index) =>
                             <CommonItem
                                 key={index}
-                                onClick={() => navigate(`/module/info/${modInfo.name}`)}
+                                onClick={() => navigate(`./info/${modInfo.name}`)}
                                 fullIcon="true"
                                 icon={
                                     <>

@@ -45,7 +45,19 @@ const router = createHashRouter([
                 children: [
                     {
                         path: 'info/:sourceName',
-                        element: <SourceInfoPage />
+                        element: <SourceInfoPage />,
+                        children: [
+                            {
+                                path: 'module',
+                                element: <ModuleListPage />,
+                                children: [
+                                    {
+                                        path: 'info/:modName',
+                                        element: <ModuleInfoPage />
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },

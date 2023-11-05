@@ -34,16 +34,12 @@ const sync = async (sourceName, branch, git) => {
     await git.fetch()
     await pullAndMerge(sourceName, branch, git)
     await git.push('origin', branch)
-    return await git.status()
+    return JSON.parse(JSON.stringify(await git.status()))
 }
 
-const fetchStatus = async (sourceName, branch, git) => {
+const fetchStatus = async (sourceName, git) => {
     if (!git) {
         git = getGit(sourceName)
-    }
-    if (!branch) {
-        const status = await git.status()
-        branch = status.current
     }
     
     return JSON.parse(JSON.stringify(await git.fetch().status()))

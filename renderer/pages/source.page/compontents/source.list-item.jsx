@@ -1,13 +1,11 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import {
     Button,
     Menu,
     MenuItem,
     MenuList,
     MenuPopover,
-    MenuTrigger,
-    Spinner
-} from '@fluentui/react-components'
+    MenuTrigger} from '@fluentui/react-components'
 import * as api from '../../../common/api'
 import { useTranslation } from 'react-i18next'
 import trashIcon from '../../../icons/trash.icon'
@@ -15,27 +13,24 @@ import optionsIcon from '../../../icons/options.icon'
 import { useModSource } from '../../../contexts/mod-source'
 import { useMessageBox, MessageBoxButtons, DialogResult, MessageBoxIcon } from '../../../contexts/message-box'
 import CommonItem from '../../../common/common-item'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import GitStatus from './git-status'
 
 export default function SourceListItem({ sourceInfo }) {
     const navigate = useNavigate()
+    const location = useLocation()
     const { showMessageBox } = useMessageBox()
     const { refreshSources, deleteSource, primarySourceName, changePrimarySource } = useModSource()
-    const { t, i18n } = useTranslation()
+    const { t } = useTranslation()
     const [isSyncing, setIsSyncing] = useState(false)
     const [gitStatus, setGitStatus] = useState()
 
     const syncButtonHandle = async () => {
         setIsSyncing(true)
-        await api.gitSync(sourceInfo.name, sourceInfo.branch)
-        setIsSyncing(false)
-        refreshGitStatus()
-    }
-
-    const refreshGitStatus = useCallback(async () => {
-        const status = await api.gitFetchStatus(sourceInfo.name, sourceInfo.branch)
+        const status = await api.gitSync(sourceInfo.name, sourceInfo.branch)
         setGitStatus(status)
-    }, [sourceInfo.branch, sourceInfo.name])
+        setIsSyncing(false)
+    }
 
     const deleteThisSource = async () => {
         if (
@@ -59,9 +54,13 @@ export default function SourceListItem({ sourceInfo }) {
         changePrimarySource(sourceInfo.name)
     }
 
-    useMemo(() => {
-        refreshGitStatus()
-    }, [refreshGitStatus])
+    useMemo(async () => {
+        if (location?.pathname === '/source' || location?.pathname === '/source/') {
+            setGitStatus()
+            const status = await api.gitFetchStatus(sourceInfo.name)
+            setGitStatus(status)
+        }
+    }, [location, sourceInfo])
 
     return <CommonItem
         onClick={() => navigate(`/source/info/${sourceInfo.name}`)}
@@ -102,10 +101,6 @@ export default function SourceListItem({ sourceInfo }) {
                         sourceInfo.isSource &&
                         <div className="flex f:12 align-items:center">
                             {
-                                !gitStatus &&
-                                <Spinner appearance="inverted" size="extra-tiny" />
-                            }
-                            {
                                 !!gitStatus?.current &&
                                 <div className="mr:8 flex align-items:center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -122,52 +117,14 @@ export default function SourceListItem({ sourceInfo }) {
                                     </div>
                                 </div>
                             }
-                            {
-                                gitStatus?.behind === 0 && gitStatus?.ahead === 0 &&
-                                <div className="flex align-items:center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="color:green" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <path d="M5 12l5 5l10 -10"></path>
-                                    </svg>
-                                    {t('Synced')}
-                                </div>
-                            }
-                            {
-                                (gitStatus?.behind > 0 || gitStatus?.ahead > 0) &&
-                                <>
-                                    <Button
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            syncButtonHandle()
-                                        }}
-                                        className="m:0! p:0! min-w:auto! font-weight:normal! f:12!" appearance="subtle">
-                                        <svg className={`${isSyncing ? '@rotate|1s|infinite' : ''}`} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
-                                            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-                                        </svg>
-                                        <div className="ml:4 flex align-items:center">
-                                            {gitStatus.behind}
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M12 5l0 14"></path>
-                                                <path d="M16 15l-4 4"></path>
-                                                <path d="M8 15l4 4"></path>
-                                            </svg>
-                                        </div>
-
-                                        <div className="flex align-items:center">
-                                            {gitStatus.ahead}
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M12 5l0 14"></path>
-                                                <path d="M16 9l-4 -4"></path>
-                                                <path d="M8 9l4 -4"></path>
-                                            </svg>
-                                        </div>
-                                    </Button>
-                                </>
-                            }
+                            <Button
+                                onClick={(event) => {
+                                    event.stopPropagation()
+                                    syncButtonHandle()
+                                }}
+                                className="m:0! p:0! min-w:auto! font-weight:normal! f:12!" appearance="subtle">
+                                <GitStatus gitStatus={gitStatus} isSyncing={isSyncing} />
+                            </Button>
                         </div>
                     }
                 </div>

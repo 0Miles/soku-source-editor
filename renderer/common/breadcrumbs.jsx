@@ -43,9 +43,8 @@ export default function Breadcrumbs() {
 
             let link = tmpParentPath + originPaths[i] + '/'
             let title
-            switch (link) {
-                case '/module/info/':
-                case '/source/info/':
+            switch (originPaths[i]) {
+                case 'info':
                     i++
                     link += originPaths[i] + '/'
                     title = originPaths[i]

@@ -29,7 +29,7 @@ ipcMain.handle('git', async (_, message) => {
             case 'sync':
                 return await sync(message[1], message[2])
             case 'fetch':
-                return await fetchStatus(message[1], message[2])
+                return await fetchStatus(message[1])
         }
     }
 })

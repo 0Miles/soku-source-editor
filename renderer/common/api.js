@@ -14,8 +14,8 @@ export const gitSync = async (sourceName, sourceBranch) => {
     return await ipcRenderer.invoke('git', ['sync', sourceName, sourceBranch])
 }
 
-export const gitFetchStatus = async (sourceName, sourceBranch) => {
-    return await ipcRenderer.invoke('git', ['fetch', sourceName, sourceBranch])
+export const gitFetchStatus = async (sourceName) => {
+    return await ipcRenderer.invoke('git', ['fetch', sourceName])
 }
 
 export const deleteSource = async (sourceName) => {
