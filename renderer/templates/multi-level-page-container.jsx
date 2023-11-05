@@ -18,7 +18,7 @@ export default function MultiLevelPageContainer({ children, className, level = 1
                 {children}
             </PageContainer>
 
-            <div className="w:50%">
+            <div className="w:50% flex flex:col">
                 <Outlet />
             </div>
         </div>
