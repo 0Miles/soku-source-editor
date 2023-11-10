@@ -1,5 +1,5 @@
 
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useMemo, useCallback } from 'react'
 import * as api from '../common/api'
 
 export const ModSourceContext = createContext()
@@ -16,10 +16,9 @@ export const ModSourceProvider = ({ children }) => {
         setSources(data)
     }
 
-    const refreshCurrentMods = async () => {
-        const data = await api.getMods(`sources/${primarySourceName}/modules`)
-        setCurrentMods(data)
-    }
+    useMemo(async () => {
+        setCurrentMods(await api.getMods(`sources/${primarySourceName}/modules`))
+    }, [primarySourceName])
 
     const changePrimarySource = (value) => {
         localStorage.setItem('primarySourceName', value)
@@ -38,7 +37,7 @@ export const ModSourceProvider = ({ children }) => {
             if (sources?.length > 1) {
                 changePrimarySource(sources.find(x => x.name !== sourceName).name)
             } else {
-                changePrimarySource()
+                changePrimarySource('')
             }
         }
         await api.deleteSource(sourceName)
@@ -51,7 +50,6 @@ export const ModSourceProvider = ({ children }) => {
                 currentMods,
                 primarySourceName,
                 refreshSources,
-                refreshCurrentMods,
                 changePrimarySource,
                 addSource,
                 deleteSource

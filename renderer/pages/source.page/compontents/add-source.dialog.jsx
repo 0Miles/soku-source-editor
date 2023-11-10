@@ -19,7 +19,7 @@ import { useModSource } from '../../../contexts/mod-source'
 
 export default function AddSourceDialog() {
     const { t } = useTranslation()
-    const { sources, refreshSources, addSource } = useModSource()
+    const { sources, refreshSources, addSource, refreshCurrentMods, primarySourceName } = useModSource()
     const [sourceUrl, setSourceUrl] = useState('')
     const [open, setOpen] = useState(false)
     const [isCloning, setIsCloning] = useState(false)

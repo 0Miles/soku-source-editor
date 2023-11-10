@@ -18,31 +18,21 @@ import CommonItem from '../../common/common-item'
 export default function ModuleListPage() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { currentMods, refreshCurrentMods, primarySourceName } = useModSource()
+    const { currentMods, primarySourceName } = useModSource()
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
     const [mods, setMods] = useState([])
-    const [level, setLevel] = useState(
-        useMemo(() => {
+    const level = useMemo(() => {
             if (location.pathname.startsWith('/source')) {
                 return 4
             }
             return 1
         }, [location])
-    )
 
     useMemo(() => {
-        (async () => {
-            if (!currentMods) {
-                setLoading(true)
-                await refreshCurrentMods()
-                setLoading(false)
-            } else {
-                setMods(currentMods)
-            }
-        })()
-    }, [currentMods, refreshCurrentMods])
+        setMods(currentMods)
+    }, [currentMods])
 
     return <MultiLevelPageContainer level={level}>
         {
