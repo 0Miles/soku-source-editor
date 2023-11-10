@@ -98,30 +98,30 @@ const getSources = async (base = process.cwd()) => {
     
     const dirname = path.resolve(base, 'sources')
 
-    if (fs.existsSync(dirname)) {
-        const data = fs.readdirSync(dirname, { encoding: 'utf-8' })
-            .map(elementName => {
-                const fullPath = path.join(dirname, elementName)
-                return {
-                    name: elementName,
-                    stat: fs.statSync(fullPath),
-                    fullPath
-                }
-            })
-            .filter(x => x.stat.isDirectory())
-            .sort((a, b) => a.stat.birthtimeMs - b.stat.birthtimeMs)
-            .map(element => {
-                const sourceInfo = checkSourceInfo(element.fullPath)
-                return {
-                    name: element.name,
-                    isSource: !!sourceInfo,
-                    info: sourceInfo
-                }
-            })
-        return data
-    } else {
-        return []
+    if (!fs.existsSync(dirname)) {
+        fs.mkdirSync(dirname)
     }
+    
+    const data = fs.readdirSync(dirname, { encoding: 'utf-8' })
+        .map(elementName => {
+            const fullPath = path.join(dirname, elementName)
+            return {
+                name: elementName,
+                stat: fs.statSync(fullPath),
+                fullPath
+            }
+        })
+        .filter(x => x.stat.isDirectory())
+        .sort((a, b) => a.stat.birthtimeMs - b.stat.birthtimeMs)
+        .map(element => {
+            const sourceInfo = checkSourceInfo(element.fullPath)
+            return {
+                name: element.name,
+                isSource: !!sourceInfo,
+                info: sourceInfo
+            }
+        })
+    return data
 }
 
 const deleteSource = (sourceName, base = process.cwd()) => {
