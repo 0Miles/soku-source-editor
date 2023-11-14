@@ -19,7 +19,7 @@ export default function CollapsibleItem({ icon, title, desc, footer, content, de
                 user-select:none
             `}>
             <CommonItem
-                onClick={() => { allowOpen && setOpen(!open) }}
+                onClick={() => { allowOpen && document.startViewTransition(_ => setOpen(!open)) }}
                 icon={icon}
                 title={title}
                 desc={desc}
@@ -42,7 +42,6 @@ export default function CollapsibleItem({ icon, title, desc, footer, content, de
                     bg:#2f2f30>div@dark bg:#eeeeee>div@light
                     {mt:2;p:16;pl:56;pr:40}>div
                     r:0|0|3|3 overflow:hidden user-select:none
-                    @transition-down|.3s|cubic-bezier(0.14,1,0.34,1)
                 `}>
                 {content}
             </div>

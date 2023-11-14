@@ -4,7 +4,7 @@ import {
 } from '@fluentui/react-components'
 
 
-export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange, loading=false }) {
+export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange, className, loading=false }) {
 
     const [selectMode, setSelectMode] = useState(false)
     const [selected, setSelected] = useState(new Array(items?.length ?? 0).fill(false))
@@ -17,7 +17,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
 
 
     return (
-        <>
+        <div className={className}>
             <div className="mt:16 flex justify-content:space-between">
                 {
                     !selectMode &&
@@ -52,7 +52,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                     {
                         items &&
                         items.map((item, i) =>
-                            <div key={i} className="rel flex align-items:center overflow-x:clip" onClick={() => toggleSelected(i)}>
+                            <div key={i} className={`rel flex align-items:center overflow-x:clip {view-transition-name:selectable-item${i}}`} onClick={() => toggleSelected(i)}>
                                 {
                                     selectMode &&
                                     <Checkbox className="m:0 position:absolute!" checked={selected[i]} />
@@ -65,6 +65,6 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                     }
                 </div>
             }
-        </>
+        </div>
     )
 }
