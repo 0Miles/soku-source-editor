@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
 import {
-    Checkbox, Button
+    Checkbox, Button, Spinner
 } from '@fluentui/react-components'
 
 
-export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange }) {
+export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange, loading=false }) {
 
     const [selectMode, setSelectMode] = useState(false)
     const [selected, setSelected] = useState(new Array(items?.length ?? 0).fill(false))
@@ -43,22 +43,28 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                         <path d="M11 18l9 0"></path>
                     </svg>} />
             </div>
-            <div className="my:8 grid grid-cols:1 gap:4 w:full">
-                {
-                    items &&
-                    items.map((item, i) =>
-                        <div key={i} className="rel flex align-items:center overflow-x:clip" onClick={() => toggleSelected(i)}>
-                            {
-                                selectMode &&
-                                <Checkbox className="m:0 position:absolute!" checked={selected[i]} />
-                            }
-                            {
-                                itemTemplate(item, selectMode)
-                            }
-                        </div>
-                    )
-                }
-            </div>
+            {
+                loading && <Spinner />
+            }
+            {
+                !loading &&
+                <div className="my:8 grid grid-cols:1 gap:4 w:full">
+                    {
+                        items &&
+                        items.map((item, i) =>
+                            <div key={i} className="rel flex align-items:center overflow-x:clip" onClick={() => toggleSelected(i)}>
+                                {
+                                    selectMode &&
+                                    <Checkbox className="m:0 position:absolute!" checked={selected[i]} />
+                                }
+                                {
+                                    itemTemplate(item, selectMode)
+                                }
+                            </div>
+                        )
+                    }
+                </div>
+            }
         </>
     )
 }

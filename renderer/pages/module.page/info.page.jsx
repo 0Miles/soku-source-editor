@@ -15,6 +15,7 @@ import boxIcon from '../../icons/box.icon'
 import chevronUpIcon from '../../icons/chevron-up.icon'
 import chevronDownIcon from '../../icons/chevron-down.icon'
 
+import * as api from '../../common/api'
 import CollapsibleItem from '../../common/collapsible-item'
 import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
@@ -31,26 +32,28 @@ renderer.link = (href, title, text) => {
 const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
-    const { currentMods, refreshCurrentMods } = useModSource()
-    const { modName } = useParams()
+    const { primarySourceName } = useModSource()
+    const { sourceName, modName } = useParams()
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
+    const [versionsLoading, setVersionsLoading] = useState(false)
     const [modInfo, setModInfo] = useState(null)
+    const [versions, setVersions] = useState([])
     const [open, setOpen] = useState(false)
     const selectedVersionRef = useRef([])
 
-    useMemo(() => {
-        (async () => {
-            if (!currentMods) {
-                setLoading(true)
-                await refreshCurrentMods()
-                setLoading(false)
-            } else {
-                setModInfo(currentMods.find(x => x.name === modName))
-            }
-        })()
-    }, [currentMods, modName, refreshCurrentMods])
+    useMemo(async () => {
+        setLoading(true)
+        setModInfo(await api.getMod(sourceName ?? primarySourceName, modName))
+        setLoading(false)
+    }, [modName, primarySourceName, sourceName])
+
+    useMemo(async () => {
+        setVersionsLoading(true)
+        setVersions(await api.getModVersions(sourceName ?? primarySourceName, modName))
+        setVersionsLoading(false)
+    }, [modName, primarySourceName, sourceName])
 
     return <PageContainer>
         {
@@ -148,7 +151,8 @@ export default function ModuleInfoPage() {
                 </div>
 
                 <SelectableList
-                    items={modInfo?.versions}
+                    loading={versionsLoading}
+                    items={versions}
                     itemTemplate={
                         (version, selectMode) => {
                             return <CollapsibleItem

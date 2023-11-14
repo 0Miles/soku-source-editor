@@ -1,5 +1,13 @@
-export const getMods = async (path) => {
-    return await ipcRenderer.invoke('get', ['mods', path])
+export const getMods = async (sourceName) => {
+    return await ipcRenderer.invoke('get', ['mods', sourceName])
+}
+
+export const getMod = async (sourceName, modName) => {
+    return await ipcRenderer.invoke('get', ['mod', sourceName, modName])
+}
+
+export const getModVersions = async (sourceName, modName) => {
+    return await ipcRenderer.invoke('get', ['modVersions', sourceName, modName])
 }
 
 export const getSources = async () => {

@@ -9,16 +9,11 @@ const storageMainSource = localStorage.getItem('primarySourceName')
 export const ModSourceProvider = ({ children }) => {
     const [sources, setSources] = useState()
     const [primarySourceName, setPrimarySourceName] = useState(storageMainSource)
-    const [currentMods, setCurrentMods] = useState()
 
     const refreshSources = async () => {
         const data = await api.getSources()
         setSources(data)
     }
-
-    useMemo(async () => {
-        setCurrentMods(await api.getMods(`sources/${primarySourceName}/modules`))
-    }, [primarySourceName])
 
     const changePrimarySource = (value) => {
         localStorage.setItem('primarySourceName', value)
@@ -47,7 +42,6 @@ export const ModSourceProvider = ({ children }) => {
         <ModSourceContext.Provider
             value={{
                 sources,
-                currentMods,
                 primarySourceName,
                 refreshSources,
                 changePrimarySource,

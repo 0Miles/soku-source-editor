@@ -22,19 +22,28 @@ const getJsonInfo = (dirname, filename) => {
     return null
 }
 
+const getDirJsonInfos = (dirname, filename) => {
+    const elementInfo = fs.statSync(dirname)
+    if (elementInfo.isDirectory()) {
+        const jsonInfo = getJsonInfo(dirname, filename)
+        if (jsonInfo) {
+            jsonInfo.createdAt = elementInfo.birthtimeMs
+            return jsonInfo
+        }
+    }
+    
+    return null
+}
+
 const getSubdirJsonInfos = (dirname, filename) => {
     const data = []
     if (fs.existsSync(dirname)) {
         const elements = fs.readdirSync(dirname, { encoding: 'utf-8'})
         for (const element of elements) {
             const elementFullPath = path.join(dirname, element)
-            const elementInfo = fs.statSync(elementFullPath)
-            if (elementInfo.isDirectory()) {
-                const jsonInfo = getJsonInfo(elementFullPath, filename)
-                if (jsonInfo) {
-                    jsonInfo.createdAt = elementInfo.birthtimeMs
-                    data.push(jsonInfo)
-                }
+            const jsonInfo = getDirJsonInfos(elementFullPath, filename)
+            if (jsonInfo) {
+                data.push(jsonInfo)
             }
         }
     }
@@ -50,23 +59,41 @@ const findFileAndGetUri = (dirname, regex) => {
     return fileName
 }
 
-const getMods = (modsDirname, base = process.cwd()) => {
-    
-    const dirname = path.resolve(base, modsDirname ?? 'modules')
-    
+const getMods = (sourceName, base = process.cwd()) => {
+    const dirname = path.resolve(base, 'sources', sourceName, 'modules')
     if (fs.existsSync(dirname)) {
         const modInfos = getSubdirJsonInfos(dirname, 'mod.json').sort((a, b) => a.createdAt - b.createdAt)
-
         for (const modInfo of modInfos) {
             modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
             modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
-            modInfo.versions = getSubdirJsonInfos(path.resolve(modInfo.dirname, 'versions'), 'version.json')
-                .sort((a, b) => compareVersions(b.version, a.version))
         }
         return modInfos
     } else {
         return []
     }
+}
+
+const getMod = (sourceName, modName, base = process.cwd()) => {
+    const dirname = path.resolve(base, 'sources', sourceName ,'modules', modName)
+
+    if (fs.existsSync(dirname)) {
+        const modInfo = getDirJsonInfos(dirname, 'mod.json')
+        
+        modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
+        modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
+        return modInfo
+    }
+    return null
+}
+
+const getModVersions = (sourceName, modName, base = process.cwd()) => {
+    const dirname = path.resolve(base, 'sources', sourceName, 'modules', modName)
+
+    if (fs.existsSync(dirname)) {
+        return getSubdirJsonInfos(path.resolve(dirname, 'versions'), 'version.json')
+            .sort((a, b) => compareVersions(b.version, a.version))
+    }
+    return []
 }
 
 const compareVersions = (a, b) => {
@@ -133,6 +160,8 @@ const deleteSource = (sourceName, base = process.cwd()) => {
 
 module.exports = {
     getMods,
+    getMod,
+    getModVersions,
     getSources,
     deleteSource
 }

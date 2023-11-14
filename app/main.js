@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getSources, deleteSource } = require('./common/dir-utils')
+const { getMods, getMod, getModVersions, getSources, deleteSource } = require('./common/dir-utils')
 const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
@@ -15,6 +15,10 @@ ipcMain.handle('get', async (_, message) => {
         switch (message[0]) {
             case 'mods':
                 return getMods(message[1])
+            case 'mod':
+                return getMod(message[1], message[2])
+            case 'modVersions':
+                return getModVersions(message[1], message[2])
             case 'sources':
                 return getSources()
         }

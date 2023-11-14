@@ -1,24 +1,24 @@
 import {
     Button,
-    MenuItem,
     Spinner
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
-
+import * as api from '../../common/api'
 import plusIcon from '../../icons/plus.icon'
 import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
 import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { currentMods, primarySourceName } = useModSource()
+    const { sourceName } = useParams()
+    const { primarySourceName } = useModSource()
     const { t, i18n } = useTranslation()
 
     const [loading, setLoading] = useState(false)
@@ -30,9 +30,15 @@ export default function ModuleListPage() {
             return 1
         }, [location])
 
-    useMemo(() => {
-        setMods(currentMods)
-    }, [currentMods])
+    useMemo(async () => {
+        setLoading(true)
+        if (sourceName) {
+            setMods(await api.getMods(sourceName))
+        } else {
+            setMods(await api.getMods(primarySourceName))
+        }
+        setLoading(false)
+    }, [primarySourceName, sourceName])
 
     return <MultiLevelPageContainer level={level}>
         {
@@ -46,11 +52,11 @@ export default function ModuleListPage() {
             ></CommonItem>
         }
         {
-            !!primarySourceName && loading &&
+            !!(primarySourceName || sourceName) && loading &&
             <Spinner />
         }
         {
-            !!primarySourceName && !loading &&
+            !!(primarySourceName || sourceName) && !loading &&
             <>
                 <div className="mb:8 grid grid-cols:1 gap:4 w:full">
                     {
