@@ -40,8 +40,8 @@ export default function SourceListPage() {
                             <SourceListItem key={index} sourceInfo={sourceInfo}/>
                         )
                     }
+                    <AddSourceDialog></AddSourceDialog>
                 </div>
-                <AddSourceDialog></AddSourceDialog>
             </>
         }
     </MultiLevelPageContainer>

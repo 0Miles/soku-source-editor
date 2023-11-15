@@ -44,8 +44,17 @@ export default function SourceListItem({ sourceInfo }) {
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question) === DialogResult.Yes
         ) {
-
-            await deleteSource(sourceInfo.name)
+            try {
+                await deleteSource(sourceInfo.name)
+            } catch (ex) {
+                showMessageBox(
+                    t('An error occurred'),
+                    <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
+                        {ex.message}
+                    </div>,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+            }
             refreshSources()
         }
     }
