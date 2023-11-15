@@ -29,3 +29,8 @@ export const gitFetchStatus = async (sourceName) => {
 export const deleteSource = async (sourceName) => {
     await ipcRenderer.invoke('delete', ['source', sourceName])
 }
+
+
+export const addMod = async (sourceName, modName, modInfo) => {
+    return await ipcRenderer.invoke('post', ['mod', sourceName, modName, modInfo])
+}

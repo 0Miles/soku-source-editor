@@ -50,5 +50,8 @@
     "Set up now": "立刻设定",
     "Set as primary": "设定为主要",
     "General": "一般",
-    "Sync": "同步"
+    "Sync": "同步",
+    "Add Module": "新增模组",
+    "Module already exists": "模组已存在",
+    "Description": "描述"
 }

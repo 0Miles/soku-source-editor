@@ -86,6 +86,7 @@ export default function AddSourceDialog() {
                         <div className="flex flex:col mb:16 mt:16>label mb:8>label">
                             <Label htmlFor="repoUrl">
                                 {t('Repository URL')}
+                                <span className="color:red">*</span>
                             </Label>
                             <Input id="repoUrl" onChange={(_, data) => { setSourceUrl(data.value); validationGithubRepoUrl(data.value) }} appearance="filled-darker" placeholder="https://github.com/{owner}/{repo}.git" />
 

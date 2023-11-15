@@ -7,7 +7,7 @@ const getJsonInfo = (dirname, filename) => {
 
     if (fs.existsSync(jsonInfoFilename)) {
         try {
-            const jsonString = fs.readFileSync(jsonInfoFilename, { encoding: 'utf-8'})
+            const jsonString = fs.readFileSync(jsonInfoFilename, { encoding: 'utf-8' })
             const info = JSON.parse(jsonString)
             if (info) {
                 info.dirname = dirname
@@ -31,14 +31,14 @@ const getDirJsonInfos = (dirname, filename) => {
             return jsonInfo
         }
     }
-    
+
     return null
 }
 
 const getSubdirJsonInfos = (dirname, filename) => {
     const data = []
     if (fs.existsSync(dirname)) {
-        const elements = fs.readdirSync(dirname, { encoding: 'utf-8'})
+        const elements = fs.readdirSync(dirname, { encoding: 'utf-8' })
         for (const element of elements) {
             const elementFullPath = path.join(dirname, element)
             const jsonInfo = getDirJsonInfos(elementFullPath, filename)
@@ -74,11 +74,11 @@ const getMods = (sourceName, base = process.cwd()) => {
 }
 
 const getMod = (sourceName, modName, base = process.cwd()) => {
-    const dirname = path.resolve(base, 'sources', sourceName ,'modules', modName)
+    const dirname = path.resolve(base, 'sources', sourceName, 'modules', modName)
 
     if (fs.existsSync(dirname)) {
         const modInfo = getDirJsonInfos(dirname, 'mod.json')
-        
+
         modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
         modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
         return modInfo
@@ -122,13 +122,13 @@ const checkSourceInfo = (dirname) => {
 }
 
 const getSources = async (base = process.cwd()) => {
-    
+
     const dirname = path.resolve(base, 'sources')
 
     if (!fs.existsSync(dirname)) {
         fs.mkdirSync(dirname)
     }
-    
+
     const data = fs.readdirSync(dirname, { encoding: 'utf-8' })
         .map(elementName => {
             const fullPath = path.join(dirname, elementName)
@@ -158,10 +158,19 @@ const deleteSource = (sourceName, base = process.cwd()) => {
     }
 }
 
+const writeFile = (dir, filename, content, base = process.cwd()) => {
+    const dirname = path.resolve(base, dir)
+    if (!fs.existsSync(dirname)) {
+        fs.mkdirSync(dirname)
+    }
+    fs.writeFileSync(path.resolve(dirname, filename), content, { encoding: 'utf-8' })
+}
+
 module.exports = {
     getMods,
     getMod,
     getModVersions,
     getSources,
-    deleteSource
+    deleteSource,
+    writeFile
 }

@@ -3,7 +3,7 @@ import {
     Spinner
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 import * as api from '../../common/api'
 import plusIcon from '../../icons/plus.icon'
@@ -13,6 +13,7 @@ import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
+import AddModDialog from './compontents/add-module.dialog'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
@@ -30,15 +31,15 @@ export default function ModuleListPage() {
             return 1
         }, [location])
 
-    useMemo(async () => {
+    const refreshMods = useCallback(async () => {
         setLoading(true)
-        if (sourceName) {
-            setMods(await api.getMods(sourceName))
-        } else {
-            setMods(await api.getMods(primarySourceName))
-        }
+        setMods(await api.getMods(sourceName ?? primarySourceName))
         setLoading(false)
     }, [primarySourceName, sourceName])
+
+    useMemo(() => {
+        refreshMods()
+    }, [refreshMods])
 
     return <MultiLevelPageContainer level={level}>
         {
@@ -88,9 +89,7 @@ export default function ModuleListPage() {
                             />
                         )
                     }
-                    <Button className="w:full min-h:70 cursor:auto!" appearance="subtle">
-                        {plusIcon}
-                    </Button>
+                    <AddModDialog sourceName={sourceName ?? primarySourceName} sourceMods={mods} onCompleted={refreshMods}/>
                 </div>
             </>
         }
