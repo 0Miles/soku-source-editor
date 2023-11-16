@@ -53,5 +53,7 @@
     "Sync": "同步",
     "Add Module": "新增模組",
     "Module already exists": "模組已存在",
-    "Description": "描述"
+    "Description": "描述",
+    "Delete module": "刪除模組",
+    "Do you want to delete these mods": "是否要刪除這些模組"
 }

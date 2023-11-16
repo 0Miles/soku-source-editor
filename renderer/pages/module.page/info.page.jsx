@@ -151,13 +151,14 @@ export default function ModuleInfoPage() {
                 </div>
 
                 <SelectableList
+                    className="mt:16"
                     loading={versionsLoading}
                     items={versions}
                     itemTemplate={
                         (version, selectMode) => {
                             return <CollapsibleItem
                                 allowOpen={!selectMode}
-                                className={`w:full ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`}
+                                className={`w:full`}
                                 icon={boxIcon}
                                 title={`v${version.version}`}
                                 desc={t('Not yet released')}

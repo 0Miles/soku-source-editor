@@ -7,18 +7,17 @@ import {
 export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange, className, loading=false }) {
 
     const [selectMode, setSelectMode] = useState(false)
-    const [selected, setSelected] = useState(new Array(items?.length ?? 0).fill(false))
+    const [indexSelected, setIndexSelected] = useState(new Array(items?.length ?? 0).fill(false))
 
     const toggleSelected = useCallback((i) => {
-        selected[i] = !selected[i]
-        setSelected([...selected])
-        selectedChange && selectedChange([...selected])
-    }, [selected, selectedChange])
-
+        indexSelected[i] = !indexSelected[i]
+        setIndexSelected([...indexSelected])
+        selectedChange && selectedChange(items.filter((_, index) => indexSelected[index]))
+    }, [indexSelected, items, selectedChange])
 
     return (
         <div className={className}>
-            <div className="mt:16 flex justify-content:space-between">
+            <div className="flex justify-content:space-between">
                 {
                     !selectMode &&
                     <div className="@transition-left|.3s mr:6>button">
@@ -32,7 +31,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                     </div>
                 }
 
-                <Button onClick={() => { setSelected(new Array(items?.length ?? 0).fill(false)); setSelectMode(!selectMode) }} icon={
+                <Button onClick={() => { setIndexSelected(new Array(items?.length ?? 0).fill(false)); setSelectMode(!selectMode) }} icon={
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M3.5 5.5l1.5 1.5l2.5 -2.5"></path>
@@ -48,14 +47,14 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
             }
             {
                 !loading &&
-                <div className="my:8 grid grid-cols:1 gap:4 w:full">
+                <div className="my:8 grid grid-cols:1 gap:4 w:full overflow-x:clip">
                     {
                         items &&
                         items.map((item, i) =>
-                            <div key={i} className={`rel flex align-items:center overflow-x:clip {view-transition-name:selectable-item${i}}`} onClick={() => toggleSelected(i)}>
+                            <div key={i} className={`rel flex align-items:center {view-transition-name:selectable-item${i}}  ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`} onClick={() => toggleSelected(i)}>
                                 {
                                     selectMode &&
-                                    <Checkbox className="m:0 position:absolute!" checked={selected[i]} />
+                                    <Checkbox className="m:0 abs! ml:-2.5rem" checked={indexSelected[i]} />
                                 }
                                 {
                                     itemTemplate(item, selectMode)

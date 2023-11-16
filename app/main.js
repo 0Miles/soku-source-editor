@@ -1,8 +1,7 @@
-const path = require('path')
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getMod, getModVersions, getSources, deleteSource, writeFile } = require('./common/dir-utils')
+const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion } = require('./common/dir-utils')
 const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
@@ -30,14 +29,9 @@ ipcMain.handle('post', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mod':
-                return writeFile(path.resolve('sources', message[1], 'modules', message[2]), 'mod.json', message[3])
-        }
-    }
-})
-
-ipcMain.handle('git', async (_, message) => {
-    if (Array.isArray(message) && message.length > 0) {
-        switch (message[0]) {
+                return await addMod(message[1], message[2], message[3])
+            case 'modVersion':
+                return await addModVersion(message[1], message[2], message[3], message[4])
             case 'cloneModSource':
                 return await cloneModSource(message[1], message[2])
             case 'sync':
@@ -52,7 +46,11 @@ ipcMain.handle('delete', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'source':
-                return await deleteSource(message[1])
+                return deleteSource(message[1])
+            case 'mod':
+                return deleteMod(message[1], message[2])
+            case 'modVersion':
+                return deleteModVersion(message[1], message[2], message[3])
         }
     }
 })

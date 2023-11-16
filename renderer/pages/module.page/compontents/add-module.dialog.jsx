@@ -56,9 +56,7 @@ export default function AddModDialog({ sourceName, sourceMods, onCompleted }) {
 
     return <Dialog open={open}>
         <DialogTrigger>
-            <Button onClick={openDialog} className="w:full min-h:70 cursor:auto!" appearance="subtle">
-                {plusIcon}
-            </Button>
+            <Button onClick={openDialog} icon={plusIcon}>{t('Add Module')}</Button>
         </DialogTrigger>
         <DialogSurface>
             <form onSubmit={handleSubmit(handleRegistration, handleError)}>
