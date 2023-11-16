@@ -44,7 +44,7 @@ export default function App() {
                             ${showSidebar ? 'block' : 'hide'}`}>
                     </div>
                     <div className="flex flex:col flex:1 w:0 align-items:center">
-                        <div className="flex flex:col flex:1 w:full max-w:960 overflow:hidden">
+                        <div className="flex flex:col flex:1 w:full max-w:960 overflow:clip">
                             <div className="w:full px:24 pt:8 pb:16">
                                 <Breadcrumbs />
                             </div>

@@ -2,12 +2,13 @@ import { useCallback, useState } from 'react'
 import {
     Checkbox, Button, Spinner
 } from '@fluentui/react-components'
+import { nanoid } from 'nanoid'
 
 
 export default function SelectableList({ items, itemTemplate, toolbar, selectModeToolbar, selectedChange, className, loading=false }) {
 
     const [selectMode, setSelectMode] = useState(false)
-    const [indexSelected, setIndexSelected] = useState(new Array(items?.length ?? 0).fill(false))
+    const [indexSelected, setIndexSelected] = useState(() => new Array(items?.length ?? 0).fill(false))
 
     const toggleSelected = useCallback((i) => {
         indexSelected[i] = !indexSelected[i]
@@ -51,7 +52,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                     {
                         items &&
                         items.map((item, i) =>
-                            <div key={i} className={`rel flex align-items:center {view-transition-name:selectable-item${i}}  ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`} onClick={() => toggleSelected(i)}>
+                            <div key={i} className={`rel flex align-items:center {view-transition-name:selectable-item-${nanoid()}}  ~transform|.3s|ease ${selectMode ? 'translate(2.5rem)' : ''}`} onClick={() => toggleSelected(i)}>
                                 {
                                     selectMode &&
                                     <Checkbox className="m:0 abs! ml:-2.5rem" checked={indexSelected[i]} />

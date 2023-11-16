@@ -2,7 +2,7 @@ import {
     Spinner,
     Button
 } from '@fluentui/react-components'
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PageContainer from '../../templates/page-container'
@@ -22,6 +22,7 @@ import { Marked, Renderer } from 'marked'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useModSource } from '../../contexts/mod-source'
+import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -35,13 +36,14 @@ export default function ModuleInfoPage() {
     const { primarySourceName } = useModSource()
     const { sourceName, modName } = useParams()
     const { t, i18n } = useTranslation()
+    const { showMessageBox } = useMessageBox()
 
     const [loading, setLoading] = useState(false)
     const [versionsLoading, setVersionsLoading] = useState(false)
     const [modInfo, setModInfo] = useState(null)
     const [versions, setVersions] = useState([])
     const [open, setOpen] = useState(false)
-    const selectedVersionRef = useRef([])
+    const selectedVersionsRef = useRef([])
 
     useMemo(async () => {
         setLoading(true)
@@ -49,11 +51,50 @@ export default function ModuleInfoPage() {
         setLoading(false)
     }, [modName, primarySourceName, sourceName])
 
-    useMemo(async () => {
+    const refreshVersions = useCallback(async () => {
         setVersionsLoading(true)
         setVersions(await api.getModVersions(sourceName ?? primarySourceName, modName))
         setVersionsLoading(false)
     }, [modName, primarySourceName, sourceName])
+    
+    useMemo(() => {
+        refreshVersions()
+    }, [refreshVersions])
+
+
+
+    const deleteSelectedVersions = async () => {
+        if (
+            await showMessageBox(
+                t('Delete version'),
+                <div>
+                    {t('Do you want to delete these versions')}
+                    {
+                        selectedVersionsRef.current.map((selectedVersion, index) =>
+                            <span key={index} className="p:4 ml:4 r:3 bg:gray-10@dark bg:gray-90@light">v{selectedVersion.version}</span>
+                        )
+                    }
+                    ?
+                </div>,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) === DialogResult.Yes
+        ) {
+            try {
+                for (const selectedVersion of selectedVersionsRef.current) {
+                    await api.deleteModVersion(sourceName ?? primarySourceName, modInfo.name, selectedVersion.version)
+                }
+            } catch (ex) {
+                showMessageBox(
+                    t('An error occurred'),
+                    <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
+                        {ex.message}
+                    </div>,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+            }
+            refreshVersions()
+        }
+    }
 
     return <PageContainer>
         {
@@ -237,11 +278,11 @@ export default function ModuleInfoPage() {
                         <Button icon={plusIcon}>{t('Add version')}</Button>
                     }
                     selectModeToolbar={
-                        <Button icon={trashIcon}>{t('Delete')}</Button>
+                        <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>
                     }
                     selectedChange={
                         (selected) => {
-                            selectedVersionRef.current = selected
+                            selectedVersionsRef.current = selected
                         }
                     }
                 />

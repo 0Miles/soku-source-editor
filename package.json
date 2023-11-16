@@ -22,6 +22,7 @@
     "html-react-parser": "^4.2.5",
     "i18next": "^23.5.1",
     "marked": "^9.1.2",
+    "nanoid": "^5.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
