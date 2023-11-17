@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
     Checkbox, Button, Spinner
 } from '@fluentui/react-components'
@@ -15,6 +15,10 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
         setIndexSelected([...indexSelected])
         selectedChange && selectedChange(items.filter((_, index) => indexSelected[index]))
     }, [indexSelected, items, selectedChange])
+
+    useMemo(() => {
+        setIndexSelected(new Array(items?.length ?? 0).fill(false))
+    }, [items])
 
     return (
         <div className={className}>

@@ -91,11 +91,7 @@ export default function ModuleListPage() {
             ></CommonItem>
         }
         {
-            !!(primarySourceName || sourceName) && loading &&
-            <Spinner />
-        }
-        {
-            !!(primarySourceName || sourceName) && !loading &&
+            !!(primarySourceName || sourceName) &&
             <>
                 <SelectableList
                     loading={loading}
