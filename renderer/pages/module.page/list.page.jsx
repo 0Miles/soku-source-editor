@@ -47,6 +47,7 @@ export default function ModuleListPage() {
     }, [refreshMods])
 
     const deleteSelectedMod = async () => {
+        if (!selectedModsRef.current?.length) return
         if (
             await showMessageBox(
                 t('Delete module'),

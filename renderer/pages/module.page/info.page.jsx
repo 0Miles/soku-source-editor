@@ -64,6 +64,7 @@ export default function ModuleInfoPage() {
 
 
     const deleteSelectedVersions = async () => {
+        if (!selectedVersionsRef.current?.length) return
         if (
             await showMessageBox(
                 t('Delete version'),
