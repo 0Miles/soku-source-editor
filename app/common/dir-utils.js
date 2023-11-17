@@ -24,11 +24,11 @@ const getJsonInfo = (dirname, filename) => {
 }
 
 const getDirJsonInfos = (dirname, filename) => {
-    const elementInfo = fs.statSync(dirname)
-    if (elementInfo.isDirectory()) {
+    const elementStat = fs.statSync(dirname)
+    if (elementStat.isDirectory()) {
         const jsonInfo = getJsonInfo(dirname, filename)
         if (jsonInfo) {
-            jsonInfo.createdAt = elementInfo.birthtimeMs
+            jsonInfo.modifiedAt = elementStat.mtimeMs
             return jsonInfo
         }
     }
@@ -63,7 +63,7 @@ const findFileAndGetUri = (dirname, regex) => {
 const getMods = (sourceName, base = process.cwd()) => {
     const dirname = path.resolve(base, 'sources', sourceName, 'modules')
     if (fs.existsSync(dirname)) {
-        const modInfos = getSubdirJsonInfos(dirname, 'mod.json').sort((a, b) => a.createdAt - b.createdAt)
+        const modInfos = getSubdirJsonInfos(dirname, 'mod.json').sort((a, b) => b.modifiedAt - a.modifiedAt)
         for (const modInfo of modInfos) {
             modInfo.icon = findFileAndGetUri(modInfo.dirname, /^icon\.(?:png|jpg|jpge|gif|ico)$/)
             modInfo.banner = findFileAndGetUri(modInfo.dirname, /^banner\.(?:png|jpg|jpge|gif|ico)$/)
@@ -132,7 +132,7 @@ const getSources = async (base = process.cwd()) => {
             }
         })
         .filter(x => x.stat.isDirectory())
-        .sort((a, b) => a.stat.birthtimeMs - b.stat.birthtimeMs)
+        .sort((a, b) => a.stat.mtimeMs - b.stat.mtimeMs)
         .map(element => {
             const sourceInfo = checkSourceInfo(element.fullPath)
             return {
