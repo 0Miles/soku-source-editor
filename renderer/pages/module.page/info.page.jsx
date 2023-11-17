@@ -23,6 +23,7 @@ import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useModSource } from '../../contexts/mod-source'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
+import AddVersionDialog from './compontents/add-version.dialog'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -276,7 +277,7 @@ export default function ModuleInfoPage() {
                         }
                     }
                     toolbar={
-                        <Button icon={plusIcon}>{t('Add version')}</Button>
+                        <AddVersionDialog sourceName={sourceName ?? primarySourceName} moduleName={modInfo.name} modVersions={versions} onCompleted={refreshVersions} />
                     }
                     selectModeToolbar={
                         <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>

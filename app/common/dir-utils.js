@@ -197,7 +197,7 @@ const addModVersion = async (sourceName, moduleName, version, content) => {
     if (!fs.existsSync(versionsDir)) {
         fs.mkdirSync(versionsDir)
     }
-    const versionDir = path.resolve(versionDir, version)
+    const versionDir = path.resolve(versionsDir, version)
     writeFile(versionDir, 'version.json', content)
     const git = getGit(sourceName)
     await git.add([path.resolve(versionDir, 'version.json')])

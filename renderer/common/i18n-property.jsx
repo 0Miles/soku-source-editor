@@ -11,7 +11,7 @@ export const getI18nProperty = (root, property, lang, i18nProperty = null) => {
             result = i18nValue.content
         }
     }
-    return result
+    return result ?? ''
 }
 
 export default function I18nProperty({ root, property, lang, i18nProperty }) {

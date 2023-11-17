@@ -79,7 +79,7 @@ export default function AddSourceDialog() {
         </DialogTrigger>
         <DialogSurface>
             <DialogBody>
-                <DialogTitle className="user-select:none">{t('Add source')}</DialogTitle>
+                <DialogTitle className="user-select:none">{t('Add Source')}</DialogTitle>
                 <DialogContent>
                     {
                         !isCloning && !errorMsg &&
