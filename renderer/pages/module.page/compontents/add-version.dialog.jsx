@@ -52,19 +52,19 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     }
 
     const handleRegistration = async (data) => {
-        console.log(data)
-        console.log(selectedConfigFiles)
-        console.log(modFilenameList)
-        // setIsDoing(true)
-        // try {
-        //     await api.addModVersion(sourceName, moduleName, data.version, JSON.stringify(data))
-        //     setOpen(false)
-        //     onCompleted && onCompleted()
-        // }
-        // catch (ex) {
-        //     setErrorMsg(ex.message)
-        //     setIsDoing(false)
-        // }
+        setIsDoing(true)
+        try {
+            await api.addModVersion(sourceName, moduleName, data.version, JSON.stringify({
+                ...data,
+                configFiles: selectedConfigFiles
+            }))
+            setOpen(false)
+            onCompleted && onCompleted()
+        }
+        catch (ex) {
+            setErrorMsg(ex.message)
+            setIsDoing(false)
+        }
     }
     const handleError = (errors) => console.error(errors)
 
@@ -91,12 +91,12 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                 <Input id="version" defaultValue={recommendedVersionNumber} {...register('version', { required: 'Version is required', validate: validateVersion })} appearance="filled-darker" placeholder={recommendedVersionNumber} />
 
                                 <Label htmlFor="notes">
-                                    {t('Notes')}
+                                    {t('Release Notes')}
                                 </Label>
                                 <Textarea id="notes" {...register('notes')} resize="vertical" appearance="filled-darker" />
 
                                 <Label htmlFor="main">
-                                    {t('Main')}
+                                    {t('Main file')}
                                 </Label>
                                 <Combobox
                                     id="main"
@@ -113,12 +113,14 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                 </Combobox>
 
                                 <Label htmlFor="configFiles">
-                                    {t('Config Files')}
+                                    {t('Config files')}
                                 </Label>
 
                                 <Combobox
                                     id="configFiles"
                                     defaultSelectedOptions={selectedConfigFiles}
+                                    freeform
+                                    onChange={(event) => console.log(event)}
                                     onOptionSelect={(_, data) => {
                                         setSelectedConfigFiles(data.selectedOptions)
                                     }}

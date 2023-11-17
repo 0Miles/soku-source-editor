@@ -55,5 +55,7 @@
     "Module already exists": "模组已存在",
     "Description": "描述",
     "Delete module": "删除模组",
-    "Do you want to delete these mods": "是否要删除这些模组"
+    "Do you want to delete these mods": "是否要删除这些模组",
+    "Add Version": "新增版本",
+    "Version": "版本"
 }
