@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { useState, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import * as api from '../../../common/api'
+import Dropzone from '../../../common/dropzone'
 
 import plusIcon from '../../../icons/plus.icon'
 
@@ -31,7 +32,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const [open, setOpen] = useState(false)
     const [isDoing, setIsDoing] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
-    const [modFilenameList, setModFilenameList] = useState(['123'])
+    const [modFilenameList, setModFilenameList] = useState([])
     const [recommendedVersionNumber, setRecommendedVersionNumber] = useState('')
     const [recommendedMainFile, setRecommendedMainFile] = useState('')
     const [selectedConfigFiles, setSelectedConfigFiles] = useState([])
@@ -94,6 +95,25 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     {t('Release Notes')}
                                 </Label>
                                 <Textarea id="notes" {...register('notes')} resize="vertical" appearance="filled-darker" />
+
+                                <Label htmlFor="notes">
+                                    {t('Module files')}
+                                </Label>
+                                <Dropzone 
+                                        onClick={async () => {
+                                            const handle = await window.showDirectoryPicker()
+                                            console.log(handle)
+                                        }}
+                                        onDrop={flies => console.log(flies)}>
+                                    {
+                                        ({ isDragActive }) =>
+                                            <div className={`${isDragActive ? 'b:gray bg:gray/.2!' : ''} ~border-color|.3s,background-color|.3s bg:#141414@dark bg:#f5f5f5@light b:2|dashed|transparent flex justify-content:center align-items:center p:16 r:3 pointer-events:none`}>
+                                                <span className={`${isDragActive ? '' : 'opacity:.5'} ~opacity|.3s`}>
+                                                    {t('Drag and drop files here, or click to select module files directory')}
+                                                </span>
+                                            </div>
+                                    }
+                                </Dropzone>
 
                                 <Label htmlFor="main">
                                     {t('Main file')}

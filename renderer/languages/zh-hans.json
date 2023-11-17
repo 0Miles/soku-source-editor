@@ -57,5 +57,7 @@
     "Delete module": "删除模组",
     "Do you want to delete these mods": "是否要删除这些模组",
     "Add Version": "新增版本",
-    "Version": "版本"
+    "Version": "版本",
+    "Module files": "模组档案",
+    "Drag and drop files here, or click to select module files directory": "拖放档案至此，或点击选择模组资料夹"
 }
