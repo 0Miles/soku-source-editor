@@ -24,6 +24,7 @@ import SelectableList from '../../common/selectable-list'
 import { useModSource } from '../../contexts/mod-source'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 import AddVersionDialog from './compontents/add-version.dialog'
+import DirectoryTreeView from '../../common/directory-tree-view'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -46,23 +47,29 @@ export default function ModuleInfoPage() {
     const [open, setOpen] = useState(false)
     const selectedVersionsRef = useRef([])
 
-    useMemo(async () => {
+    const refreshModInfo = useCallback(async () => {
         setLoading(true)
         setModInfo(await api.getMod(sourceName ?? primarySourceName, modName))
         setLoading(false)
     }, [modName, primarySourceName, sourceName])
+
+    useMemo(() => {
+        refreshModInfo()
+    }, [refreshModInfo])
 
     const refreshVersions = useCallback(async () => {
         setVersionsLoading(true)
         setVersions(await api.getModVersions(sourceName ?? primarySourceName, modName))
         setVersionsLoading(false)
     }, [modName, primarySourceName, sourceName])
-    
+
     useMemo(() => {
         refreshVersions()
     }, [refreshVersions])
 
-
+    const selectedVersionChangeHandle = useCallback((selected) => {
+        selectedVersionsRef.current = selected
+    }, [])
 
     const deleteSelectedVersions = async () => {
         if (!selectedVersionsRef.current?.length) return
@@ -192,20 +199,59 @@ export default function ModuleInfoPage() {
                         }
                     </Button>
                 </div>
-
                 <SelectableList
                     className="mt:16"
                     loading={versionsLoading}
                     items={versions}
                     itemTemplate={
-                        (version, selectMode) => {
+                        (version, selectMode, index) => {
                             return <CollapsibleItem
+                                defaultOpen={index === 0 && !version.downloadLink?.length}
                                 allowOpen={!selectMode}
                                 className={`w:full`}
                                 icon={boxIcon}
-                                title={`v${version.version}`}
-                                desc={t('Not yet released')}
+                                title={
+                                    <>
+                                        {`v${version.version}`}
+                                        {
+                                            version.version === modInfo.recommendedVersion &&
+                                            <svg className="mx:8 color:gold-80 fill:gold-80/.3" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                                            </svg>
+                                        }
+                                    </>
+                                }
+                                desc={
+                                    !version.downloadLink?.length && t('Not yet released')
+                                }
                                 content={<>
+                                    <div className="flex align-items:center justify-content:space-between">
+                                        <div className="mr:16 my:2>div">
+                                            <div>
+                                                {t('Release on Github')}
+                                            </div>
+                                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                                {t(`Requires logging in and setting up the module's Github Repository`)}
+                                            </div>
+                                        </div>
+                                        <Button disabled>{t('Release')}</Button>
+                                    </div>
+                                    <div>
+                                        <div className="flex align-items:center justify-content:space-between mb:16">
+                                            <div>
+                                                {t('Release Notes')}
+                                            </div>
+                                            <Button>{t('Edit')}</Button>
+                                        </div>
+                                        <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
+                                            {
+                                                HTMLReactParser(
+                                                    marked.parse(getI18nProperty(version, 'notes', i18n.language))
+                                                )
+                                            }
+                                        </div>
+                                    </div>
                                     <div>
                                         <div className="flex align-items:center justify-content:space-between mb:16">
                                             <div>
@@ -229,35 +275,19 @@ export default function ModuleInfoPage() {
                                                     version.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
                                                 }
                                             </div>
-                                            <div className="grid-col:1">
-                                                {t('Location')}:
+                                            <div className="grid-col:1 mt:8">
+                                                {t('All files')}:
                                             </div>
-                                            <div className="grid-col:3 f:14 color:#CFCFCF@dark user-select:text">
+                                            <div className="grid-col:3 mt:8 f:14 color:#CFCFCF@dark user-select:text">
                                                 {
-                                                    version.dirname
+                                                    !!version.moduleFiles?.children?.length &&
+                                                    <DirectoryTreeView className="bg:#141414@dark bg:#f5f5f5@light r:3 p:8 ml:-16" folder={version.moduleFiles} />
+                                                }
+                                                {
+                                                    !version.moduleFiles?.children?.length &&
+                                                    t('Module files not loaded')
                                                 }
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex align-items:center justify-content:space-between">
-                                        <div className="mr:16 my:2>div">
-                                            <div>
-                                                {t('Release on Github')}
-                                            </div>
-                                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                                                {t(`Requires logging in and setting up the module's Github Repository`)}
-                                            </div>
-                                        </div>
-                                        <Button disabled>{t('Release')}</Button>
-                                    </div>
-                                    <div>
-                                        <div className="mb:16">{t('Release Notes')}</div>
-                                        <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
-                                            {
-                                                HTMLReactParser(
-                                                    marked.parse(getI18nProperty(version, 'notes', i18n.language))
-                                                )
-                                            }
                                         </div>
                                     </div>
                                     <div className="flex align-items:center justify-content:space-between">
@@ -271,6 +301,31 @@ export default function ModuleInfoPage() {
                                         </div>
                                         <Button>{t('Export')}</Button>
                                     </div>
+                                    {
+                                        version.version !== modInfo.recommendedVersion &&
+                                        <div className="flex align-items:center justify-content:space-between">
+                                            <div className="mr:16 my:2>div">
+                                                <div>
+                                                    {t('Set as recommended version')}
+                                                </div>
+                                                <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                                    {t(`Requires publish and get download link`)}
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={
+                                                    async () => {
+                                                        await api.updateMod(sourceName ?? primarySourceName, modInfo.name, JSON.stringify({
+                                                            recommendedVersion: version.version
+                                                        }))
+                                                        refreshModInfo()
+                                                    }
+                                                }
+                                                disabled={!version.downloadLink?.length}>
+                                                {t('Set')}
+                                            </Button>
+                                        </div>
+                                    }
                                 </>
                                 }
                             />
@@ -282,11 +337,7 @@ export default function ModuleInfoPage() {
                     selectModeToolbar={
                         <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>
                     }
-                    selectedChange={
-                        (selected) => {
-                            selectedVersionsRef.current = selected
-                        }
-                    }
+                    selectedChange={selectedVersionChangeHandle}
                 />
             </>
         }

@@ -30,9 +30,8 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     })
     const [open, setOpen] = useState(false)
     const [isDoing, setIsDoing] = useState(false)
+    const [doingMessage, setDoingMessage] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
-
-    const [isRecommendedVersion, setIsRecommendedVersion] = useState(true)
 
     const [recommendedVersionNumber, setRecommendedVersionNumber] = useState('')
     const [recommendedMainFile, setRecommendedMainFile] = useState('')
@@ -46,13 +45,12 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setIsDoing(false)
 
         const lastVersionNumber = modVersions[0]?.version ?? '0.0.0'
-        const lastNum = parseInt(lastVersionNumber.match(/(\d)([\w]*)$/)[0] ?? '0')
-        setRecommendedVersionNumber(lastVersionNumber.replace(/(\d)([\w]*)$/, lastNum + 1 + '$2'))
+        const lastNum = parseInt(lastVersionNumber.match(/(\d+)([\w]*)$/)[0] ?? '0')
+        setRecommendedVersionNumber(lastVersionNumber.replace(/(\d+)([\w]*)$/, lastNum + 1 + '$2'))
         setRecommendedMainFile(modVersions[0]?.main ?? '')
         setSelectedConfigFiles(modVersions[0]?.configFiles ?? [])
         setModFiles()
         setModFilesTopLevelFilenames([])
-        setIsRecommendedVersion(true)
 
         reset()
         setOpen(true)
@@ -61,16 +59,16 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const handleAddVersion = async (data) => {
         setIsDoing(true)
         try {
-            // TODO: 複製新版本模組檔案
+            if (modFiles?.children) {
+                setDoingMessage(t('Copying module files...'))
+                await api.copyModVersionFiles(modFiles?.children, sourceName, moduleName, data.version)
+            }
 
+            setDoingMessage(t('Generating version information file...'))
             await api.addModVersion(sourceName, moduleName, data.version, JSON.stringify({
                 ...data,
                 configFiles: selectedConfigFiles
             }))
-
-            if (isRecommendedVersion) {
-                // TODO: call 設置RecommendedVersion API
-            }
 
             setOpen(false)
             onCompleted && onCompleted()
@@ -167,16 +165,14 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     <>
                                         <Label htmlFor="main">
                                             {t('Main file')}
+                                            <span className="color:red">*</span>
                                         </Label>
                                         <ComboBox
                                             id="main"
                                             defaultValue={recommendedMainFile}
                                             options={modFilesTopLevelFilenames}
-                                            onOptionSelect={(_, data) => {
-                                                setSelectedConfigFiles(data.selectedOptions)
-                                            }}
                                             comboboxProps={({
-                                                ...register('main')
+                                                ...register('main', { required: true })
                                             })}
                                         />
 
@@ -202,7 +198,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                             <div className="flex flex:col overflow:clip">
                                 <Spinner />
                                 <div className="center my:16">
-                                    {t('Getting source repository')}
+                                    {doingMessage}
                                 </div>
                             </div>
                         }
@@ -217,10 +213,6 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                         }
                     </DialogContent>
 
-                    {
-                        !isDoing && !errorMsg &&
-                        <Switch onChange={(_, data) => setIsRecommendedVersion(data.checked)} defaultChecked label={t('Set as recommended version')} />
-                    }
                     <DialogActions className="user-select:none">
                         {
                             !isDoing && !errorMsg &&

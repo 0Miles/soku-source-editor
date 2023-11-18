@@ -80,6 +80,10 @@ export default function ModuleListPage() {
         }
     }
 
+    const selectedModsChangeHandle = useCallback((selected) => {
+        selectedModsRef.current = selected
+    }, [])
+
     return <MultiLevelPageContainer level={level}>
         {
             !primarySourceName &&
@@ -130,11 +134,7 @@ export default function ModuleListPage() {
                     selectModeToolbar={
                         <Button onClick={deleteSelectedMod} icon={trashIcon}>{t('Delete')}</Button>
                     }
-                    selectedChange={
-                        (selected) => {
-                            selectedModsRef.current = selected
-                        }
-                    }
+                    selectedChange={selectedModsChangeHandle}
                 />
             </>
         }

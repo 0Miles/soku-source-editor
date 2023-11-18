@@ -18,7 +18,8 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
 
     useMemo(() => {
         setIndexSelected(new Array(items?.length ?? 0).fill(false))
-    }, [items])
+        selectedChange && selectedChange([])
+    }, [items, selectedChange])
 
     return (
         <div className={className}>
@@ -62,7 +63,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                                     <Checkbox className="m:0 abs! ml:-2.5rem" checked={indexSelected[i]} />
                                 }
                                 {
-                                    itemTemplate(item, selectMode)
+                                    itemTemplate && itemTemplate(item, selectMode, i)
                                 }
                             </div>
                         )

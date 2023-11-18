@@ -48,7 +48,7 @@ export const deleteMod = async (sourceName, modName) => {
     return await ipcRenderer.invoke('delete', ['mod', sourceName, modName])
 }
 
-export const deleteModVersion = async (sourceName, modName, version, versionInfo) => {
+export const deleteModVersion = async (sourceName, modName, version) => {
     return await ipcRenderer.invoke('delete', ['modVersion', sourceName, modName, version])
 }
 
@@ -56,6 +56,14 @@ export const addMod = async (sourceName, modName, modInfo) => {
     return await ipcRenderer.invoke('post', ['mod', sourceName, modName, modInfo])
 }
 
+export const updateMod = async (sourceName, modName, modInfo) => {
+    return await ipcRenderer.invoke('patch', ['mod', sourceName, modName, modInfo])
+}
+
 export const addModVersion = async (sourceName, modName, version, versionInfo) => {
     return await ipcRenderer.invoke('post', ['modVersion', sourceName, modName, version, versionInfo])
+}
+
+export const copyModVersionFiles = async (files, sourceName, modName, version) => {
+    return await ipcRenderer.invoke('post', ['copyModVersionFiles', files, sourceName, modName, version])
 }

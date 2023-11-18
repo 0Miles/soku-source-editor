@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion, getAllFilenames, getFilesTree } = require('./common/dir-utils')
+const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion, getAllFilenames, getFilesTree, copyModVersionFiles, updateMod } = require('./common/dir-utils')
 const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
@@ -42,6 +42,17 @@ ipcMain.handle('post', async (_, message) => {
                 return await sync(message[1], message[2])
             case 'fetch':
                 return await fetchStatus(message[1])
+            case 'copyModVersionFiles':
+                return copyModVersionFiles(message[1], message[2], message[3], message[4])
+        }
+    }
+})
+
+ipcMain.handle('patch', async (_, message) => {
+    if (Array.isArray(message) && message.length > 0) {
+        switch (message[0]) {
+            case 'mod':
+                return await updateMod(message[1], message[2], message[3])
         }
     }
 })

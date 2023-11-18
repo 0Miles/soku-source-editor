@@ -83,8 +83,15 @@ const getModVersions = (sourceName, modName, base = process.cwd()) => {
     const dirname = path.resolve(base, 'sources', sourceName, 'modules', modName)
 
     if (fs.existsSync(dirname)) {
-        return getSubdirJsonInfos(path.resolve(dirname, 'versions'), 'version.json')
+        const versionInfos = getSubdirJsonInfos(path.resolve(dirname, 'versions'), 'version.json')
             .sort((a, b) => compareVersions(b.version, a.version))
+        for (const versionInfo of versionInfos) {
+            const moduleDataPath = path.resolve(versionInfo.dirname, 'module_data')
+            if (fs.existsSync(moduleDataPath)) {
+                versionInfo.moduleFiles = getFilesTree([moduleDataPath]).find(_ => true)
+            }
+        }
+        return versionInfos
     }
     return []
 }
@@ -93,8 +100,8 @@ const compareVersions = (a, b) => {
     const aParts = a.match(/\d+/g)
     const bParts = b.match(/\d+/g)
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-        const aPart = aParts[i] ?? 0
-        const bPart = bParts[i] ?? 0
+        const aPart = parseInt(aParts[i]) ?? 0
+        const bPart = parseInt(bParts[i]) ?? 0
         if (aPart < bPart) {
             return -1
         } else if (aPart > bPart) {
@@ -180,8 +187,15 @@ const writeFile = (dir, filename, content, base = process.cwd()) => {
     fs.writeFileSync(path.resolve(dirname, filename), content, { encoding: 'utf-8' })
 }
 
-const addMod = async (sourceName, moduleName, content) => {
-    const modulesDir = path.resolve('sources', sourceName, 'modules')
+const updateJson = (originJsonFilename, patchJson) => {
+    const jsonInfo = JSON.parse(fs.readFileSync(originJsonFilename, { encoding: 'utf-8' }))
+    const patch = JSON.parse(patchJson)
+    const newModInfo = Object.assign(jsonInfo, patch)
+    fs.writeFileSync(originJsonFilename, JSON.stringify(newModInfo), { encoding: 'utf-8' })
+}
+
+const addMod = async (sourceName, moduleName, content, base = process.cwd()) => {
+    const modulesDir = path.resolve(base, 'sources', sourceName, 'modules')
     if (!fs.existsSync(modulesDir)) {
         fs.mkdirSync(modulesDir)
     }
@@ -192,8 +206,21 @@ const addMod = async (sourceName, moduleName, content) => {
     await git.commit('New module: ' + moduleName)
 }
 
-const addModVersion = async (sourceName, moduleName, version, content) => {
-    const versionsDir = path.resolve('sources', sourceName, 'modules', moduleName, 'versions')
+const updateMod = async (sourceName, moduleName, content, base = process.cwd()) => {
+    const modulesDir = path.resolve(base, 'sources', sourceName, 'modules')
+    if (!fs.existsSync(modulesDir)) {
+        fs.mkdirSync(modulesDir)
+    }
+    const moduleInfoFilename = path.resolve(modulesDir, moduleName, 'mod.json')
+    updateJson(moduleInfoFilename, content)
+
+    const git = getGit(sourceName)
+    await git.add('.')
+    await git.commit('Update module: ' + moduleName)
+}
+
+const addModVersion = async (sourceName, moduleName, version, content, base = process.cwd()) => {
+    const versionsDir = path.resolve(base, 'sources', sourceName, 'modules', moduleName, 'versions')
     if (!fs.existsSync(versionsDir)) {
         fs.mkdirSync(versionsDir)
     }
@@ -218,7 +245,6 @@ const getAllFilenames = (paths) => {
     return result
 }
 
-
 const getFilesTree = (paths) => {
     let result = []
     for (const originPath of paths) {
@@ -240,8 +266,40 @@ const getFilesTree = (paths) => {
             })
         }
     }
+    result.sort((a, b) => {
+        if (a.type === b.type) {
+            return 0
+        } else if (a.type === 'directory') {
+            return -1
+        } else {
+            return 1
+        }
+    })
     return result
 }
+
+const copyModVersionFiles = (files, sourceName, moduleName, version, base = process.cwd()) => {
+    const versionsDir = path.resolve(base, 'sources', sourceName, 'modules', moduleName, 'versions')
+    if (!fs.existsSync(versionsDir)) {
+        fs.mkdirSync(versionsDir)
+    }
+
+    const versionDir = path.resolve(versionsDir, version)
+    if (!fs.existsSync(versionDir)) {
+        fs.mkdirSync(versionDir)
+    }
+
+    const versionModuleDataDir = path.resolve(versionDir, 'module_data')
+    if (fs.existsSync(versionModuleDataDir)) {
+        fs.rmSync(versionModuleDataDir, { recursive: true, force: true })
+    }
+    fs.mkdirSync(versionModuleDataDir)
+
+    for (const file of files) {
+        fs.cpSync(url.fileURLToPath(file.url), path.resolve(versionModuleDataDir, file.name), { recursive: true, force: true })
+    }
+}
+
 
 module.exports = {
     getMods,
@@ -255,5 +313,7 @@ module.exports = {
     addMod,
     addModVersion,
     deleteMod,
-    deleteModVersion
+    deleteModVersion,
+    copyModVersionFiles,
+    updateMod
 }
