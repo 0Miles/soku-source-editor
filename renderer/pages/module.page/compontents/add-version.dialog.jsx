@@ -154,7 +154,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                                 }
                                                 {
                                                     modFiles &&
-                                                    <DirectoryTreeView className="w:full" folder={modFiles} />
+                                                    <DirectoryTreeView className="w:full p:8" folder={modFiles} />
                                                 }
                                             </div>
                                     }
