@@ -26,6 +26,20 @@ export const gitFetchStatus = async (sourceName) => {
     return await ipcRenderer.invoke('post', ['fetch', sourceName])
 }
 
+export const getAllFilenames = async (paths) => {
+    if (!Array.isArray(paths)) {
+        paths = [paths]
+    }
+    return await ipcRenderer.invoke('get', ['allFilenames', paths])
+}
+
+export const getFilesTree = async (paths) => {
+    if (!Array.isArray(paths)) {
+        paths = [paths]
+    }
+    return await ipcRenderer.invoke('get', ['filesTree', paths])
+}
+
 export const deleteSource = async (sourceName) => {
     await ipcRenderer.invoke('delete', ['source', sourceName])
 }

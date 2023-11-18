@@ -10,19 +10,18 @@ import {
     DialogContent,
     Input,
     Label,
-    SpinButton,
     Textarea,
-    Combobox,
-    Option,
-    Badge
+    Switch
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useState, useMemo, useRef } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as api from '../../../common/api'
 import Dropzone from '../../../common/dropzone'
 
 import plusIcon from '../../../icons/plus.icon'
+import DirectoryTreeView from '../../../common/directory-tree-view'
+import ComboBox from '../../../common/combo-box'
 
 export default function AddVersionDialog({ sourceName, moduleName, modVersions, onCompleted }) {
     const { t } = useTranslation()
@@ -32,11 +31,15 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const [open, setOpen] = useState(false)
     const [isDoing, setIsDoing] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
-    const [modFilenameList, setModFilenameList] = useState([])
+
+    const [isRecommendedVersion, setIsRecommendedVersion] = useState(true)
+
     const [recommendedVersionNumber, setRecommendedVersionNumber] = useState('')
     const [recommendedMainFile, setRecommendedMainFile] = useState('')
     const [selectedConfigFiles, setSelectedConfigFiles] = useState([])
-    const [configFilesComboBoxOpen, setConfigFilesComboBoxOpen] = useState(false)
+
+    const [modFiles, setModFiles] = useState()
+    const [modFilesTopLevelFilenames, setModFilesTopLevelFilenames] = useState([])
 
     const openDialog = () => {
         setErrorMsg('')
@@ -47,18 +50,28 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setRecommendedVersionNumber(lastVersionNumber.replace(/(\d)([\w]*)$/, lastNum + 1 + '$2'))
         setRecommendedMainFile(modVersions[0]?.main ?? '')
         setSelectedConfigFiles(modVersions[0]?.configFiles ?? [])
+        setModFiles()
+        setModFilesTopLevelFilenames([])
+        setIsRecommendedVersion(true)
 
         reset()
         setOpen(true)
     }
 
-    const handleRegistration = async (data) => {
+    const handleAddVersion = async (data) => {
         setIsDoing(true)
         try {
+            // TODO: 複製新版本模組檔案
+
             await api.addModVersion(sourceName, moduleName, data.version, JSON.stringify({
                 ...data,
                 configFiles: selectedConfigFiles
             }))
+
+            if (isRecommendedVersion) {
+                // TODO: call 設置RecommendedVersion API
+            }
+
             setOpen(false)
             onCompleted && onCompleted()
         }
@@ -67,10 +80,40 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
             setIsDoing(false)
         }
     }
-    const handleError = (errors) => console.error(errors)
 
     const validateVersion = (value) => {
         return !modVersions?.find(x => x.version === value)
+    }
+
+    const moduleFilesDropHandle = async (files) => {
+        const filenames = files.map(x => x.path)
+        let filesTree = await api.getFilesTree(filenames)
+        if (filesTree.length === 1 && filesTree[0].type === 'directory') {
+            filesTree = filesTree[0]
+        } else {
+            filesTree = {
+                name: '',
+                children: filesTree
+            }
+        }
+
+        const topLevelFiles = filesTree.children.filter(x => x.type === 'file').map(x => x.name)
+        setModFilesTopLevelFilenames(topLevelFiles)
+        if (!recommendedMainFile || !topLevelFiles.includes(recommendedMainFile)) {
+            const dllFiles = topLevelFiles.filter(x => x.toLowerCase().endsWith('.dll'))
+            if (dllFiles?.length === 1) {
+                setRecommendedMainFile(dllFiles[0])
+            } else {
+                setRecommendedMainFile()
+            }
+        }
+
+        let newSelectedConfigFiles = selectedConfigFiles.filter(x => topLevelFiles.includes(x))
+        if (!newSelectedConfigFiles?.length) {
+            newSelectedConfigFiles = topLevelFiles.filter(x => x.toLowerCase().endsWith('.ini'))
+        }
+        setSelectedConfigFiles([...newSelectedConfigFiles])
+        setModFiles(filesTree)
     }
 
     return <Dialog open={open}>
@@ -78,19 +121,20 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
             <Button onClick={openDialog} icon={plusIcon}>{t('Add Version')}</Button>
         </DialogTrigger>
         <DialogSurface>
-            <form onSubmit={handleSubmit(handleRegistration, handleError)}>
+            <form onSubmit={handleSubmit(handleAddVersion)}>
                 <DialogBody>
-                    <DialogTitle className="user-select:none">{t('Add Version')}</DialogTitle>
+                    <DialogTitle className="user-select:none">
+                        {t('Add Version')}
+                    </DialogTitle>
                     <DialogContent>
                         {
                             !isDoing && !errorMsg &&
-                            <div className="flex flex:col mb:16 mt:16>label mb:8>label">
+                            <div className="flex flex:col pr:8 mb:16 mt:16>label mb:8>label">
                                 <Label htmlFor="version">
                                     {t('Version')}
                                     <span className="color:red">*</span>
                                 </Label>
                                 <Input id="version" defaultValue={recommendedVersionNumber} {...register('version', { required: 'Version is required', validate: validateVersion })} appearance="filled-darker" placeholder={recommendedVersionNumber} />
-
                                 <Label htmlFor="notes">
                                     {t('Release Notes')}
                                 </Label>
@@ -99,77 +143,58 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                 <Label htmlFor="notes">
                                     {t('Module files')}
                                 </Label>
-                                <Dropzone 
-                                        onClick={async () => {
-                                            const handle = await window.showDirectoryPicker()
-                                            console.log(handle)
-                                        }}
-                                        onDrop={flies => console.log(flies)}>
+                                <Dropzone
+                                    onDrop={moduleFilesDropHandle}>
                                     {
                                         ({ isDragActive }) =>
-                                            <div className={`${isDragActive ? 'b:gray bg:gray/.2!' : ''} ~border-color|.3s,background-color|.3s bg:#141414@dark bg:#f5f5f5@light b:2|dashed|transparent flex justify-content:center align-items:center p:16 r:3 pointer-events:none`}>
-                                                <span className={`${isDragActive ? '' : 'opacity:.5'} ~opacity|.3s`}>
-                                                    {t('Drag and drop files here, or click to select module files directory')}
-                                                </span>
+                                            <div className={`${isDragActive ? 'b:gray bg:gray/.2!' : ''} ~border-color|.3s,background-color|.3s bg:#141414@dark bg:#f5f5f5@light b:2|dashed|transparent r:3`}>
+                                                {
+                                                    !modFiles &&
+                                                    <span className={`${isDragActive ? '' : 'opacity:.5'} ~opacity|.3s min-h:128 flex justify-content:center align-items:center pointer-events:none`}>
+                                                        {t('Drag and drop module directory or files here')}
+                                                    </span>
+                                                }
+                                                {
+                                                    modFiles &&
+                                                    <DirectoryTreeView className="w:full" folder={modFiles} />
+                                                }
                                             </div>
                                     }
                                 </Dropzone>
 
-                                <Label htmlFor="main">
-                                    {t('Main file')}
-                                </Label>
-                                <Combobox
-                                    id="main"
-                                    {...register('main')}
-                                    defaultValue={recommendedMainFile}
-                                    freeform
-                                    appearance="filled-darker"
-                                >
-                                    {modFilenameList.map((option) => (
-                                        <Option key={option} >
-                                            {option}
-                                        </Option>
-                                    ))}
-                                </Combobox>
+                                {
+                                    modFiles &&
+                                    <>
+                                        <Label htmlFor="main">
+                                            {t('Main file')}
+                                        </Label>
+                                        <ComboBox
+                                            id="main"
+                                            defaultValue={recommendedMainFile}
+                                            options={modFilesTopLevelFilenames}
+                                            onOptionSelect={(_, data) => {
+                                                setSelectedConfigFiles(data.selectedOptions)
+                                            }}
+                                            comboboxProps={({
+                                                ...register('main')
+                                            })}
+                                        />
 
-                                <Label htmlFor="configFiles">
-                                    {t('Config files')}
-                                </Label>
+                                        <Label htmlFor="configFiles">
+                                            {t('Config files')}
+                                        </Label>
 
-                                <Combobox
-                                    id="configFiles"
-                                    defaultSelectedOptions={selectedConfigFiles}
-                                    freeform
-                                    onChange={(event) => console.log(event)}
-                                    onOptionSelect={(_, data) => {
-                                        setSelectedConfigFiles(data.selectedOptions)
-                                    }}
-                                    onOpenChange={(_, data) => setConfigFilesComboBoxOpen(data.open)}
-                                    multiselect
-                                    appearance="filled-darker"
-                                >
-                                    {
-                                        selectedConfigFiles.filter(x => !modFilenameList.includes(x))
-                                            .map(option =>
-                                                <Option key={option}>
-                                                    {option}
-                                                </Option>
-                                            )
-                                    }
-                                    {
-                                        modFilenameList.map(option =>
-                                            <Option key={option}>
-                                                {option}
-                                            </Option>
-                                        )
-                                    }
-                                </Combobox>
-
-                                <label htmlFor="configFiles" className={`${configFilesComboBoxOpen ? 'opacity:.2' : ''} z:9 mt:-30! h:30 flex py:4 mr:8>div pl:8 mr:30 flex-wrap:nowrap overflow:clip`}>
-                                    {
-                                        selectedConfigFiles.map((filename, i) => <Badge key={i}>{filename}</Badge>)
-                                    }
-                                </label>
+                                        <ComboBox
+                                            id="configFiles"
+                                            defaultSelected={selectedConfigFiles}
+                                            options={modFilesTopLevelFilenames}
+                                            onOptionSelect={(_, data) => {
+                                                setSelectedConfigFiles(data.selectedOptions)
+                                            }}
+                                            multiselect
+                                        />
+                                    </>
+                                }
                             </div>
                         }
                         {
@@ -191,6 +216,11 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                             </div>
                         }
                     </DialogContent>
+
+                    {
+                        !isDoing && !errorMsg &&
+                        <Switch onChange={(_, data) => setIsRecommendedVersion(data.checked)} defaultChecked label={t('Set as recommended version')} />
+                    }
                     <DialogActions className="user-select:none">
                         {
                             !isDoing && !errorMsg &&

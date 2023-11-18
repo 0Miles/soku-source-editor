@@ -59,5 +59,7 @@
     "Add Version": "新增版本",
     "Version": "版本",
     "Module files": "模组档案",
-    "Drag and drop files here, or click to select module files directory": "拖放档案至此，或点击选择模组资料夹"
+    "Drag and drop module directory or files here": "拖放模组资料夹或档案至此",
+    "Delete version": "删除版本",
+    "Do you want to delete these versions": "是否要删除这些版本"
 }

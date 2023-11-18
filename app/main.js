@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion } = require('./common/dir-utils')
+const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion, getAllFilenames, getFilesTree } = require('./common/dir-utils')
 const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
 
 ipcMain.handle('switch-native-theme', (_, message) => {
@@ -21,6 +21,10 @@ ipcMain.handle('get', async (_, message) => {
                 return getModVersions(message[1], message[2])
             case 'sources':
                 return getSources()
+            case 'allFilenames':
+                return getAllFilenames(message[1])
+            case 'filesTree':
+                return getFilesTree(message[1])
         }
     }
 })

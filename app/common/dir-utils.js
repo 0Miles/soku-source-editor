@@ -204,11 +204,52 @@ const addModVersion = async (sourceName, moduleName, version, content) => {
     await git.commit(`New version of ${moduleName}: ${version}`)
 }
 
+const getAllFilenames = (paths) => {
+    let result = []
+    for (const originPath of paths) {
+        const absPath = path.resolve(originPath)
+        const absPathStat = fs.statSync(absPath)
+        if (absPathStat.isDirectory()) {
+            result = result.concat(fs.readdirSync(absPath).map(x => path.resolve(absPath, x)))
+        } else {
+            result.push(absPath)
+        }
+    }
+    return result
+}
+
+
+const getFilesTree = (paths) => {
+    let result = []
+    for (const originPath of paths) {
+        const absPath = path.resolve(originPath)
+        const absPathStat = fs.statSync(absPath)
+        if (absPathStat.isDirectory()) {
+            const dir = {
+                type: 'directory',
+                name: path.basename(absPath),
+                url: url.pathToFileURL(absPath).href
+            }
+            dir.children = getFilesTree(fs.readdirSync(absPath).map(x => path.resolve(absPath, x)))
+            result.push(dir)
+        } else {
+            result.push({
+                type: 'file',
+                name: path.basename(absPath),
+                url: url.pathToFileURL(absPath).href
+            })
+        }
+    }
+    return result
+}
+
 module.exports = {
     getMods,
     getMod,
     getModVersions,
     getSources,
+    getAllFilenames,
+    getFilesTree,
     deleteSource,
     writeFile,
     addMod,
