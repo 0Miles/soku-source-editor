@@ -16,6 +16,7 @@ import SourceInfoPage from './pages/source.page/info.page'
 import SettingListPage from './pages/setting.page/list.page'
 import '@master/css'
 import './i18n'
+import { MessageBoxProvider } from './contexts/message-box'
 
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement)
@@ -73,7 +74,9 @@ root.render(
     <React.StrictMode>
         <ThemeProvider>
             <ModSourceProvider>
-                <RouterProvider router={router} />
+                <MessageBoxProvider>
+                    <RouterProvider router={router} />
+                </MessageBoxProvider>
             </ModSourceProvider>
         </ThemeProvider>
     </React.StrictMode>

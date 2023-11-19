@@ -1,5 +1,10 @@
 
-import { useEffect, createContext, useState } from 'react'
+import { useEffect, createContext, useState, useContext } from 'react'
+import {
+    FluentProvider,
+    webLightTheme,
+    webDarkTheme,
+} from '@fluentui/react-components'
 
 const MatchMediaDark = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
 // init theme
@@ -8,7 +13,7 @@ const isDark = storageTheme === 'system' ? MatchMediaDark.matches : storageTheme
 document.documentElement.classList.toggle('dark', isDark)
 document.documentElement.classList.toggle('light', !isDark)
 
-export const ThemeContext = createContext()
+const ThemeContext = createContext()
 
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(storageTheme ?? 'system')
@@ -56,7 +61,13 @@ export const ThemeProvider = ({ children }) => {
                 current
             }}
         >
-            {children}
+            <FluentProvider className="bg:transparent! h:full" theme={current === 'dark' ? webDarkTheme : webLightTheme}>
+                {children}
+            </FluentProvider>
         </ThemeContext.Provider>
     )
+}
+
+export const useTheme = () => {
+    return useContext(ThemeContext)
 }
