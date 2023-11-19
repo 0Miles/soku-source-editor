@@ -80,6 +80,7 @@ class Module {
                 this.element.updateInfo({
                     recommendedVersion: newRecommendedVersion.element.info.version ?? ''
                 })
+                await this.git.add('.').commit(`Update module: ${this.moduleName}`)
             }
         }
     }

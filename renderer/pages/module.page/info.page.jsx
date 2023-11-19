@@ -102,6 +102,7 @@ export default function ModuleInfoPage() {
                     MessageBoxIcon.Error)
             }
             refreshVersions()
+            refreshModInfo()
         }
     }
 
