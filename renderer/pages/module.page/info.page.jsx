@@ -315,9 +315,9 @@ export default function ModuleInfoPage() {
                                             <Button
                                                 onClick={
                                                     async () => {
-                                                        await api.updateMod(sourceName ?? primarySourceName, modInfo.name, JSON.stringify({
+                                                        await api.updateMod(sourceName ?? primarySourceName, modInfo.name, {
                                                             recommendedVersion: version.version
-                                                        }))
+                                                        })
                                                         refreshModInfo()
                                                     }
                                                 }

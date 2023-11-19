@@ -1,8 +1,10 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 
 const createMainWindow = require('./window/main.window')
-const { getMods, getMod, getModVersions, getSources, deleteSource, addMod, addModVersion, deleteMod, deleteModVersion, getAllFilenames, getFilesTree, copyModVersionFiles, updateMod } = require('./common/dir-utils')
-const { cloneModSource, sync, fetchStatus } = require('./common/git-utils')
+
+const { ModManager } = require('./mod-manager/mod-manager')
+const getFilesTree = require('./common/get-files-tree')
+const modManager = new ModManager()
 
 ipcMain.handle('switch-native-theme', (_, message) => {
     if (['dark', 'light', 'system'].includes(message)) {
@@ -14,15 +16,13 @@ ipcMain.handle('get', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mods':
-                return getMods(message[1])
+                return modManager.getSource(message[1])?.modules?.map(x => x.getData())
             case 'mod':
-                return getMod(message[1], message[2])
+                return modManager.getSource(message[1])?.getModule(message[2])?.getData()
             case 'modVersions':
-                return getModVersions(message[1], message[2])
+                return modManager.getSource(message[1])?.getModule(message[2])?.versions?.map(x => x.getData())
             case 'sources':
-                return getSources()
-            case 'allFilenames':
-                return getAllFilenames(message[1])
+                return modManager.sources?.map(x => x.getData())
             case 'filesTree':
                 return getFilesTree(message[1])
         }
@@ -33,17 +33,24 @@ ipcMain.handle('post', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mod':
-                return await addMod(message[1], message[2], message[3])
+                return await modManager
+                    .getSource(message[1])
+                    .addModule(message[2], message[3])
             case 'modVersion':
-                return await addModVersion(message[1], message[2], message[3], message[4])
+                return await modManager
+                    .getSource(message[1])
+                    .getModule(message[2])
+                    .addVersion(message[3], message[4])
             case 'cloneModSource':
-                return await cloneModSource(message[1], message[2])
+                return await modManager.addSource(message[1], message[2])
             case 'sync':
-                return await sync(message[1], message[2])
+                await modManager.getSource(message[1]).sync()
+                return JSON.parse(JSON.stringify(modManager.getSource(message[1]).status))
             case 'fetch':
-                return await fetchStatus(message[1])
+                await modManager.getSource(message[1]).fetchStatus()
+                return JSON.parse(JSON.stringify(modManager.getSource(message[1]).status))
             case 'copyModVersionFiles':
-                return copyModVersionFiles(message[1], message[2], message[3], message[4])
+                return modManager.getSource(message[1]).getModule(message[2]).getVersion(message[3]).copyModVersionFiles(message[4])
         }
     }
 })
@@ -52,7 +59,7 @@ ipcMain.handle('patch', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mod':
-                return await updateMod(message[1], message[2], message[3])
+                return await modManager.getSource(message[1]).getModule(message[2]).update(message[3])
         }
     }
 })
@@ -61,11 +68,11 @@ ipcMain.handle('delete', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'source':
-                return deleteSource(message[1])
+                return modManager.deleteSource(message[1])
             case 'mod':
-                return deleteMod(message[1], message[2])
+                return modManager.getSource(message[1]).deleteModule(message[2])
             case 'modVersion':
-                return deleteModVersion(message[1], message[2], message[3])
+                return modManager.getSource(message[1]).getModule(message[2]).deleteVersion(message[3])
         }
     }
 })

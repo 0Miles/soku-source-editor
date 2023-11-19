@@ -10,8 +10,7 @@ import {
     DialogContent,
     Input,
     Label,
-    Textarea,
-    Switch
+    Textarea
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
@@ -59,16 +58,16 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const handleAddVersion = async (data) => {
         setIsDoing(true)
         try {
+            setDoingMessage(t('Generating version information file...'))
+            await api.addModVersion(sourceName, moduleName, data.version, {
+                ...data,
+                configFiles: selectedConfigFiles
+            })
+
             if (modFiles?.children) {
                 setDoingMessage(t('Copying module files...'))
                 await api.copyModVersionFiles(modFiles?.children, sourceName, moduleName, data.version)
             }
-
-            setDoingMessage(t('Generating version information file...'))
-            await api.addModVersion(sourceName, moduleName, data.version, JSON.stringify({
-                ...data,
-                configFiles: selectedConfigFiles
-            }))
 
             setOpen(false)
             onCompleted && onCompleted()

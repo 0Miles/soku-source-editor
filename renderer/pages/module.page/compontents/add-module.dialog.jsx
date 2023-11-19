@@ -39,7 +39,7 @@ export default function AddModDialog({ sourceName, sourceMods, onCompleted }) {
     const handleRegistration = async (data) => {
         setIsDoing(true)
         try {
-            await api.addMod(sourceName, data.name, JSON.stringify(data))
+            await api.addMod(sourceName, data.name, data)
             setOpen(false)
             onCompleted && onCompleted()
         }

@@ -21,6 +21,12 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
         selectedChange && selectedChange([])
     }, [items, selectedChange])
 
+    const switchSelectModeHandle = () => {
+        setIndexSelected(new Array(items?.length ?? 0).fill(false))
+        selectedChange && selectedChange([])
+        setSelectMode(!selectMode)
+    }
+
     return (
         <div className={className}>
             <div className="flex justify-content:space-between">
@@ -37,7 +43,7 @@ export default function SelectableList({ items, itemTemplate, toolbar, selectMod
                     </div>
                 }
 
-                <Button onClick={() => { setIndexSelected(new Array(items?.length ?? 0).fill(false)); setSelectMode(!selectMode) }} icon={
+                <Button onClick={switchSelectModeHandle} icon={
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M3.5 5.5l1.5 1.5l2.5 -2.5"></path>
