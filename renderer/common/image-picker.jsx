@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { useState } from 'react'
 
 export default function ImagePicker({ defaultValue, className, id, onChange }) {
@@ -13,9 +14,9 @@ export default function ImagePicker({ defaultValue, className, id, onChange }) {
         <label className={`${className} cursor:pointer`} htmlFor={id}>
             {
                 fileUrl &&
-                <img className="object-fit:cover w:full h:full" src={fileUrl} />
+                <img className="object-fit:cover w:full h:full" src={fileUrl + '?' + nanoid()} />
             }
         </label>
-        <input className="hide" type="file" id={id} accept=", image/webp, image/png, image/jpeg" onChange={fileInputOnChangeHandle} />
+        <input className="hide" type="file" id={id} accept=", image/webp, image/png, image/jpeg, image/gif" onChange={fileInputOnChangeHandle} />
     </>
 }

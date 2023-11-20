@@ -30,11 +30,13 @@ class Module {
     }
 
     refreshIconAndBanner() {
-        this.icon = findFileAndGetUri(this.dirname, /^icon\.(?:png|jpg|jpge|gif|webp)$/)
-        this.banner = findFileAndGetUri(this.dirname, /^banner\.(?:png|jpg|jpge|gif|webp)$/)
+        this.icon = findFileAndGetUri(this.dirname, /^icon\.(?:webp|png|jfif|pjpeg|jpeg|pjp|jpg|gif)$/)
+        this.banner = findFileAndGetUri(this.dirname, /^banner\.(?:webp|png|jfif|pjpeg|jpeg|pjp|jpg|gif)$/)
     }
 
     copyAndReplaceImage(fileUrl, imageName) {
+        if (this[imageName] === fileUrl) return
+
         if (this[imageName]) {
             fs.rmSync(url.fileURLToPath(this[imageName]))
         }

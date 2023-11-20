@@ -62,5 +62,8 @@
     "Drag and drop module directory or files here": "拖放模組資料夾或檔案至此",
     "Set as recommended version": "設為推薦版本",
     "Delete version": "刪除版本",
-    "Do you want to delete these versions": "是否要刪除這些版本"
+    "Do you want to delete these versions": "是否要刪除這些版本",
+    "Edit Module": "編輯模組",
+    "Icon": "圖示",
+    "Banner": "橫幅"
 }

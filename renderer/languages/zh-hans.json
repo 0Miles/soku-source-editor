@@ -61,5 +61,8 @@
     "Module files": "模组档案",
     "Drag and drop module directory or files here": "拖放模组资料夹或档案至此",
     "Delete version": "删除版本",
-    "Do you want to delete these versions": "是否要删除这些版本"
+    "Do you want to delete these versions": "是否要删除这些版本",
+    "Edit Module": "编辑模组",
+    "Icon": "图示",
+    "Banner": "横幅"
 }

@@ -126,9 +126,6 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
                             isDoing &&
                             <div className="flex flex:col overflow:clip">
                                 <Spinner />
-                                <div className="center my:16">
-                                    {t('Getting source repository')}
-                                </div>
                             </div>
                         }
                         {

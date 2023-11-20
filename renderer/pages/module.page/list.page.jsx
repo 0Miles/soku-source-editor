@@ -17,6 +17,7 @@ import CommonItem from '../../common/common-item'
 import AddModuleDialog from './compontents/add-module.dialog'
 import SelectableList from '../../common/selectable-list'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
+import { nanoid } from 'nanoid'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
@@ -42,9 +43,11 @@ export default function ModuleListPage() {
         setLoading(false)
     }, [primarySourceName, sourceName])
 
-    useMemo(() => {
-        refreshMods()
-    }, [refreshMods])
+    useMemo(async () => {
+        if (location?.pathname.match(/.*module\/?$/)) {
+            refreshMods()
+        }
+    }, [location, refreshMods])
 
     const deleteSelectedMod = async () => {
         if (!selectedModsRef.current?.length) return
@@ -111,7 +114,7 @@ export default function ModuleListPage() {
                                         {
                                             !!modInfo.icon &&
                                             <img className="w:full h:full obj:cover"
-                                                src={modInfo.icon}
+                                                src={modInfo.icon + '?' + nanoid()}
                                             />
                                         }
                                         {

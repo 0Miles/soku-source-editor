@@ -37,6 +37,9 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         setErrorMsg('')
         setIsDoing(false)
         reset()
+        setIconUrl(modInfo.icon)
+        setBannerUrl(modInfo.banner)
+
 
         setOpen(true)
     }
@@ -74,7 +77,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                             {t('Icon')}
                                         </Label>
                                         <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
-                                            <ImagePicker id="icon" className="abs block w:full h:full" defaultValue={modInfo.icon} onChange={(value) => setIconUrl(value)} />
+                                            <ImagePicker id="icon" className="abs block w:full h:full" defaultValue={iconUrl} onChange={(value) => setIconUrl(value)} />
                                             <div className="abs pointer-events:none z:-1">
                                                 {gearIcon}
                                             </div>
@@ -84,7 +87,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                         <Label htmlFor="banner">
                                             {t('Banner')}
                                         </Label>
-                                        <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" defaultValue={modInfo.banner} onChange={(value) => setBannerUrl(value)} />
+                                        <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" defaultValue={bannerUrl} onChange={(value) => setBannerUrl(value)} />
                                     </div>
                                 </div>
 
@@ -110,9 +113,6 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                             isDoing &&
                             <div className="flex flex:col overflow:clip">
                                 <Spinner />
-                                <div className="center my:16">
-                                    {t('Getting source repository')}
-                                </div>
                             </div>
                         }
                         {
@@ -129,7 +129,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                         {
                             !isDoing && !errorMsg &&
                             <>
-                                <Button as="button" type="submit" appearance="primary" disabled={!formState.isValid}>{t('Add')}</Button>
+                                <Button as="button" type="submit" appearance="primary" disabled={!formState.isValid}>{t('Edit')}</Button>
                                 <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
                             </>
                         }

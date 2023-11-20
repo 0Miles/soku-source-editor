@@ -26,6 +26,7 @@ import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '
 import AddVersionDialog from './compontents/add-version.dialog'
 import DirectoryTreeView from '../../common/directory-tree-view'
 import EditModuleDialog from './compontents/edit-module.dialog'
+import { nanoid } from 'nanoid'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -121,14 +122,14 @@ export default function ModuleInfoPage() {
                 <div className={`rel w:full pt:30 px:24 user-select:none`}>
                     {
                         !!modInfo.banner &&
-                        <img src={modInfo.banner} className="abs z:-1 border-radius:6|6|0|0 top:0 left:0 w:full h:full max-h:250 object-fit:cover" />
+                        <img src={modInfo.banner + '?' + nanoid()} className="abs z:-1 border-radius:6|6|0|0 top:0 left:0 w:full h:full max-h:250 object-fit:cover" />
                     }
                     <div className="abs z:-1 border-radius:6|6|0|0 top:0 left:-1 w:calc(100%+2px) h:full max-h:250 bg:linear-gradient(rgba(0,0,0,.65)|0%,rgba(32,32,32,.9)|60%,rgba(32,32,32,1)|75%)@dark bg:linear-gradient(rgba(200,200,200,.65)|0%,rgba(255,255,255,.85)|60%,rgba(255,255,255,1)|75%)@light"></div>
                     <div className="flex w:full align-items:center justify-content:center">
                         <div className="flex aspect:1/1 flex:0|0|120px h:full overflow:hidden align-items:center justify-content:center bg:gray/.2">
                             {
                                 !!modInfo.icon &&
-                                <img src={modInfo.icon} className="obj:cover w:full h:full" />
+                                <img src={modInfo.icon + '?' + nanoid()} className="obj:cover w:full h:full" />
                             }
                             {
                                 !modInfo.icon &&
