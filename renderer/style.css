@@ -75,6 +75,7 @@ body {
 ::-webkit-scrollbar {
     background-color: transparent;
     width: 0.25rem;
+    height: 0.25rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -84,7 +85,6 @@ body {
 .light ::-webkit-scrollbar-thumb {
     background-color: #babac0;
     border-radius: 1rem;
-    border: 0.25rem solid #ffffff
 }
 
 .dark ::-webkit-scrollbar-thumb {
