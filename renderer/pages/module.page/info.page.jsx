@@ -25,6 +25,7 @@ import { useModSource } from '../../contexts/mod-source'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 import AddVersionDialog from './compontents/add-version.dialog'
 import DirectoryTreeView from '../../common/directory-tree-view'
+import EditModuleDialog from './compontents/edit-module.dialog'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -107,12 +108,15 @@ export default function ModuleInfoPage() {
     }
 
     return <PageContainer>
+        
         {
             loading &&
-            <Spinner />
+            <div className="flex justify-content:center">
+                <Spinner className="abs mt:24 @transition-down|.3s" />
+            </div>
         }
         {
-            !loading && !!modInfo &&
+            !!modInfo &&
             <>
                 <div className={`rel w:full pt:30 px:24 user-select:none`}>
                     {
@@ -141,7 +145,11 @@ export default function ModuleInfoPage() {
                                 <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
                             </div>
                         </div>
-                        <Button className="abs top:60 right:35" icon={pencilIcon}></Button>
+                        <EditModuleDialog
+                            sourceName={sourceName ?? primarySourceName}
+                            modInfo={modInfo}
+                            className="abs top:60 right:35"
+                            onCompleted={refreshModInfo} />
                     </div>
 
                     <div className={`overflow:hidden ~max-height|.5s|ease ${open ? 'max-h:350' : 'max-h:0'} flex flex-wrap:wrap`}>

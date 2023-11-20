@@ -17,11 +17,11 @@ import { useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import * as api from '../../../common/api'
 
-import plusIcon from '../../../icons/plus.icon'
+import pencilIcon from '../../../icons/pencil.icon'
 import gearIcon from '../../../icons/gear.icon'
 import ImagePicker from '../../../common/image-picker'
 
-export default function AddModuleDialog({ sourceName, sourceMods, onCompleted }) {
+export default function EditModuleDialog({ className, sourceName, modInfo, onCompleted, TriggerButton }) {
     const { t } = useTranslation()
     const { register, handleSubmit, reset, formState } = useForm({
         mode: 'all'
@@ -46,7 +46,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         try {
             data.icon = iconUrl
             data.banner = bannerUrl
-            await api.addMod(sourceName, data.name, data)
+            await api.updateMod(sourceName, modInfo.name, data)
             setOpen(false)
             onCompleted && onCompleted()
         }
@@ -57,67 +57,51 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
     }
     const handleError = (errors) => console.error(errors)
 
-    const validateModuleName = (value) => {
-        return !sourceMods?.find(x => x.name === value)
-    }
-
     return <Dialog open={open}>
-        
-        <DialogTrigger>
-            <Button onClick={openDialog} icon={plusIcon}>{t('Add Module')}</Button>
-        </DialogTrigger>
+        <Button className={className} onClick={openDialog} icon={pencilIcon}></Button>
+
         <DialogSurface>
             <form onSubmit={handleSubmit(handleRegistration, handleError)}>
                 <DialogBody>
-                    <DialogTitle className="user-select:none">{t('Add Module')}</DialogTitle>
+                    <DialogTitle className="user-select:none">{t('Edit Module')} - {modInfo.name}</DialogTitle>
                     <DialogContent>
                         {
                             !isDoing && !errorMsg &&
                             <div className="flex flex:col pr:8 mb:16 mt:16>label mb:8>label">
-                                    <div className="flex mt:16">
-                                        <div className="mr:16">
-                                            <Label htmlFor="icon">
-                                                {t('Icon')}
-                                            </Label>
-                                            <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
-                                                <ImagePicker id="icon" className="abs block w:full h:full" onChange={(value) => setIconUrl(value)} />
-                                                <div className="abs pointer-events:none z:-1">
-                                                    {gearIcon}
-                                                </div>
+                                <div className="flex mt:16">
+                                    <div className="mr:16">
+                                        <Label htmlFor="icon">
+                                            {t('Icon')}
+                                        </Label>
+                                        <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
+                                            <ImagePicker id="icon" className="abs block w:full h:full" defaultValue={modInfo.icon} onChange={(value) => setIconUrl(value)} />
+                                            <div className="abs pointer-events:none z:-1">
+                                                {gearIcon}
                                             </div>
                                         </div>
-                                        <div className="flex:1">
-                                            <Label htmlFor="banner">
-                                                {t('Banner')}
-                                            </Label>
-                                            <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" onChange={(value) => setBannerUrl(value)} />
-                                        </div>
                                     </div>
-                                <Label htmlFor="name">
-                                    {t('Name')}
-                                    <span className="color:red">*</span>
-                                </Label>
-                                <Input id="name" {...register('name', { required: 'Name is required', validate: validateModuleName })} appearance="filled-darker" />
-                                {
-                                    !!formState.errors.name && formState.errors.name.type !== 'required' &&
-                                    <div className="color:gray-80">
-                                        {t('Module already exists')}
+                                    <div className="flex:1">
+                                        <Label htmlFor="banner">
+                                            {t('Banner')}
+                                        </Label>
+                                        <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" defaultValue={modInfo.banner} onChange={(value) => setBannerUrl(value)} />
                                     </div>
-                                }
+                                </div>
+
                                 <Label htmlFor="description">
                                     {t('Description')}
                                 </Label>
-                                <Input id="description" {...register('description')} appearance="filled-darker" />
+                                <Input id="description" defaultValue={modInfo.description} {...register('description')} appearance="filled-darker" />
 
                                 <Label htmlFor="author">
                                     {t('Author')}
                                 </Label>
-                                <Input id="author" {...register('author')} appearance="filled-darker" />
+                                <Input id="author" defaultValue={modInfo.author} {...register('author')} appearance="filled-darker" />
 
                                 <Label htmlFor="priority">
                                     {t('Module Priority')}
                                 </Label>
-                                <SpinButton id="priority" defaultValue={0} min={-100} max={100} {...register('priority')} appearance="filled-darker" />
+                                <SpinButton id="priority" defaultValue={modInfo.priority} min={-100} max={100} {...register('priority')} appearance="filled-darker" />
 
 
                             </div>

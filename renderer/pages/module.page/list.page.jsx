@@ -14,7 +14,7 @@ import I18nProperty from '../../common/i18n-property'
 import { useModSource } from '../../contexts/mod-source'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
-import AddModDialog from './compontents/add-module.dialog'
+import AddModuleDialog from './compontents/add-module.dialog'
 import SelectableList from '../../common/selectable-list'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 
@@ -129,7 +129,7 @@ export default function ModuleListPage() {
                         }
                     }
                     toolbar={
-                        <AddModDialog sourceName={sourceName ?? primarySourceName} sourceMods={mods} onCompleted={refreshMods} />
+                        <AddModuleDialog sourceName={sourceName ?? primarySourceName} sourceMods={mods} onCompleted={refreshMods} />
                     }
                     selectModeToolbar={
                         <Button onClick={deleteSelectedMod} icon={trashIcon}>{t('Delete')}</Button>
