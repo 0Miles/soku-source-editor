@@ -51,6 +51,10 @@ ipcMain.handle('post', async (_, message) => {
                 return JSON.parse(JSON.stringify(modManager.getSource(message[1]).status))
             case 'copyModVersionFiles':
                 return modManager.getSource(message[1]).getModule(message[2]).getVersion(message[3]).copyModVersionFiles(message[4])
+            case 'copyModIconFile':
+                return modManager.getSource(message[1]).getModule(message[2]).copyAndReplaceImage(message[3], 'icon')
+            case 'copyModBannerFile':
+                return modManager.getSource(message[1]).getModule(message[2]).copyAndReplaceImage(message[3], 'banner')
         }
     }
 })

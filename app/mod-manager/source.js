@@ -3,11 +3,55 @@ const path = require('path')
 const { Module } = require('./module')
 const { default: simpleGit } = require('simple-git')
 const { DirectoryJsonElement } = require('./directory-json-element')
+const chokidar = require('chokidar')
 
 class Source {
     constructor(sourceName) {
         this.sourceName = sourceName
+        this.pendingChanges = []
         this.init()
+    }
+
+    async watch() {
+        await this.stopWatching()
+        this.watcher = chokidar.watch(this.dirname, {
+            ignored: /[\/\\]\./,
+            persistent: true,
+            ignoreInitial: true
+        })
+
+        this.watcher.on('all', (event, path) => {
+            if (['add', 'change', 'unlink'].includes(event)) {
+                this.pendingChanges.push({ event, path })
+            }
+            clearTimeout(this.commitTimeout)
+            this.commitTimeout = setTimeout(async () => {
+                try {
+                    const addAndChangeFiles = this.pendingChanges.filter(x => x.event === 'add' || x.event === 'change')
+                    const removeFiles = this.pendingChanges.filter(x => x.event === 'unlink')
+                    if (addAndChangeFiles?.length > 0) {
+                        await this.git.add(addAndChangeFiles.map(x => x.path))
+                    }
+                    if (removeFiles?.length > 0) {
+                        await this.git.rm(removeFiles.map(x => x.path))
+                    }
+                    await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
+                } catch (ex) {
+                    console.error(ex)
+                }
+                this.pendingChanges = []
+            }, 1000)
+        })
+    }
+
+    async stopWatching() {
+        if (this.watcher) {
+            await this.watcher.close()
+        }
+    }
+
+    __destroy() {
+        this.stopWatching()
     }
 
     init() {
@@ -15,6 +59,7 @@ class Source {
         this.git = simpleGit(this.dirname)
         this.element = new DirectoryJsonElement(this.dirname, 'soku-mod-source.json')
         this.refreshModules()
+        this.watch()
     }
 
     getData() {
@@ -33,7 +78,7 @@ class Source {
                 .map(dirContent => {
                     const stat = fs.statSync(path.join(modulesDir, dirContent))
                     if (stat.isDirectory()) {
-                        return new Module(this.sourceName, dirContent, this.git)
+                        return new Module(this.sourceName, dirContent)
                     }
                     return null
                 })
@@ -48,20 +93,16 @@ class Source {
         return this.modules.find(x => x.moduleName === moduleName)
     }
 
-    async addModule(moduleName, moduleInfo) {
+    addModule(moduleName, moduleInfo) {
         const newModule = new Module(this.sourceName, moduleName)
         newModule.element.putInfo(moduleInfo)
         this.modules.unshift(newModule)
-        await this.git.add([path.resolve(newModule.dirname, 'mod.json')])
-        await this.git.commit('New module: ' + moduleName)
     }
 
-    async deleteModule(moduleName) {
+    deleteModule(moduleName) {
         const targetModuleIndex = this.modules.findIndex(x => x.moduleName === moduleName)
         if (targetModuleIndex !== -1) {
             this.modules[targetModuleIndex].element.delete()
-            await this.git.rm([path.resolve(this.modules[targetModuleIndex].dirname), '-r'])
-            await this.git.commit(`Delete module: ${this.modules[targetModuleIndex].moduleName}`)
             this.modules.splice(targetModuleIndex, 1)
         }
     }

@@ -53,11 +53,23 @@ export const deleteModVersion = async (sourceName, modName, version) => {
 }
 
 export const addMod = async (sourceName, modName, modInfo) => {
-    return await ipcRenderer.invoke('post', ['mod', sourceName, modName, modInfo])
+    const modIcon = modInfo.icon
+    const modbanner = modInfo.banner
+    delete modInfo.icon
+    delete modInfo.banner
+    await ipcRenderer.invoke('post', ['mod', sourceName, modName, modInfo])
+    await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
+    await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
 }
 
 export const updateMod = async (sourceName, modName, modInfo) => {
-    return await ipcRenderer.invoke('patch', ['mod', sourceName, modName, modInfo])
+    const modIcon = modInfo.icon
+    const modbanner = modInfo.banner
+    delete modInfo.icon
+    delete modInfo.banner
+    await ipcRenderer.invoke('patch', ['mod', sourceName, modName, modInfo])
+    await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
+    await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
 }
 
 export const addModVersion = async (sourceName, modName, version, versionInfo) => {
