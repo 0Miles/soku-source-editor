@@ -33,18 +33,18 @@ ipcMain.handle('post', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mod':
-                return await modManager
+                return modManager
                     .getSource(message[1])
                     .addModule(message[2], message[3])
             case 'modVersion':
-                return await modManager
+                return modManager
                     .getSource(message[1])
                     .getModule(message[2])
                     .addVersion(message[3], message[4])
             case 'cloneModSource':
                 return await modManager.addSource(message[1], message[2])
             case 'sync':
-                await modManager.getSource(message[1]).sync()
+                modManager.getSource(message[1]).sync()
                 return JSON.parse(JSON.stringify(modManager.getSource(message[1]).status))
             case 'fetch':
                 await modManager.getSource(message[1]).fetchStatus()
@@ -63,9 +63,9 @@ ipcMain.handle('patch', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'mod':
-                return await modManager.getSource(message[1]).getModule(message[2]).update(message[3])
+                return modManager.getSource(message[1]).getModule(message[2]).update(message[3])
             case 'modVersion':
-                return await modManager.getSource(message[1]).getModule(message[2]).getVersion(message[3]).update(message[4])
+                return modManager.getSource(message[1]).getModule(message[2]).getVersion(message[3]).update(message[4])
         }
     }
 })

@@ -32,7 +32,8 @@ class ModManager {
 
     async addSource(url, sourceName) {
         const git = simpleGit(this.sourcesDir)
-        return await git.clone(url, sourceName ? path.resolve(this.sourcesDir, sourceName) : undefined)
+        await git.clone(url, sourceName ? path.resolve(this.sourcesDir, sourceName) : undefined)
+        this.refreshSources()
     }
 
     deleteSource(sourceName) {

@@ -61,8 +61,10 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         moduleName={modInfo.name}
                         versionInfo={versionInfoForDisplay}
                         onCompleted={(data) => {
-                            versionInfoForDisplay.notes = data.notes
-                            setVersionInfoForDisplay(versionInfoForDisplay)
+                            setVersionInfoForDisplay({
+                                ...versionInfoForDisplay,
+                                notes: data.notes
+                            })
                         }} />
                 </div>
                 <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
@@ -83,7 +85,6 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         moduleName={modInfo.name}
                         versionInfo={versionInfoForDisplay}
                         onCompleted={(data) => {
-                            console.log(data)
                             setVersionInfoForDisplay({
                                 ...versionInfoForDisplay,
                                 ...data
