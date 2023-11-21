@@ -12,15 +12,12 @@ import boxIcon from '../../../icons/box.icon'
 import { marked } from 'marked'
 import { getI18nProperty } from '../../../common/i18n-property'
 import { useTranslation } from 'react-i18next'
+import EditVersionContentDialog from './edit-version-content.dialog'
 
 export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
     const { primarySourceName } = useModSource()
     const { t, i18n } = useTranslation()
-    const [releaseNotes, setReleaseNotes] = useState(
-        HTMLReactParser(
-            marked.parse(getI18nProperty(versionInfo, 'notes', i18n.language))
-        )
-    )
+    const [versionInfoForDisplay, setVersionInfoForDisplay] = useState(versionInfo)
 
     return <CollapsibleItem
         defaultOpen={defaultOpen}
@@ -40,7 +37,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
             </>
         }
         desc={
-            !versionInfo.downloadLink?.length && t('Not yet released')
+            !versionInfoForDisplay.downloadLink?.length && t('Not yet released')
         }
         content={<>
             <div className="flex align-items:center justify-content:space-between">
@@ -62,19 +59,17 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     <EditVersionNotesDialog
                         sourceName={sourceName ?? primarySourceName}
                         moduleName={modInfo.name}
-                        versionInfo={versionInfo}
+                        versionInfo={versionInfoForDisplay}
                         onCompleted={(data) => {
-                            versionInfo.notes = data.notes
-                            setReleaseNotes(
-                                HTMLReactParser(
-                                    marked.parse(getI18nProperty(versionInfo, 'notes', i18n.language))
-                                )
-                            )
+                            versionInfoForDisplay.notes = data.notes
+                            setVersionInfoForDisplay(versionInfoForDisplay)
                         }} />
                 </div>
                 <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                     {
-                        releaseNotes
+                        HTMLReactParser(
+                            marked.parse(getI18nProperty(versionInfoForDisplay, 'notes', i18n.language))
+                        )
                     }
                 </div>
             </div>
@@ -83,22 +78,32 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     <div>
                         {t('Content')}
                     </div>
-                    <Button>{t('Edit')}</Button>
+                    <EditVersionContentDialog
+                        sourceName={sourceName ?? primarySourceName}
+                        moduleName={modInfo.name}
+                        versionInfo={versionInfoForDisplay}
+                        onCompleted={(data) => {
+                            console.log(data)
+                            setVersionInfoForDisplay({
+                                ...versionInfoForDisplay,
+                                ...data
+                            })
+                        }} />
                 </div>
                 <div className="grid grid-template-cols:max-content|4|auto gap:8">
                     <div className="grid-col:1">
                         {t('Main file')}:
                     </div>
                     <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
-                        {versionInfo.main}
+                        {versionInfoForDisplay.main}
                     </div>
                     <div className="grid-col:1">
                         {t('Config files')}:
                     </div>
                     <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
                         {
-                            !!versionInfo.configFiles?.length &&
-                            versionInfo.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
+                            !!versionInfoForDisplay.configFiles?.length &&
+                            versionInfoForDisplay.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
                         }
                     </div>
                     <div className="grid-col:1 mt:8">
@@ -106,12 +111,12 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     </div>
                     <div className="grid-col:3 mt:8 f:14 color:#CFCFCF@dark user-select:text">
                         {
-                            !!versionInfo.moduleFiles?.children?.length &&
-                            <DirectoryTreeView className="bg:#141414@dark bg:#f5f5f5@light r:3 p:8 ml:-16" folder={versionInfo.moduleFiles} />
+                            !!versionInfoForDisplay.moduleFiles?.children?.length &&
+                            <DirectoryTreeView className="bg:#141414@dark bg:#f5f5f5@light r:3 p:4 ml:-8" folder={versionInfoForDisplay.moduleFiles} />
                         }
                         {
-                            !versionInfo.moduleFiles?.children?.length &&
-                            t('Module files not loaded')
+                            !versionInfoForDisplay.moduleFiles?.children?.length &&
+                            t('Module files not imported')
                         }
                     </div>
                 </div>
@@ -122,10 +127,16 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         {t('Export compressed file')}
                     </div>
                     <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                        {t('Generates a zip file that can be imported in SokuLauncher')}
+                        {
+                            !!versionInfoForDisplay.moduleFiles?.children?.length &&
+                            t('Generates a zip file that can be imported in SokuLauncher')}
+                        {
+                            !versionInfoForDisplay.moduleFiles?.children?.length &&
+                            t('Requires import module files')
+                        }
                     </div>
                 </div>
-                <Button>{t('Export')}</Button>
+                <Button disabled={!versionInfoForDisplay.moduleFiles?.children?.length}>{t('Export')}</Button>
             </div>
             {
                 versionInfo.version !== modInfo.recommendedVersion &&
@@ -147,7 +158,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                                 refreshModInfo()
                             }
                         }
-                        disabled={!versionInfo.downloadLink?.length}>
+                        disabled={!versionInfoForDisplay.downloadLink?.length}>
                         {t('Set')}
                     </Button>
                 </div>

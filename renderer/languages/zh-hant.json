@@ -65,5 +65,13 @@
     "Do you want to delete these versions": "是否要刪除這些版本",
     "Edit Module": "編輯模組",
     "Icon": "圖示",
-    "Banner": "橫幅"
+    "Banner": "橫幅",
+    "Generating version information file...": "正在產生版本資訊檔案...",
+    "Updating version information file...": "正在更新版本資訊檔案...",
+    "Copying module files...": "正在複製版本檔案",
+    "All files": "所有檔案",
+    "Requires publish and get download link": "需先發佈並取得下載連結",
+    "Set": "設定",
+    "Module files not imported": "模組檔案未導入",
+    "Requires import module files": "需先導入模組檔案"
 }

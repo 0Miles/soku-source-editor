@@ -26,19 +26,29 @@ class Source {
             }
             clearTimeout(this.commitTimeout)
             this.commitTimeout = setTimeout(async () => {
-                try {
-                    const addAndChangeFiles = this.pendingChanges.filter(x => x.event === 'add' || x.event === 'change')
-                    const removeFiles = this.pendingChanges.filter(x => x.event === 'unlink')
-                    if (addAndChangeFiles?.length > 0) {
-                        await this.git.add(addAndChangeFiles.map(x => x.path))
+                const addAndChangeFiles = this.pendingChanges.filter(x => x.event === 'add' || x.event === 'change')
+                const removeFiles = this.pendingChanges.filter(x => x.event === 'unlink')
+                if (addAndChangeFiles?.length > 0) {
+                    for (const addAndChangeFile of addAndChangeFiles) {
+                        try {
+                            await this.git.add(addAndChangeFile.path)
+                        } catch (ex) {
+                            console.log(ex)
+                        }
                     }
-                    if (removeFiles?.length > 0) {
-                        await this.git.rm(removeFiles.map(x => x.path))
-                    }
-                    await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
-                } catch (ex) {
-                    console.error(ex)
                 }
+
+                if (removeFiles?.length > 0) {
+                    for (const removeFile of removeFiles) {
+                        try {
+                            await this.git.add(removeFile.path)
+                        } catch (ex) {
+                            console.log(ex)
+                        }
+                    }
+                }
+                
+                await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
                 this.pendingChanges = []
             }, 1000)
         })

@@ -8,21 +8,18 @@ import {
     DialogBody,
     DialogActions,
     DialogContent,
-    Input,
-    Label,
-    Textarea
+    Label
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as api from '../../../common/api'
 import Dropzone from '../../../common/dropzone'
 
-import plusIcon from '../../../icons/plus.icon'
 import DirectoryTreeView from '../../../common/directory-tree-view'
 import ComboBox from '../../../common/combo-box'
 
-export default function AddVersionDialog({ sourceName, moduleName, modVersions, onCompleted }) {
+export default function EditVersionContentDialog({ sourceName, moduleName, versionInfo, onCompleted }) {
     const { t } = useTranslation()
     const { register, handleSubmit, reset, formState } = useForm({
         mode: 'all'
@@ -33,24 +30,21 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const [doingMessage, setDoingMessage] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
 
-    const [recommendedVersionNumber, setRecommendedVersionNumber] = useState('')
     const [recommendedMainFile, setRecommendedMainFile] = useState('')
     const [selectedConfigFiles, setSelectedConfigFiles] = useState([])
 
     const [moduleFiles, setModuleFiles] = useState()
+    const [moduleFilesDirty, setModuleFilesDirty] = useState(false)
     const [moduleFilesTopLevelFilenames, setModuleFilesTopLevelFilenames] = useState([])
 
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
 
-        const lastVersionNumber = modVersions[0]?.version ?? '0.0.0'
-        const lastNum = parseInt(lastVersionNumber.match(/(\d+)([\w]*)$/)[0] ?? '0')
-        setRecommendedVersionNumber(lastVersionNumber.replace(/(\d+)([\w]*)$/, lastNum + 1 + '$2'))
-        setRecommendedMainFile(modVersions[0]?.main ?? '')
-        setSelectedConfigFiles(modVersions[0]?.configFiles ?? [])
-        setModuleFiles()
-        setModuleFilesTopLevelFilenames([])
+        setRecommendedMainFile(versionInfo.main)
+        setSelectedConfigFiles(versionInfo.configFiles)
+        setModuleFiles(versionInfo.moduleFiles)
+        setModuleFilesDirty(false)
 
         reset()
         setOpen(true)
@@ -59,19 +53,24 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const handleAddVersion = async (data) => {
         setIsDoing(true)
         try {
-            setDoingMessage(t('Generating version information file...'))
-            await api.addModVersion(sourceName, moduleName, data.version, {
+            setDoingMessage(t('Updating version information file...'))
+            await api.updateModVersion(sourceName, moduleName, versionInfo.version, {
                 ...data,
                 configFiles: selectedConfigFiles
             })
 
-            if (moduleFiles?.children) {
+            if (moduleFiles?.children && moduleFilesDirty) {
                 setDoingMessage(t('Copying module files...'))
-                await api.copyModVersionFiles(moduleFiles?.children, sourceName, moduleName, data.version)
+                await api.copyModVersionFiles(moduleFiles?.children, sourceName, moduleName, versionInfo.version)
             }
 
             setOpen(false)
-            onCompleted && onCompleted()
+            const complatedData = {
+                ...data,
+                configFiles: selectedConfigFiles,
+                moduleFiles
+            }
+            onCompleted && onCompleted(complatedData)
         }
         catch (ex) {
             setErrorMsg(ex.message)
@@ -79,9 +78,10 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         }
     }
 
-    const validateVersion = (value) => {
-        return !modVersions?.find(x => x.version === value)
-    }
+    useMemo(() => {
+        const topLevelFiles = moduleFiles?.children.filter(x => x.type === 'file').map(x => x.name) ?? []
+        setModuleFilesTopLevelFilenames(topLevelFiles)
+    }, [moduleFiles])
 
     const moduleFilesDropHandle = async (files) => {
         setIsDropFileLoading(true)
@@ -95,37 +95,26 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                 children: filesTree
             }
         }
-
-        const topLevelFiles = filesTree.children.filter(x => x.type === 'file').map(x => x.name)
-        setModuleFilesTopLevelFilenames(topLevelFiles)
+        
         setModuleFiles(filesTree)
+        setModuleFilesDirty(true)
         setIsDropFileLoading(false)
     }
 
     return <Dialog open={open}>
         <DialogTrigger>
-            <Button onClick={openDialog} icon={plusIcon}>{t('Add Version')}</Button>
+            <Button onClick={openDialog}>{t('Edit')}</Button>
         </DialogTrigger>
         <DialogSurface>
             <form onSubmit={handleSubmit(handleAddVersion)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">
-                        {t('Add Version')}
+                        v{versionInfo.version} - {t('Content')}
                     </DialogTitle>
                     <DialogContent>
                         {
                             !isDoing && !errorMsg &&
                             <div className="flex flex:col pr:8 mb:16 mt:16>label mb:8>label">
-                                <Label htmlFor="version">
-                                    {t('Version')}
-                                    <span className="color:red">*</span>
-                                </Label>
-                                <Input id="version" defaultValue={recommendedVersionNumber} {...register('version', { required: 'Version is required', validate: validateVersion })} appearance="filled-darker" placeholder={recommendedVersionNumber} />
-                                <Label htmlFor="notes">
-                                    {t('Release Notes')}
-                                </Label>
-                                <Textarea id="notes" {...register('notes')} resize="vertical" appearance="filled-darker" />
-
                                 <Label htmlFor="notes">
                                     {t('Module files')}
                                 </Label>
@@ -151,7 +140,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     }
                                 </Dropzone>
 
-                                
+
                                 <Label htmlFor="main">
                                     {t('Main file')}
                                     <span className="color:red">*</span>
@@ -204,7 +193,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                         {
                             !isDoing && !errorMsg &&
                             <>
-                                <Button as="button" type="submit" appearance="primary" disabled={!formState.isValid}>{t('Add')}</Button>
+                                <Button as="button" type="submit" appearance="primary" disabled={!formState.isValid}>{t('Edit')}</Button>
                                 <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
                             </>
                         }

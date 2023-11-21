@@ -36,6 +36,7 @@ export default function EditVersionNotesDialog({ sourceName, moduleName, version
     const handleAddVersion = async (data) => {
         setIsDoing(true)
         try {
+            setDoingMessage(t('Updating version information file...'))
             await api.updateModVersion(sourceName, moduleName, versionInfo.version, data)
 
             setOpen(false)
