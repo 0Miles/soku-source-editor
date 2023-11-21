@@ -64,6 +64,8 @@ ipcMain.handle('patch', async (_, message) => {
         switch (message[0]) {
             case 'mod':
                 return await modManager.getSource(message[1]).getModule(message[2]).update(message[3])
+            case 'modVersion':
+                return await modManager.getSource(message[1]).getModule(message[2]).getVersion(message[3]).update(message[4])
         }
     }
 })

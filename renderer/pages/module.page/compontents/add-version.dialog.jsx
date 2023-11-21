@@ -24,7 +24,7 @@ import ComboBox from '../../../common/combo-box'
 
 export default function AddVersionDialog({ sourceName, moduleName, modVersions, onCompleted }) {
     const { t } = useTranslation()
-    const { register, handleSubmit, reset, formState, setValue } = useForm({
+    const { register, handleSubmit, reset, formState } = useForm({
         mode: 'all'
     })
     const [open, setOpen] = useState(false)

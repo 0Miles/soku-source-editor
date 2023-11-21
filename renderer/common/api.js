@@ -15,7 +15,7 @@ export const getSources = async () => {
 }
 
 export const cloneModSource = async (url, customName) => {
-    return  await ipcRenderer.invoke('post', ['cloneModSource', url, customName])
+    return await ipcRenderer.invoke('post', ['cloneModSource', url, customName])
 }
 
 export const gitSync = async (sourceName, sourceBranch) => {
@@ -58,8 +58,12 @@ export const addMod = async (sourceName, modName, modInfo) => {
     delete modInfo.icon
     delete modInfo.banner
     await ipcRenderer.invoke('post', ['mod', sourceName, modName, modInfo])
-    await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
-    await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
+    if (modIcon) {
+        await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
+    }
+    if (modbanner) {
+        await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
+    }
 }
 
 export const updateMod = async (sourceName, modName, modInfo) => {
@@ -68,12 +72,20 @@ export const updateMod = async (sourceName, modName, modInfo) => {
     delete modInfo.icon
     delete modInfo.banner
     await ipcRenderer.invoke('patch', ['mod', sourceName, modName, modInfo])
-    await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
-    await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
+    if (modIcon) {
+        await ipcRenderer.invoke('post', ['copyModIconFile', sourceName, modName, modIcon])
+    }
+    if (modbanner) {
+        await ipcRenderer.invoke('post', ['copyModBannerFile', sourceName, modName, modbanner])
+    }
 }
 
 export const addModVersion = async (sourceName, modName, version, versionInfo) => {
     return await ipcRenderer.invoke('post', ['modVersion', sourceName, modName, version, versionInfo])
+}
+
+export const updateModVersion = async (sourceName, modName, version, versionInfo) => {
+    return await ipcRenderer.invoke('patch', ['modVersion', sourceName, modName, version, versionInfo])
 }
 
 export const copyModVersionFiles = async (files, sourceName, modName, version) => {
