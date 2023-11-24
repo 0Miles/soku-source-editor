@@ -5,7 +5,7 @@ export default function Dropzone({ className, children, onDrop, onClick }) {
 
     return <>
         <div
-            className={className}
+            className={`${className} rel`}
             onClick={onClick}
             onDragOver={(event) => { event.preventDefault() }}
             onDrop={
@@ -21,8 +21,12 @@ export default function Dropzone({ className, children, onDrop, onClick }) {
                 }
             }
             onDragEnter={(event) => { event.preventDefault(); setIsDragActive(true) }}
-            onDragLeave={(event) => { event.preventDefault(); setIsDragActive(false) }} >
+             >
             {children({ isDragActive })}
+            {
+                isDragActive &&
+                <div className="abs inset:0" onDragLeaveCapture={(event) => { event.preventDefault(); setIsDragActive(false) }}></div>
+            }
         </div>
     </>
 }

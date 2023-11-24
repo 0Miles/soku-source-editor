@@ -134,7 +134,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     onDrop={moduleFilesDropHandle}>
                                     {
                                         ({ isDragActive }) =>
-                                            <div className={`${isDragActive ? 'b:2 bg:gray/.2!' : ''} ~border-color|.3s,background-color|.3s bg:#141414@dark bg:#f5f5f5@light b:0|dashed|gray r:3 flex justify-content:center align-items:center rel overflow:clip`}>
+                                            <div tabIndex={0} className={`${isDragActive ? 'b:2 bg:gray/.2!' : ''} ~border-color|.3s,background-color|.3s bg:#141414@dark bg:#f5f5f5@light b:0|dashed|gray r:3 flex justify-content:center align-items:center rel overflow:clip`}>
                                                 {
                                                     isDropFileLoading && <Spinner className="abs top:0 my:8 @transition-down|.3s" size="tiny" />
                                                 }
