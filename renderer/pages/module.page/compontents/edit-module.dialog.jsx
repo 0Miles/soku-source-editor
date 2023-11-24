@@ -77,7 +77,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                             {t('Icon')}
                                         </Label>
                                         <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
-                                            <ImagePicker id="icon" className="abs block w:full h:full" onChange={(value) => setIconUrl(value)} />
+                                            <ImagePicker id="icon" defaultValue={iconUrl} className="abs block w:full h:full" onChange={(value) => setIconUrl(value)} />
                                             <div className="abs pointer-events:none z:-1">
                                                 {gearIcon}
                                             </div>
@@ -87,7 +87,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                         <Label htmlFor="banner">
                                             {t('Banner')}
                                         </Label>
-                                        <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" onChange={(value) => setBannerUrl(value)} />
+                                        <ImagePicker id="banner" defaultValue={bannerUrl} className="block bg:gray/.2 h:120 overflow:clip mt:8" onChange={(value) => setBannerUrl(value)} />
                                     </div>
                                 </div>
 
