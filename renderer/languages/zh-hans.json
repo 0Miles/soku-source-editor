@@ -60,6 +60,7 @@
     "Version": "版本",
     "Module files": "模组档案",
     "Drag and drop module directory or files here": "拖放模组资料夹或档案至此",
+    "Set as recommended version": "设置为推荐版本",
     "Delete version": "删除版本",
     "Do you want to delete these versions": "是否要删除这些版本",
     "Edit Module": "编辑模组",
@@ -74,5 +75,8 @@
     "Module files not imported": "模组档案未導入",
     "Requires import module files": "需先导入模组档案",
     "Download links": "下载连结",
-    "No download link has been released yet": "尚未发布任何下载连结"
+    "No download link has been released yet": "尚未发布任何下载连结",
+    "Add custom link": "新增自订连结",
+    "Invalid URL": "不合法的URL",
+    "The same URL has been added": "已加入过相同的URL"
 }

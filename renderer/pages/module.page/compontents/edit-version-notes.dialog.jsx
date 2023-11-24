@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+
 import * as api from '../../../common/api'
 
 export default function EditVersionNotesDialog({ sourceName, moduleName, versionInfo, onCompleted }) {
@@ -33,7 +34,7 @@ export default function EditVersionNotesDialog({ sourceName, moduleName, version
         setOpen(true)
     }
 
-    const handleAddVersion = async (data) => {
+    const handleSubmitAction = async (data) => {
         setIsDoing(true)
         try {
             setDoingMessage(t('Updating version information file...'))
@@ -53,7 +54,7 @@ export default function EditVersionNotesDialog({ sourceName, moduleName, version
             <Button onClick={openDialog}>{t('Edit')}</Button>
         </DialogTrigger>
         <DialogSurface>
-            <form onSubmit={handleSubmit(handleAddVersion)}>
+            <form onSubmit={handleSubmit(handleSubmitAction)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">
                         v{versionInfo.version} - {t('Release Notes')}

@@ -15,10 +15,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import * as api from '../../../common/api'
-import Dropzone from '../../../common/dropzone'
 
 import plusIcon from '../../../icons/plus.icon'
+
+import * as api from '../../../common/api'
+import Dropzone from '../../../common/dropzone'
 import DirectoryTreeView from '../../../common/directory-tree-view'
 import ComboBox from '../../../common/combo-box'
 
@@ -56,7 +57,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setOpen(true)
     }
 
-    const handleAddVersion = async (data) => {
+    const handleSubmitAction = async (data) => {
         setIsDoing(true)
         try {
             setDoingMessage(t('Generating version information file...'))
@@ -107,7 +108,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
             <Button onClick={openDialog} icon={plusIcon}>{t('Add Version')}</Button>
         </DialogTrigger>
         <DialogSurface>
-            <form onSubmit={handleSubmit(handleAddVersion)}>
+            <form onSubmit={handleSubmit(handleSubmitAction)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">
                         {t('Add Version')}

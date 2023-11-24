@@ -13,12 +13,13 @@ import {
     SpinButton
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import * as api from '../../../common/api'
 
 import pencilIcon from '../../../icons/pencil.icon'
 import gearIcon from '../../../icons/gear.icon'
+
+import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
 
 export default function EditModuleDialog({ className, sourceName, modInfo, onCompleted, TriggerButton }) {
@@ -44,7 +45,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         setOpen(true)
     }
 
-    const handleRegistration = async (data) => {
+    const handleSubmitAction = async (data) => {
         setIsDoing(true)
         try {
             data.icon = iconUrl
@@ -64,7 +65,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         <Button className={className} onClick={openDialog} icon={pencilIcon}></Button>
 
         <DialogSurface>
-            <form onSubmit={handleSubmit(handleRegistration, handleError)}>
+            <form onSubmit={handleSubmit(handleSubmitAction, handleError)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">{t('Edit Module')} - {modInfo.name}</DialogTitle>
                     <DialogContent>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import {
     Button
 } from '@fluentui/react-components'
@@ -10,13 +10,13 @@ import DirectoryTreeView from '../../../common/directory-tree-view'
 import HTMLReactParser from 'html-react-parser'
 
 import boxIcon from '../../../icons/box.icon'
-import githubIcon from '../../../icons/github.icon'
-import linkIcon from '../../../icons/link.icon'
 
 import { marked } from 'marked'
 import { getI18nProperty } from '../../../common/i18n-property'
 import { useTranslation } from 'react-i18next'
 import EditVersionContentDialog from './edit-version-content.dialog'
+import EditVersionDownloadLinksDialog from './edit-version-download-links.dialog'
+import VersionDownloadLink from './version-download-link'
 
 export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
     const { primarySourceName } = useModSource()
@@ -45,7 +45,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
         }
         content={<>
             {
-                !versionInfo.downloadLinks?.find(x => x.type === 'github') &&                
+                !versionInfoForDisplay.downloadLinks?.find(x => x.type === 'github') &&
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">
                         <div>
@@ -66,33 +66,28 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         </div>
                         <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                             {
-                                !versionInfo.downloadLinks?.length &&
+                                !versionInfoForDisplay.downloadLinks?.length &&
                                 t('No download link has been released yet')
                             }
                         </div>
                     </div>
-                    <Button>{t('Edit')}</Button>
+                    <EditVersionDownloadLinksDialog
+                        sourceName={sourceName ?? primarySourceName}
+                        moduleName={modInfo.name}
+                        versionInfo={versionInfoForDisplay}
+                        onCompleted={(data) => {
+                            setVersionInfoForDisplay({
+                                ...versionInfoForDisplay,
+                                ...data
+                            })
+                        }} />
                 </div>
                 {
-                    !!versionInfo.downloadLinks?.length &&
-                    <div className="mt:16 my:4>div">
+                    !!versionInfoForDisplay.downloadLinks?.length &&
+                    <div className="mt:16">
                         {
-                            versionInfo.downloadLinks?.map(
-                                (downloadLink, i) => <div key={i} className="flex bg:#141414@dark bg:#f5f5f5@light p:8 r:3 align-items:center">
-                                    <div className="mr:8 mt:4">
-                                        {
-                                            downloadLink.type === 'github' && githubIcon
-                                        }
-                                        {
-                                            downloadLink.type === 'other' && linkIcon
-                                        }
-                                    </div>
-                                    <div className="white-space:nowrap overflow:clip text-overflow:ellipsis f:white>a@dark f:#242424>a@light">
-                                        <a href={downloadLink.url} alt={downloadLink.url}>
-                                            {downloadLink.url}
-                                        </a>
-                                    </div>
-                                </div>
+                            versionInfoForDisplay.downloadLinks?.map(
+                                (downloadLink, i) => <VersionDownloadLink key={i} downloadLink={downloadLink} />
                             )
                         }
                     </div>
@@ -194,7 +189,10 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                             {t('Set as recommended version')}
                         </div>
                         <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                            {t(`Requires publish and get download link`)}
+                            {
+                                !versionInfoForDisplay.downloadLinks?.length &&
+                                t(`Requires publish and get download link`)
+                            }
                         </div>
                     </div>
                     <Button

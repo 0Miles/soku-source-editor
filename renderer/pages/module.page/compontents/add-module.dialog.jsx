@@ -15,10 +15,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import * as api from '../../../common/api'
 
 import plusIcon from '../../../icons/plus.icon'
 import gearIcon from '../../../icons/gear.icon'
+
+import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
 
 export default function AddModuleDialog({ sourceName, sourceMods, onCompleted }) {
@@ -41,7 +42,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         setOpen(true)
     }
 
-    const handleRegistration = async (data) => {
+    const handleSubmitAction = async (data) => {
         setIsDoing(true)
         try {
             data.icon = iconUrl
@@ -67,7 +68,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
             <Button onClick={openDialog} icon={plusIcon}>{t('Add Module')}</Button>
         </DialogTrigger>
         <DialogSurface>
-            <form onSubmit={handleSubmit(handleRegistration, handleError)}>
+            <form onSubmit={handleSubmit(handleSubmitAction, handleError)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">{t('Add Module')}</DialogTitle>
                     <DialogContent>

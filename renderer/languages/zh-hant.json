@@ -75,5 +75,8 @@
     "Module files not imported": "模組檔案未導入",
     "Requires import module files": "需先導入模組檔案",
     "Download links": "下載連結",
-    "No download link has been released yet": "尚未發佈任何下載連結"
+    "No download link has been released yet": "尚未發佈任何下載連結",
+    "Add custom link": "新增自訂連結",
+    "Invalid URL": "不合法的URL",
+    "The same URL has been added": "已加入過相同的 URL"
 }
