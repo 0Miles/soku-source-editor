@@ -73,5 +73,7 @@
     "Requires publish and get download link": "需先發佈並取得下載連結",
     "Set": "設定",
     "Module files not imported": "模組檔案未導入",
-    "Requires import module files": "需先導入模組檔案"
+    "Requires import module files": "需先導入模組檔案",
+    "Download links": "下載連結",
+    "No download link has been released yet": "尚未發佈任何下載連結"
 }

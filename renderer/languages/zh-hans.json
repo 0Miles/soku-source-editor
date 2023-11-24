@@ -72,5 +72,7 @@
     "Requires publish and get download link": "需先发布并取得下载连结",
     "Set": "设定",
     "Module files not imported": "模组档案未導入",
-    "Requires import module files": "需先导入模组档案"
+    "Requires import module files": "需先导入模组档案",
+    "Download links": "下载连结",
+    "No download link has been released yet": "尚未发布任何下载连结"
 }

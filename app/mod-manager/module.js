@@ -86,7 +86,7 @@ class Module {
         }
 
         if (this.element.info.recommendedVersion && this.element.info.recommendedVersion === versionNum) {
-            const newRecommendedVersion = this.versions.find(x => x.element.info?.downloadLink?.length)
+            const newRecommendedVersion = this.versions.find(x => x.element.info?.downloadLinks?.length)
             if (newRecommendedVersion) {
                 this.element.updateInfo({
                     recommendedVersion: newRecommendedVersion.element.info.version ?? ''

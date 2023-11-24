@@ -8,7 +8,11 @@ import CollapsibleItem from '../../../common/collapsible-item'
 import EditVersionNotesDialog from './edit-version-notes.dialog'
 import DirectoryTreeView from '../../../common/directory-tree-view'
 import HTMLReactParser from 'html-react-parser'
+
 import boxIcon from '../../../icons/box.icon'
+import githubIcon from '../../../icons/github.icon'
+import linkIcon from '../../../icons/link.icon'
+
 import { marked } from 'marked'
 import { getI18nProperty } from '../../../common/i18n-property'
 import { useTranslation } from 'react-i18next'
@@ -37,19 +41,62 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
             </>
         }
         desc={
-            !versionInfoForDisplay.downloadLink?.length && t('Not yet released')
+            !versionInfoForDisplay.downloadLinks?.length && t('Not yet released')
         }
         content={<>
-            <div className="flex align-items:center justify-content:space-between">
-                <div className="mr:16 my:2>div">
-                    <div>
-                        {t('Release on Github')}
+            {
+                !versionInfo.downloadLinks?.find(x => x.type === 'github') &&                
+                <div className="flex align-items:center justify-content:space-between">
+                    <div className="mr:16 my:2>div">
+                        <div>
+                            {t('Release on Github')}
+                        </div>
+                        <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                            {t(`Requires logging in and setting up the module's Github Repository`)}
+                        </div>
                     </div>
-                    <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                        {t(`Requires logging in and setting up the module's Github Repository`)}
-                    </div>
+                    <Button disabled>{t('Release')}</Button>
                 </div>
-                <Button disabled>{t('Release')}</Button>
+            }
+            <div>
+                <div className="flex align-items:center justify-content:space-between">
+                    <div className="mr:16 my:2>div">
+                        <div>
+                            {t('Download links')}
+                        </div>
+                        <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                            {
+                                !versionInfo.downloadLinks?.length &&
+                                t('No download link has been released yet')
+                            }
+                        </div>
+                    </div>
+                    <Button>{t('Edit')}</Button>
+                </div>
+                {
+                    !!versionInfo.downloadLinks?.length &&
+                    <div className="mt:16 my:4>div">
+                        {
+                            versionInfo.downloadLinks?.map(
+                                (downloadLink, i) => <div key={i} className="flex bg:#141414@dark bg:#f5f5f5@light p:8 r:3 align-items:center">
+                                    <div className="mr:8 mt:4">
+                                        {
+                                            downloadLink.type === 'github' && githubIcon
+                                        }
+                                        {
+                                            downloadLink.type === 'other' && linkIcon
+                                        }
+                                    </div>
+                                    <div className="white-space:nowrap overflow:clip text-overflow:ellipsis f:white>a@dark f:#242424>a@light">
+                                        <a href={downloadLink.url} alt={downloadLink.url}>
+                                            {downloadLink.url}
+                                        </a>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+                }
             </div>
             <div>
                 <div className="flex align-items:center justify-content:space-between mb:16">
@@ -159,7 +206,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                                 refreshModInfo()
                             }
                         }
-                        disabled={!versionInfoForDisplay.downloadLink?.length}>
+                        disabled={!versionInfoForDisplay.downloadLinks?.length}>
                         {t('Set')}
                     </Button>
                 </div>

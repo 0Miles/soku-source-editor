@@ -7,27 +7,21 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PageContainer from '../../templates/page-container'
 
-import plusIcon from '../../icons/plus.icon'
-import pencilIcon from '../../icons/pencil.icon'
 import trashIcon from '../../icons/trash.icon'
 import gearIcon from '../../icons/gear.icon'
-import boxIcon from '../../icons/box.icon'
 import chevronUpIcon from '../../icons/chevron-up.icon'
 import chevronDownIcon from '../../icons/chevron-down.icon'
+import githubIcon from '../../icons/github.icon'
 
 import * as api from '../../common/api'
-import CollapsibleItem from '../../common/collapsible-item'
-import HTMLReactParser from 'html-react-parser'
 import { Marked, Renderer } from 'marked'
-import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
+import I18nProperty from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useModSource } from '../../contexts/mod-source'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 import AddVersionDialog from './compontents/add-version.dialog'
-import DirectoryTreeView from '../../common/directory-tree-view'
 import EditModuleDialog from './compontents/edit-module.dialog'
 import { nanoid } from 'nanoid'
-import EditVersionNotesDialog from './compontents/edit-version-notes.dialog'
 import VersionListItem from './compontents/version.list-item'
 
 const renderer = new Renderer()
@@ -181,10 +175,7 @@ export default function ModuleInfoPage() {
                                     !!modInfo.repository?.length &&
                                     modInfo.repository.map((repo, i) => <div key={i} className="flex align-items:center p:8">
                                         <div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
-                                            </svg>
+                                            {githubIcon}
                                         </div>
                                         <div className="ml:8">
                                             {repo.owner}/{repo.repo}
@@ -219,7 +210,7 @@ export default function ModuleInfoPage() {
                         (versionInfo, selectMode, index) => {
                             
                             return <VersionListItem
-                                defaultOpen={index === 0 && !versionInfo.downloadLink?.length}
+                                defaultOpen={index === 0 && !versionInfo.downloadLinks?.length}
                                 allowOpen={!selectMode}
                                 className={`w:full`}
                                 sourceName={sourceName ?? primarySourceName}
