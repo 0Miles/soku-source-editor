@@ -78,5 +78,7 @@
     "No download link has been released yet": "尚未發佈任何下載連結",
     "Add custom link": "新增自訂連結",
     "Invalid URL": "不合法的URL",
-    "The same URL has been added": "已加入過相同的 URL"
+    "The same URL has been added": "已加入過相同的 URL",
+    "Invalid input": "不合法的輸入",
+    "The same value has been added": "已加入過相同的值"
 }

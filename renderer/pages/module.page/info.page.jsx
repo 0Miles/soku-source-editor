@@ -23,6 +23,7 @@ import AddVersionDialog from './compontents/add-version.dialog'
 import EditModuleDialog from './compontents/edit-module.dialog'
 import { nanoid } from 'nanoid'
 import VersionListItem from './compontents/version.list-item'
+import RepoItem from './compontents/repo-item'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -172,18 +173,11 @@ export default function ModuleInfoPage() {
                             </div>
                             <div className="my:6 flex flex-wrap:wrap">
                                 {
-                                    !!modInfo.repository?.length &&
-                                    modInfo.repository.map((repo, i) => <div key={i} className="flex align-items:center p:8">
-                                        <div>
-                                            {githubIcon}
-                                        </div>
-                                        <div className="ml:8">
-                                            {repo.owner}/{repo.repo}
-                                        </div>
-                                    </div>)
+                                    !!modInfo.repositories?.length &&
+                                    modInfo.repositories.map((repo, i) => <RepoItem key={i} className="flex align-items:center p:8 r:3 bg:#141414@dark bg:#f5f5f5@light mr:8" repo={repo} />)
                                 }
                                 {
-                                    !modInfo.repository?.length &&
+                                    !modInfo.repositories?.length &&
                                     <div>
                                         {t('No repository configured')}
                                     </div>
@@ -208,7 +202,6 @@ export default function ModuleInfoPage() {
                     items={versions}
                     itemTemplate={
                         (versionInfo, selectMode, index) => {
-                            
                             return <VersionListItem
                                 defaultOpen={index === 0 && !versionInfo.downloadLinks?.length}
                                 allowOpen={!selectMode}

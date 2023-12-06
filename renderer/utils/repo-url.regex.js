@@ -1,0 +1,1 @@
+export default new RegExp(/https:\/\/(github|gitee)\.com\/([^/]*)\/([^/]+?)(?:\.git)?$/)

@@ -56,6 +56,10 @@ export default function EditVersionDownloadLinksDialog({ sourceName, moduleName,
             type = 'github'
         }
 
+        if (customLink.match(/^https?:\/\/gitee\.com\//)) {
+            type = 'gitee'
+        }
+
         downloadLinks.push({
             type,
             url: customLink

@@ -1,3 +1,4 @@
+import giteeIcon from '../../../icons/gitee.icon'
 import githubIcon from '../../../icons/github.icon'
 import linkIcon from '../../../icons/link.icon'
 
@@ -6,6 +7,9 @@ export default function VersionDownloadLink({downloadLink, className}) {
         <div className="mr:8 inline-flex">
             {
                 downloadLink.type === 'github' && githubIcon
+            }
+            {
+                downloadLink.type === 'gitee' && giteeIcon
             }
             {
                 downloadLink.type === 'other' && linkIcon

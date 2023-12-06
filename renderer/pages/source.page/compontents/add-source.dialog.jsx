@@ -16,6 +16,7 @@ import { useState } from 'react'
 
 import plusIcon from '../../../icons/plus.icon'
 import { useModSource } from '../../../contexts/mod-source'
+import repoUrlRegex from '../../../utils/repo-url.regex'
 
 export default function AddSourceDialog() {
     const { t } = useTranslation()
@@ -62,11 +63,10 @@ export default function AddSourceDialog() {
         }
     }
 
-    const validationGithubRepoUrl = (value) => {
-        const match = value.match(/https:\/\/github\.com\/([^/]*)\/([^/]+?)(?:\.git)?\/?$/)
+    const validationRepoUrl = (value) => {
+        const match = value.match(repoUrlRegex)
         if (match) {
-            setRecommendedName(getRecommendedName(match[2]))
-
+            setRecommendedName(getRecommendedName(match[3]))
         }
         setValidRepoUrl(!!match)
     }
@@ -88,7 +88,7 @@ export default function AddSourceDialog() {
                                 {t('Repository URL')}
                                 <span className="color:red">*</span>
                             </Label>
-                            <Input id="repoUrl" onChange={(_, data) => { setSourceUrl(data.value); validationGithubRepoUrl(data.value) }} appearance="filled-darker" placeholder="https://github.com/{owner}/{repo}.git" />
+                            <Input id="repoUrl" onChange={(_, data) => { setSourceUrl(data.value); validationRepoUrl(data.value) }} appearance="filled-darker" placeholder="https://github.com/{owner}/{repo}.git" />
 
                             <Label htmlFor="customName">
                                 {t('Name')}

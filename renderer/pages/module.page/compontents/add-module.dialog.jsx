@@ -18,9 +18,16 @@ import { useForm } from 'react-hook-form'
 
 import plusIcon from '../../../icons/plus.icon'
 import gearIcon from '../../../icons/gear.icon'
+import linkIcon from '../../../icons/link.icon'
 
 import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
+import repoUrlRegex from '../../../utils/repo-url.regex'
+import githubIcon from '../../../icons/github.icon'
+import giteeIcon from '../../../icons/gitee.icon'
+import RepoItem from './repo-item'
+import trashIcon from '../../../icons/trash.icon'
+import MultipleItemInput from '../../../common/multiple-item.input'
 
 export default function AddModuleDialog({ sourceName, sourceMods, onCompleted }) {
     const { t } = useTranslation()
@@ -47,6 +54,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         try {
             data.icon = iconUrl
             data.banner = bannerUrl
+            data.repositories = repositories
             await api.addMod(sourceName, data.name, data)
             setOpen(false)
             onCompleted && onCompleted()
@@ -62,8 +70,20 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         return !sourceMods?.find(x => x.name === value)
     }
 
+    const [repositories, setRepositories] = useState([])
+    const repositoryInputOnChange = (repoUrls) => {
+        setRepositories(repoUrls.map(repoUrl => {
+            const match = repoUrl.match(repoUrlRegex)
+            return {
+                type: match[1],
+                owner: match[2],
+                repo: match[3]
+            }
+        }))
+    }
+
     return <Dialog open={open}>
-        
+
         <DialogTrigger>
             <Button onClick={openDialog} icon={plusIcon}>{t('Add Module')}</Button>
         </DialogTrigger>
@@ -75,25 +95,25 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
                         {
                             !isDoing && !errorMsg &&
                             <div className="flex flex:col pr:8 mb:16 mt:16>label mb:8>label">
-                                    <div className="flex mt:16">
-                                        <div className="mr:16">
-                                            <Label htmlFor="icon">
-                                                {t('Icon')}
-                                            </Label>
-                                            <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
-                                                <ImagePicker id="icon" className="abs block w:full h:full" onChange={(value) => setIconUrl(value)} />
-                                                <div className="abs pointer-events:none z:-1">
-                                                    {gearIcon}
-                                                </div>
+                                <div className="flex mt:16">
+                                    <div className="mr:16">
+                                        <Label htmlFor="icon">
+                                            {t('Icon')}
+                                        </Label>
+                                        <div className="rel flex justify-content:center align-items:center bg:gray/.2 aspect-ratio:1/1 w:120 overflow:clip mt:8">
+                                            <ImagePicker id="icon" className="abs block w:full h:full" onChange={(value) => setIconUrl(value)} />
+                                            <div className="abs pointer-events:none z:-1">
+                                                {gearIcon}
                                             </div>
                                         </div>
-                                        <div className="flex:1">
-                                            <Label htmlFor="banner">
-                                                {t('Banner')}
-                                            </Label>
-                                            <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" onChange={(value) => setBannerUrl(value)} />
-                                        </div>
                                     </div>
+                                    <div className="flex:1">
+                                        <Label htmlFor="banner">
+                                            {t('Banner')}
+                                        </Label>
+                                        <ImagePicker id="banner" className="block bg:gray/.2 h:120 overflow:clip mt:8" onChange={(value) => setBannerUrl(value)} />
+                                    </div>
+                                </div>
                                 <Label htmlFor="name">
                                     {t('Name')}
                                     <span className="color:red">*</span>
@@ -120,6 +140,24 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
                                 </Label>
                                 <SpinButton id="priority" defaultValue={0} min={-100} max={100} {...register('priority')} appearance="filled-darker" />
 
+                                <Label>
+                                    {t('Repository')}
+                                </Label>
+                                <MultipleItemInput
+                                    placeholder={'https://github.com/{owner}/{repo}'}
+                                    itemTemplate={
+                                        (repoUrl) => {
+                                            const match = repoUrl.match(repoUrlRegex)
+                                            const repo = {
+                                                type: match[1],
+                                                owner: match[2],
+                                                repo: match[3]
+                                            }
+                                            return <RepoItem className="flex flex:1 w:0 mr:8 p:8 r:3 bg:#141414@dark bg:#f5f5f5@light align-items:center" repo={repo} />
+                                        }
+                                    }
+                                    matchRegex={repoUrlRegex}
+                                    onChange={repositoryInputOnChange} />
 
                             </div>
                         }

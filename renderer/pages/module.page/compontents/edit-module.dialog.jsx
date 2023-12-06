@@ -21,6 +21,9 @@ import gearIcon from '../../../icons/gear.icon'
 
 import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
+import MultipleItemInput from '../../../common/multiple-item.input'
+import RepoItem from './repo-item'
+import repoUrlRegex from '../../../utils/repo-url.regex'
 
 export default function EditModuleDialog({ className, sourceName, modInfo, onCompleted, TriggerButton }) {
     const { t } = useTranslation()
@@ -33,6 +36,8 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
 
     const [iconUrl, setIconUrl] = useState(false)
     const [bannerUrl, setBannerUrl] = useState(false)
+    const [repoUrls, setRepoUrls] = useState([])
+    const [repositories, setRepositories] = useState([])
 
     const openDialog = () => {
         setErrorMsg('')
@@ -40,7 +45,8 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         reset()
         setIconUrl(modInfo.icon)
         setBannerUrl(modInfo.banner)
-
+        setRepoUrls(modInfo.repositories?.map(x => `https://${x.type}.com/${x.owner}/${x.repo}`) ?? [])
+        setRepositories(modInfo.repositories ?? [])
 
         setOpen(true)
     }
@@ -50,6 +56,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         try {
             data.icon = iconUrl
             data.banner = bannerUrl
+            data.repositories = repositories
             await api.updateMod(sourceName, modInfo.name, data)
             setOpen(false)
             onCompleted && onCompleted()
@@ -60,6 +67,17 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         }
     }
     const handleError = (errors) => console.error(errors)
+
+    const repositoryInputOnChange = (repoUrls) => {
+        setRepositories(repoUrls.map(repoUrl => {
+            const match = repoUrl.match(repoUrlRegex)
+            return {
+                type: match[1],
+                owner: match[2],
+                repo: match[3]
+            }
+        }))
+    }
 
     return <Dialog open={open}>
         <Button className={className} onClick={openDialog} icon={pencilIcon}></Button>
@@ -107,6 +125,25 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                 </Label>
                                 <SpinButton id="priority" defaultValue={modInfo.priority} min={-100} max={100} {...register('priority')} appearance="filled-darker" />
 
+                                <Label>
+                                    {t('Repository')}
+                                </Label>
+                                <MultipleItemInput
+                                    defaultItems={repoUrls}
+                                    placeholder={'https://github.com/{owner}/{repo}'}
+                                    itemTemplate={
+                                        (repoUrl) => {
+                                            const match = repoUrl.match(repoUrlRegex)
+                                            const repo = {
+                                                type: match[1],
+                                                owner: match[2],
+                                                repo: match[3]
+                                            }
+                                            return <RepoItem className="flex flex:1 w:0 mr:8 p:8 r:3 bg:#141414@dark bg:#f5f5f5@light align-items:center" repo={repo} />
+                                        }
+                                    }
+                                    matchRegex={repoUrlRegex}
+                                    onChange={repositoryInputOnChange} />
 
                             </div>
                         }
