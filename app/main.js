@@ -44,7 +44,7 @@ ipcMain.handle('post', async (_, message) => {
             case 'cloneModSource':
                 return await modManager.addSource(message[1], message[2])
             case 'sync':
-                modManager.getSource(message[1]).sync()
+                await modManager.getSource(message[1]).sync()
                 return JSON.parse(JSON.stringify(modManager.getSource(message[1]).status))
             case 'fetch':
                 await modManager.getSource(message[1]).fetchStatus()
