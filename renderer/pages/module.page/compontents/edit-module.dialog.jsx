@@ -139,7 +139,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                                 owner: match[2],
                                                 repo: match[3]
                                             }
-                                            return <RepoItem className="flex flex:1 w:0 mr:8 p:8 r:3 bg:#141414@dark bg:#f5f5f5@light align-items:center" repo={repo} />
+                                            return <RepoItem className="flex flex:1 w:0 mr:8 align-items:center" repo={repo} />
                                         }
                                     }
                                     matchRegex={repoUrlRegex}
