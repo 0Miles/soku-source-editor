@@ -10,11 +10,12 @@ class Source {
         this.sourceName = sourceName
         this.pendingChanges = []
         this.init()
+        this.watch()
     }
 
     async watch() {
         await this.stopWatching()
-        this.watcher = chokidar.watch(this.dirname, {
+        this.watcher = chokidar.watch(path.join(this.dirname, 'modules'), {
             ignored: /[\/\\]\./,
             persistent: true,
             ignoreInitial: true
@@ -50,6 +51,7 @@ class Source {
                 
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
                 this.pendingChanges = []
+                await this.checkAndUpdateSourceModulesJson()
             }, 1000)
         })
     }
@@ -69,7 +71,6 @@ class Source {
         this.git = simpleGit(this.dirname)
         this.element = new DirectoryJsonElement(this.dirname, 'soku-mod-source.json')
         this.refreshModules()
-        this.watch()
     }
 
     getData() {
@@ -80,23 +81,39 @@ class Source {
         }
     }
 
+    async checkAndUpdateSourceModulesJson() {
+        this.refreshModules()
+        const modulesJsonString = JSON.stringify(this.modules.map(x => x.moduleName))
+
+        const modulesJsonFilename = path.join(this.dirname, 'modules.json')
+        let oldJsonString = ''
+        if (fs.existsSync(modulesJsonFilename)) {
+            oldJsonString = fs.readFileSync(modulesJsonFilename, { encoding: 'utf-8'})
+        }
+        if (modulesJsonString != oldJsonString) {
+            fs.writeFileSync(modulesJsonFilename, modulesJsonString, { encoding: 'utf-8'})
+            await this.git.add(modulesJsonFilename)
+            await this.git.commit('Update modules.json')
+        }
+    }
+
     refreshModules() {
         const modulesDir = path.join(this.dirname, 'modules')
-        if (fs.existsSync(modulesDir)) {
-            const dirContents = fs.readdirSync(modulesDir, { encoding: 'utf-8' })
-            this.modules = dirContents
-                .map(dirContent => {
-                    const stat = fs.statSync(path.join(modulesDir, dirContent))
-                    if (stat.isDirectory()) {
-                        return new Module(this.sourceName, dirContent)
-                    }
-                    return null
-                })
-                .filter(x => x && x.element.info)
-                .sort((a, b) => b.element.modifiedAt - a.element.modifiedAt)
-        } else {
-            this.modules = []
+        if (!fs.existsSync(modulesDir)) {
+            fs.mkdirSync(modulesDir)
         }
+
+        const dirContents = fs.readdirSync(modulesDir, { encoding: 'utf-8' })
+        this.modules = dirContents
+            .map(dirContent => {
+                const stat = fs.statSync(path.join(modulesDir, dirContent))
+                if (stat.isDirectory()) {
+                    return new Module(this.sourceName, dirContent)
+                }
+                return null
+            })
+            .filter(x => x && x.element.info)
+            .sort((a, b) => b.element.modifiedAt - a.element.modifiedAt)
     }
 
     getModule(moduleName) {
@@ -138,6 +155,7 @@ class Source {
         await this.pullAndMerge(branch)
         await this.git.push('origin', branch)
         await this.refreshGitStatus()
+        this.refreshModules()
     }
 
     async fetchStatus() {
