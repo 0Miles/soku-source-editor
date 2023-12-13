@@ -64,16 +64,20 @@ class Module {
                 .filter(x => x && x.element.info)
                 .sort((a, b) => compareVersions(b.version, a.version))
             
-            const moduleVersionNumbers = this.versions.map(x => x.version)
-
-            const oldVersionNumbersJson = JSON.stringify(this.element.info?.versionNumber ?? '[]')
-            if (oldVersionNumbersJson !== JSON.stringify(moduleVersionNumbers)) {
-                this.element.updateInfo({
-                    versionNumbers: moduleVersionNumbers
-                })
-            }
+            this.updateVersionNumbers()
         } else {
             this.versions = []
+        }
+    }
+
+    updateVersionNumbers() {
+        const moduleVersionNumbers = this.versions.map(x => x.version)
+
+        const oldVersionNumbersJson = JSON.stringify(this.element.info?.versionNumber ?? '[]')
+        if (oldVersionNumbersJson !== JSON.stringify(moduleVersionNumbers)) {
+            this.element.updateInfo({
+                versionNumbers: moduleVersionNumbers
+            })
         }
     }
 
@@ -85,6 +89,7 @@ class Module {
         const newVersion = new ModuleVersion(this.sourceName, this.moduleName, versionNum)
         newVersion.element.putInfo(versionInfo)
         this.versions.unshift(newVersion)
+        this.updateVersionNumbers()
     }
 
     deleteVersion(versionNum) {
@@ -102,6 +107,7 @@ class Module {
                 })
             }
         }
+        this.updateVersionNumbers()
     }
 
     update(moduleInfoPatch) {
