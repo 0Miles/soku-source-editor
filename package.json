@@ -1,6 +1,6 @@
 {
-  "name": "soku-mod-manager",
-  "description": "Soku mod manager",
+  "name": "soku-source-editor",
+  "description": "Soku source editor",
   "version": "0.0.0",
   "author": "Miles",
   "scripts": {

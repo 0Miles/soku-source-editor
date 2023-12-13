@@ -1,4 +1,4 @@
-# SokuModManager
+# SokuSourceEditor
 
 ## Install
 Clone and install dependencies:
