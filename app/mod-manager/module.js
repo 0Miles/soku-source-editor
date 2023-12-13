@@ -63,6 +63,15 @@ class Module {
                 })
                 .filter(x => x && x.element.info)
                 .sort((a, b) => compareVersions(b.version, a.version))
+            
+            const moduleVersionNumbers = this.versions.map(x => x.version)
+
+            const oldVersionNumbersJson = JSON.stringify(this.element.info?.versionNumber ?? '[]')
+            if (oldVersionNumbersJson !== JSON.stringify(moduleVersionNumbers)) {
+                this.element.updateInfo({
+                    versionNumbers: moduleVersionNumbers
+                })
+            }
         } else {
             this.versions = []
         }
