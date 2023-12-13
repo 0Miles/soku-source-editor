@@ -83,7 +83,13 @@ class Source {
 
     async checkAndUpdateSourceModulesJson() {
         this.refreshModules()
-        const modulesJsonString = JSON.stringify(this.modules.map(x => x.moduleName))
+        const modulesJsonString = JSON.stringify(
+            this.modules.map(x => ({
+                name: x.moduleName,
+                icon: x.icon && path.basename(x.icon),
+                bannre: x.banner && path.basename(x.banner)
+            }))
+        )
 
         const modulesJsonFilename = path.join(this.dirname, 'modules.json')
         let oldJsonString = ''
