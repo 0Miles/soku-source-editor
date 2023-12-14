@@ -99,11 +99,11 @@ class Module {
             this.versions.splice(targetVersionIndex, 1)
         }
 
-        if (this.element.info.recommendedVersion && this.element.info.recommendedVersion === versionNum) {
-            const newRecommendedVersion = this.versions.find(x => x.element.info?.downloadLinks?.length)
-            if (newRecommendedVersion) {
+        if (this.element.info.recommendedVersionNumber && this.element.info.recommendedVersionNumber === versionNum) {
+            const newRecommendedVersionNumber = this.versions.find(x => x.element.info?.downloadLinks?.length)
+            if (newRecommendedVersionNumber) {
                 this.element.updateInfo({
-                    recommendedVersion: newRecommendedVersion.element.info.version ?? ''
+                    recommendedVersionNumber: newRecommendedVersionNumber.element.info.version ?? ''
                 })
             }
         }

@@ -32,7 +32,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
             <>
                 {`v${versionInfo.version}`}
                 {
-                    versionInfo.version === modInfo.recommendedVersion &&
+                    versionInfo.version === modInfo.recommendedVersionNumber &&
                     <svg className="mx:8 color:gold-80 fill:gold-80/.3" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
@@ -182,7 +182,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                 <Button disabled={!versionInfoForDisplay.moduleFiles?.children?.length}>{t('Export')}</Button>
             </div>
             {
-                versionInfo.version !== modInfo.recommendedVersion &&
+                versionInfo.version !== modInfo.recommendedVersionNumber &&
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">
                         <div>
@@ -199,7 +199,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         onClick={
                             async () => {
                                 await api.updateMod(sourceName ?? primarySourceName, modInfo.name, {
-                                    recommendedVersion: versionInfo.version
+                                    recommendedVersionNumber: versionInfo.version
                                 })
                                 refreshModInfo()
                             }
