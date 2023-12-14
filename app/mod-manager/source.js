@@ -87,7 +87,7 @@ class Source {
             this.modules.map(x => ({
                 name: x.moduleName,
                 icon: x.icon && path.basename(x.icon),
-                bannre: x.banner && path.basename(x.banner)
+                banner: x.banner && path.basename(x.banner)
             }))
         )
 
