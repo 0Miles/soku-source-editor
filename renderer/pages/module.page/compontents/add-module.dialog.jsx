@@ -44,6 +44,8 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
+        setIconUrl()
+        setBannerUrl()
         reset()
 
         setOpen(true)
