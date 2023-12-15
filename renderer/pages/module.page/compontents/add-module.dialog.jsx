@@ -14,7 +14,7 @@ import {
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useState, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 
 import plusIcon from '../../../icons/plus.icon'
 import gearIcon from '../../../icons/gear.icon'
@@ -40,12 +40,14 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
 
     const [iconUrl, setIconUrl] = useState(false)
     const [bannerUrl, setBannerUrl] = useState(false)
+    const [repositories, setRepositories] = useState([])
 
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
         setIconUrl()
         setBannerUrl()
+        setRepositories([])
         reset()
 
         setOpen(true)
@@ -72,7 +74,6 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         return !sourceMods?.find(x => x.name === value)
     }
 
-    const [repositories, setRepositories] = useState([])
     const repositoryInputOnChange = (repoUrls) => {
         setRepositories(repoUrls.map(repoUrl => {
             const match = repoUrl.match(repoUrlRegex)
