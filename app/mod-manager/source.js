@@ -152,11 +152,20 @@ class Source {
         await this.git.pull('origin', branch, { '--strategy-option': 'theirs' })
     }
 
+    async commitMissingFiles() {
+        const missingFiles = this.status.files
+        if (missingFiles.length > 0) {
+            await this.git.add('.')
+            await this.git.commit(`Add missing files`)
+        }
+    }
+
     async sync(branch) {
         if (!branch) {
             await this.refreshGitStatus()
             branch = this.status.current
         }
+        await this.commitMissingFiles()
         await this.git.fetch()
         await this.pullAndMerge(branch)
         await this.git.push('origin', branch)
