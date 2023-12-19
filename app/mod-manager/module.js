@@ -64,7 +64,7 @@ class Module {
                 })
                 .filter(x => x && x.element.info)
                 .sort((a, b) => compareVersions(b.version, a.version))
-            
+
             this.updateVersionNumbers()
         } else {
             this.versions = []
@@ -147,7 +147,8 @@ class Module {
         // Add version.json to the root of the ZIP file
         const modJson = this.getData()
         const versionJson = version.getData()
-        const combinedVersionJson = {
+
+        archive.append(JSON.stringify({
             name: modJson.name,
             description: modJson.description,
             descriptionI18n: modJson.descriptionI18n,
@@ -159,10 +160,20 @@ class Module {
             updateWorkingDir: `./${lowercaseModuleName}`,
             fromLocalArchive: true,
             compressed: true
-        }
-        // 產生供安裝使用的version.json
+        }), { name: 'version.json' })
 
-        archive.append(JSON.stringify(combinedVersionJson), { name: 'version.json' })
+        archive.append(JSON.stringify({
+            name: modJson.name,
+            description: modJson.description,
+            descriptionI18n: modJson.descriptionI18n,
+            icon: modJson.icon ? path.basename(url.fileURLToPath(modJson.icon)) : null,
+            banner: modJson.banner ? path.basename(url.fileURLToPath(modJson.banner)) : null,
+            author: modJson.author,
+            priority: modJson.priority,
+            version: versionJson.version,
+            main: versionJson.main,
+            configFiles: versionJson.configFiles
+        }), { name: `${lowercaseModuleName}/mod.json` })
 
         // Add module_data files to the moduleName directory in the ZIP file
         const moduleDataDir = path.join(version.dirname, 'module_data')
