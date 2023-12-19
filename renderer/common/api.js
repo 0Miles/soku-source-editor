@@ -91,3 +91,7 @@ export const updateModVersion = async (sourceName, modName, version, versionInfo
 export const copyModVersionFiles = async (files, sourceName, modName, version) => {
     return await ipcRenderer.invoke('post', ['copyModVersionFiles', sourceName, modName, version, files])
 }
+
+export const exportZip = async (sourceName, modName, versionNum) => {
+    return await ipcRenderer.invoke('post', ['exportZip', sourceName, modName, versionNum])
+}

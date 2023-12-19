@@ -1,5 +1,5 @@
-const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
-
+const { app, BrowserWindow, ipcMain, nativeTheme, dialog } = require('electron')
+const path = require('node:path')
 const createMainWindow = require('./window/main.window')
 
 const { ModManager } = require('./mod-manager/mod-manager')
@@ -55,9 +55,27 @@ ipcMain.handle('post', async (_, message) => {
                 return modManager.getSource(message[1]).getModule(message[2]).copyAndReplaceImage(message[3], 'icon')
             case 'copyModBannerFile':
                 return modManager.getSource(message[1]).getModule(message[2]).copyAndReplaceImage(message[3], 'banner')
+            case 'exportZip':
+                return await openSaveDialogAndExportZip(message[1], message[2], message[3])
         }
     }
 })
+
+const openSaveDialogAndExportZip = async (sourceName, moduleName, versionNum) => {
+    const result = await dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), {
+        defaultPath: `${moduleName}_${versionNum}.zip`,
+        filters: [
+            { name: 'Zip Files', extensions: ['zip'] },
+            { name: 'All Files', extensions: ['*'] }
+        ]
+    })
+    
+    if (!result.canceled) {
+        modManager.getSource(sourceName)
+            .getModule(moduleName)
+            .exportZip(versionNum, path.dirname(result.filePath), path.basename(result.filePath))
+    }
+}
 
 ipcMain.handle('patch', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {

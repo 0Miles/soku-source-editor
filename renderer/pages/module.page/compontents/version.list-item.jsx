@@ -179,7 +179,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         }
                     </div>
                 </div>
-                <Button disabled={!versionInfoForDisplay.moduleFiles?.children?.length}>{t('Export')}</Button>
+                <Button onClick={() => api.exportZip(sourceName, modInfo.name, versionInfo.version)} disabled={!versionInfoForDisplay.moduleFiles?.children?.length}>{t('Export')}</Button>
             </div>
             {
                 versionInfo.version !== modInfo.recommendedVersionNumber &&

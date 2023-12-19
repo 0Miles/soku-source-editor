@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const url = require('url')
+const archiver = require('archiver')
 const { DirectoryJsonElement } = require('./directory-json-element')
 const { ModuleVersion } = require('./version')
 const compareVersions = require('../common/compare-versions')
@@ -117,6 +118,70 @@ class Module {
             this.moduleName = moduleInfoPatch.name
             this.init()
         }
+    }
+
+    async exportZip(versionNum, outputDir = null, filename = null) {
+        const version = this.getVersion(versionNum)
+        const lowercaseModuleName = this.moduleName.toLowerCase()
+
+        outputDir = !outputDir ? path.resolve(version.dirname, 'output') : path.resolve(outputDir)
+        filename = !filename ? `${this.moduleName}_${versionNum}.zip` : filename
+
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir)
+        }
+        // Create a new ZIP file
+        const output = fs.createWriteStream(path.join(outputDir, filename))
+        const archive = archiver('zip')
+
+        output.on('close', () => {
+            console.log('ZIP file created successfully')
+        })
+
+        archive.on('error', (err) => {
+            throw err
+        })
+
+        archive.pipe(output)
+
+        // Add version.json to the root of the ZIP file
+        const modJson = this.getData()
+        const versionJson = version.getData()
+        const combinedVersionJson = {
+            name: modJson.name,
+            description: modJson.description,
+            descriptionI18n: modJson.descriptionI18n,
+            notes: versionJson.notes,
+            notesI18n: versionJson.notesI18n,
+            version: versionJson.version,
+            fileName: versionJson.main,
+            configFiles: versionJson.configFiles,
+            updateWorkingDir: `./${lowercaseModuleName}`,
+            fromLocalArchive: true,
+            compressed: true
+        }
+        // 產生供安裝使用的version.json
+
+        archive.append(JSON.stringify(combinedVersionJson), { name: 'version.json' })
+
+        // Add module_data files to the moduleName directory in the ZIP file
+        const moduleDataDir = path.join(version.dirname, 'module_data')
+
+        if (fs.existsSync(moduleDataDir)) {
+            archive.directory(moduleDataDir, `/${lowercaseModuleName}`)
+        }
+
+        // Add icon and banner files to the moduleName directory in the ZIP file
+        if (this.icon) {
+            const iconPath = url.fileURLToPath(this.icon)
+            archive.file(iconPath, { name: `/${lowercaseModuleName}/${path.basename(iconPath)}` })
+        }
+        if (this.banner) {
+            const bannerPath = url.fileURLToPath(this.banner)
+            archive.file(bannerPath, { name: `/${lowercaseModuleName}/${path.basename(bannerPath)}` })
+        }
+
+        await archive.finalize()
     }
 }
 
