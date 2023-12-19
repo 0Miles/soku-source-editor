@@ -163,13 +163,9 @@ class Module {
         }), { name: 'version.json' })
 
         archive.append(JSON.stringify({
-            name: modJson.name,
-            description: modJson.description,
-            descriptionI18n: modJson.descriptionI18n,
+            ...modJson,
             icon: modJson.icon ? path.basename(url.fileURLToPath(modJson.icon)) : null,
             banner: modJson.banner ? path.basename(url.fileURLToPath(modJson.banner)) : null,
-            author: modJson.author,
-            priority: modJson.priority,
             version: versionJson.version,
             main: versionJson.main,
             configFiles: versionJson.configFiles
