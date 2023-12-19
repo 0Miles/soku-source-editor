@@ -47,9 +47,10 @@
   },
   "main": "app/main.js",
   "build": {
-    "appId": "com.soku-mod-manager.app",
-    "productName": "SokuModManager",
+    "appId": "com.soku-source-editor.app",
+    "productName": "SokuSourceEditor",
     "directories": {
+      "buildResources": "resources",
       "output": "pack"
     },
     "files": [
