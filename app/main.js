@@ -92,7 +92,7 @@ ipcMain.handle('delete', async (_, message) => {
     if (Array.isArray(message) && message.length > 0) {
         switch (message[0]) {
             case 'source':
-                return modManager.deleteSource(message[1])
+                return await modManager.deleteSource(message[1])
             case 'mod':
                 return modManager.getSource(message[1]).deleteModule(message[2])
             case 'modVersion':

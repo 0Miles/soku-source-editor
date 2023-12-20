@@ -36,9 +36,10 @@ class ModManager {
         this.refreshSources()
     }
 
-    deleteSource(sourceName) {
+    async deleteSource(sourceName) {
         const targetSourceIndex = this.sources.findIndex(x => x.sourceName === sourceName)
         if (targetSourceIndex !== -1) {
+            await this.sources[targetSourceIndex].stopWatching()
             this.sources[targetSourceIndex].element.delete()
             this.sources.splice(targetSourceIndex, 1)
         }

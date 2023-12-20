@@ -74,7 +74,7 @@ class Module {
     updateVersionNumbers() {
         const moduleVersionNumbers = this.versions.map(x => x.version)
 
-        const oldVersionNumbersJson = JSON.stringify(this.element.info?.versionNumber ?? '[]')
+        const oldVersionNumbersJson = JSON.stringify(this.element.info?.versionNumbers ?? '[]')
         if (oldVersionNumbersJson !== JSON.stringify(moduleVersionNumbers)) {
             this.element.updateInfo({
                 versionNumbers: moduleVersionNumbers

@@ -50,8 +50,8 @@ class Source {
                 }
                 
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
-                this.pendingChanges = []
                 await this.checkAndUpdateSourceModulesJson()
+                this.pendingChanges = []
             }, 1000)
         })
     }
