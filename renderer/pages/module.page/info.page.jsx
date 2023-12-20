@@ -17,7 +17,7 @@ import * as api from '../../common/api'
 import { Marked, Renderer } from 'marked'
 import I18nProperty from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
-import { useModSource } from '../../contexts/mod-source'
+import { useShared } from '../../contexts/shared'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 import AddVersionDialog from './compontents/add-version.dialog'
 import EditModuleDialog from './compontents/edit-module.dialog'
@@ -34,7 +34,7 @@ renderer.link = (href, title, text) => {
 const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
-    const { primarySourceName } = useModSource()
+    const { primarySourceName } = useShared()
     const { sourceName, modName } = useParams()
     const { t, i18n } = useTranslation()
     const { showMessageBox } = useMessageBox()

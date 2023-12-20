@@ -1,22 +1,37 @@
 
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useMemo } from 'react'
 import * as api from '../common/api'
 
-export const ModSourceContext = createContext()
+export const SharedContext = createContext()
 
-const storageMainSource = localStorage.getItem('primarySourceName')
-
-export const ModSourceProvider = ({ children }) => {
+export const SharedProvider = ({ children }) => {
+    const [config, setConfig] = useState()
     const [sources, setSources] = useState()
-    const [primarySourceName, setPrimarySourceName] = useState(storageMainSource)
+    const [primarySourceName, setPrimarySourceName] = useState('')
+
+    useMemo(() => {
+        ipcRenderer.invoke('get-config').then((config) => {
+            setConfig(config)
+            setPrimarySourceName(config.primarySourceName ?? '')
+        })
+    }, [])
+
+    const setConfigValue = async (key, value) => {
+        await ipcRenderer.invoke('update-config', { [key]: value })
+        setConfig(await ipcRenderer.invoke('get-config'))
+    }
 
     const refreshSources = async () => {
         const data = await api.getSources()
+        if (data?.length && !data.find(x => x.name === primarySourceName)) {
+            setPrimarySourceName('')
+            setConfigValue('primarySourceName', '')
+        }
         setSources(data)
     }
 
     const changePrimarySource = (value) => {
-        localStorage.setItem('primarySourceName', value)
+        setConfigValue('primarySourceName', value ?? '')
         setPrimarySourceName(value)
     }
 
@@ -39,8 +54,10 @@ export const ModSourceProvider = ({ children }) => {
     }
 
     return (
-        <ModSourceContext.Provider
+        <SharedContext.Provider
             value={{
+                config,
+                setConfigValue,
                 sources,
                 primarySourceName,
                 refreshSources,
@@ -50,10 +67,10 @@ export const ModSourceProvider = ({ children }) => {
             }}
         >
             {children}
-        </ModSourceContext.Provider>
+        </SharedContext.Provider>
     )
 }
 
-export const useModSource = () => {
-    return useContext(ModSourceContext)
+export const useShared = () => {
+    return useContext(SharedContext)
 }

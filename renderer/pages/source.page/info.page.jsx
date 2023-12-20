@@ -1,6 +1,6 @@
 import { Button, Spinner } from '@fluentui/react-components'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
-import { useModSource } from '../../contexts/mod-source'
+import { useShared } from '../../contexts/shared'
 import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import CommonItem from '../../common/common-item'
@@ -12,7 +12,7 @@ import GitStatus from './compontents/git-status'
 
 export default function SourceInfoPage() {
     const navigate = useNavigate()
-    const { sources, refreshSources } = useModSource()
+    const { sources, refreshSources } = useShared()
     const { sourceName } = useParams()
     const { t } = useTranslation()
     const [sourceInfo, setSourceInfo] = useState(null)

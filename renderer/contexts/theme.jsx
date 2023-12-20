@@ -5,31 +5,28 @@ import {
     webLightTheme,
     webDarkTheme,
 } from '@fluentui/react-components'
+import { useShared } from './shared'
 
 const MatchMediaDark = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
 
 const ThemeContext = createContext()
 
 export const ThemeProvider = ({ children }) => {
+    const { config, setConfigValue } = useShared()
     const [theme, setTheme] = useState()
     const [current, setCurrent] = useState(MatchMediaDark?.matches ? 'dark' : 'light')
 
     useMemo(() => {
-        ipcRenderer.invoke('get-config', 'theme').then((configTheme) => {
-            const storedTheme = configTheme || 'system'
-            setTheme(storedTheme)
-            if (storedTheme === 'system') {
-                const isDark = MatchMediaDark?.matches
-                setCurrent(isDark ? 'dark' : 'light')
-            } else {
-                setCurrent(storedTheme)
-            }
-        })
-    }, [])
+        if (config) {
+            const configTheme = config.theme || 'system'
+            setTheme(configTheme)
+        }
+    }, [config])
 
     const switchTheme = (value) => {
         if (value && value !== theme) {
             setTheme(value)
+            setConfigValue(value)
         }
     }
 
@@ -42,13 +39,14 @@ export const ThemeProvider = ({ children }) => {
     useEffect(() => {
         if (!theme) return
         ipcRenderer.invoke('switch-native-theme', theme)
+
         if (theme === 'system') {
             const isDark = MatchMediaDark?.matches
             setCurrent(isDark ? 'dark' : 'light')
         } else {
             setCurrent(theme)
         }
-        
+
         const onSystemThemeChange = (matchMediaDark) => {
             if (theme === 'system') {
                 setCurrent(matchMediaDark.matches ? 'dark' : 'light')

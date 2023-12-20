@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
 
-import { useModSource } from '../../contexts/mod-source'
+import { useShared } from '../../contexts/shared'
 import AddSourceDialog from './compontents/add-source.dialog'
 import SourceListItem from './compontents/source.list-item'
 
 export default function SourceListPage() {
-    const { sources, refreshSources } = useModSource()
+    const { sources, refreshSources } = useShared()
     const { t } = useTranslation()
 
     const [loading, setLoading] = useState(false)

@@ -1,20 +1,19 @@
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
     Select
 } from '@fluentui/react-components'
+import { useShared } from '../contexts/shared'
 
 export default function ChangeLanguageSelect({className}) {
-    const [lang, setLang] = useState(localStorage.getItem('lang') ?? 'en')
+    const { setConfigValue } = useShared()
     const { i18n } = useTranslation()
 
     const changeLanguage = (lang) => {
         i18n.changeLanguage(lang)
-        setLang(lang)
-        localStorage.setItem('lang', lang)
+        setConfigValue('lang', lang)
     }
 
-    return <Select defaultValue={lang} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
+    return <Select value={i18n.language} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
         <option value="en">
             English
         </option>

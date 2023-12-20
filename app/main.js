@@ -23,7 +23,6 @@ ipcMain.handle('update-config', (_, patch) => {
 ipcMain.handle('switch-native-theme', (_, message) => {
     if (['dark', 'light', 'system'].includes(message)) {
         nativeTheme.themeSource = message
-        configManager.updateConfig({ theme: message })
     }
 })
 

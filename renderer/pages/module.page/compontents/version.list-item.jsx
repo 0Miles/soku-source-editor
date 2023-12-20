@@ -3,7 +3,7 @@ import {
     Button
 } from '@fluentui/react-components'
 import * as api from '../../../common/api'
-import { useModSource } from '../../../contexts/mod-source'
+import { useShared } from '../../../contexts/shared'
 import CollapsibleItem from '../../../common/collapsible-item'
 import EditVersionNotesDialog from './edit-version-notes.dialog'
 import DirectoryTreeView from '../../../common/directory-tree-view'
@@ -19,7 +19,7 @@ import EditVersionDownloadLinksDialog from './edit-version-download-links.dialog
 import VersionDownloadLink from './version-download-link'
 
 export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
-    const { primarySourceName } = useModSource()
+    const { primarySourceName } = useShared()
     const { t, i18n } = useTranslation()
     const [versionInfoForDisplay, setVersionInfoForDisplay] = useState(versionInfo)
 

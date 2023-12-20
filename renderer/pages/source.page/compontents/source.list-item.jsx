@@ -10,7 +10,7 @@ import * as api from '../../../common/api'
 import { useTranslation } from 'react-i18next'
 import trashIcon from '../../../icons/trash.icon'
 import optionsIcon from '../../../icons/options.icon'
-import { useModSource } from '../../../contexts/mod-source'
+import { useShared } from '../../../contexts/shared'
 import { useMessageBox, MessageBoxButtons, DialogResult, MessageBoxIcon } from '../../../contexts/message-box'
 import CommonItem from '../../../common/common-item'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -20,7 +20,7 @@ export default function SourceListItem({ sourceInfo }) {
     const navigate = useNavigate()
     const location = useLocation()
     const { showMessageBox } = useMessageBox()
-    const { refreshSources, deleteSource, primarySourceName, changePrimarySource } = useModSource()
+    const { refreshSources, deleteSource, primarySourceName, changePrimarySource } = useShared()
     const { t } = useTranslation()
     const [isSyncing, setIsSyncing] = useState(false)
     const [gitStatus, setGitStatus] = useState()

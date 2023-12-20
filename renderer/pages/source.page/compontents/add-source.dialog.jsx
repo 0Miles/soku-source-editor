@@ -15,12 +15,12 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 
 import plusIcon from '../../../icons/plus.icon'
-import { useModSource } from '../../../contexts/mod-source'
+import { useShared } from '../../../contexts/shared'
 import repoUrlRegex from '../../../utils/repo-url.regex'
 
 export default function AddSourceDialog() {
     const { t } = useTranslation()
-    const { sources, refreshSources, addSource } = useModSource()
+    const { sources, refreshSources, addSource } = useShared()
     const [sourceUrl, setSourceUrl] = useState('')
     const [open, setOpen] = useState(false)
     const [isCloning, setIsCloning] = useState(false)

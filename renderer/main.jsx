@@ -6,7 +6,7 @@ import {
     Navigate
 } from 'react-router-dom'
 import { ThemeProvider } from './contexts/theme'
-import { ModSourceProvider } from './contexts/mod-source'
+import { SharedProvider } from './contexts/shared'
 
 import App from './app'
 import ModuleListPage from './pages/module.page/list.page'
@@ -28,7 +28,7 @@ const router = createHashRouter([
         children: [
             {
                 path: '',
-                element: <Navigate to= "module" replace />
+                element: <Navigate to="module" replace />
             },
             {
                 path: 'module',
@@ -72,12 +72,12 @@ const router = createHashRouter([
 
 root.render(
     <React.StrictMode>
-        <ThemeProvider>
-            <ModSourceProvider>
+        <SharedProvider>
+            <ThemeProvider>
                 <MessageBoxProvider>
                     <RouterProvider router={router} />
                 </MessageBoxProvider>
-            </ModSourceProvider>
-        </ThemeProvider>
+            </ThemeProvider>
+        </SharedProvider>
     </React.StrictMode>
 )

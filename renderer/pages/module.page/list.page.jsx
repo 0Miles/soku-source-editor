@@ -11,7 +11,7 @@ import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
 import trashIcon from '../../icons/trash.icon'
 import I18nProperty from '../../common/i18n-property'
-import { useModSource } from '../../contexts/mod-source'
+import { useShared } from '../../contexts/shared'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
 import AddModuleDialog from './compontents/add-module.dialog'
@@ -23,7 +23,7 @@ export default function ModuleListPage() {
     const navigate = useNavigate()
     const location = useLocation()
     const { sourceName } = useParams()
-    const { primarySourceName } = useModSource()
+    const { primarySourceName } = useShared()
     const { t, i18n } = useTranslation()
     const { showMessageBox } = useMessageBox()
 
