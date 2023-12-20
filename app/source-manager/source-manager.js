@@ -3,7 +3,7 @@ const path = require('path')
 const { default: simpleGit } = require('simple-git')
 const { Source } = require('./source')
 
-class ModManager {
+class SourceManager {
     constructor() {
         this.sourcesDir = path.resolve(process.cwd(), 'sources')
         if (!fs.existsSync(this.sourcesDir)) {
@@ -46,4 +46,4 @@ class ModManager {
     }
 }
 
-module.exports = { ModManager }
+module.exports = { SourceManager }

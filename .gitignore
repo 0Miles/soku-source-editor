@@ -132,3 +132,4 @@ dist
 pack
 modules/*
 sources/*
+electron.exe.json

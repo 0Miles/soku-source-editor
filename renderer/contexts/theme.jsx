@@ -1,5 +1,5 @@
 
-import { useEffect, createContext, useState, useContext } from 'react'
+import { useEffect, createContext, useState, useContext, useMemo } from 'react'
 import {
     FluentProvider,
     webLightTheme,
@@ -7,17 +7,25 @@ import {
 } from '@fluentui/react-components'
 
 const MatchMediaDark = typeof matchMedia !== 'undefined' ? matchMedia?.('(prefers-color-scheme:dark)') : undefined
-// init theme
-const storageTheme = localStorage.getItem('theme') ?? 'system'
-const isDark = storageTheme === 'system' ? MatchMediaDark.matches : storageTheme === 'dark'
-document.documentElement.classList.toggle('dark', isDark)
-document.documentElement.classList.toggle('light', !isDark)
 
 const ThemeContext = createContext()
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(storageTheme ?? 'system')
-    const [current, setCurrent] = useState(isDark ? 'dark' : 'light')
+    const [theme, setTheme] = useState()
+    const [current, setCurrent] = useState(MatchMediaDark?.matches ? 'dark' : 'light')
+
+    useMemo(() => {
+        ipcRenderer.invoke('get-config', 'theme').then((configTheme) => {
+            const storedTheme = configTheme || 'system'
+            setTheme(storedTheme)
+            if (storedTheme === 'system') {
+                const isDark = MatchMediaDark?.matches
+                setCurrent(isDark ? 'dark' : 'light')
+            } else {
+                setCurrent(storedTheme)
+            }
+        })
+    }, [])
 
     const switchTheme = (value) => {
         if (value && value !== theme) {
@@ -32,8 +40,8 @@ export const ThemeProvider = ({ children }) => {
     }, [current])
 
     useEffect(() => {
+        if (!theme) return
         ipcRenderer.invoke('switch-native-theme', theme)
-        localStorage.setItem('theme', theme)
         if (theme === 'system') {
             const isDark = MatchMediaDark?.matches
             setCurrent(isDark ? 'dark' : 'light')
