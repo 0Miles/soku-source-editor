@@ -18,15 +18,14 @@ export const ThemeProvider = ({ children }) => {
 
     useMemo(() => {
         if (config) {
-            const configTheme = config.theme || 'system'
-            setTheme(configTheme)
+            setTheme(config.theme ?? 'system')
         }
     }, [config])
 
     const switchTheme = (value) => {
         if (value && value !== theme) {
             setTheme(value)
-            setConfigValue(value)
+            setConfigValue('theme', value)
         }
     }
 
@@ -38,21 +37,22 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         if (!theme) return
-        ipcRenderer.invoke('switch-native-theme', theme)
 
-        if (theme === 'system') {
-            const isDark = MatchMediaDark?.matches
-            setCurrent(isDark ? 'dark' : 'light')
-        } else {
-            setCurrent(theme)
-        }
+        (async () => {
+            await ipcRenderer.invoke('switch-native-theme', theme)
+            if (theme === 'system') {
+                const isDark = MatchMediaDark?.matches
+                setCurrent(isDark ? 'dark' : 'light')
+            } else {
+                setCurrent(theme)
+            }
+        })()
 
         const onSystemThemeChange = (matchMediaDark) => {
             if (theme === 'system') {
                 setCurrent(matchMediaDark.matches ? 'dark' : 'light')
             }
         }
-
         MatchMediaDark?.addEventListener('change', onSystemThemeChange)
         return () => {
             MatchMediaDark?.removeEventListener('change', onSystemThemeChange)

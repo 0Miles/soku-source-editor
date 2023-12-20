@@ -1,10 +1,12 @@
 
 import { createContext, useState, useContext, useMemo } from 'react'
 import * as api from '../common/api'
+import { useTranslation } from 'react-i18next'
 
 export const SharedContext = createContext()
 
 export const SharedProvider = ({ children }) => {
+    const { i18n } = useTranslation()
     const [config, setConfig] = useState()
     const [sources, setSources] = useState()
     const [primarySourceName, setPrimarySourceName] = useState('')
@@ -12,9 +14,10 @@ export const SharedProvider = ({ children }) => {
     useMemo(() => {
         ipcRenderer.invoke('get-config').then((config) => {
             setConfig(config)
+            config.lang && i18n.changeLanguage(config.lang)
             setPrimarySourceName(config.primarySourceName ?? '')
         })
-    }, [])
+    }, [i18n])
 
     const setConfigValue = async (key, value) => {
         await ipcRenderer.invoke('update-config', { [key]: value })

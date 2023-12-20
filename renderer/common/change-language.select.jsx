@@ -3,9 +3,10 @@ import {
     Select
 } from '@fluentui/react-components'
 import { useShared } from '../contexts/shared'
+import { defaultLang } from '../i18n'
 
 export default function ChangeLanguageSelect({className}) {
-    const { setConfigValue } = useShared()
+    const { config, setConfigValue } = useShared()
     const { i18n } = useTranslation()
 
     const changeLanguage = (lang) => {
@@ -13,7 +14,7 @@ export default function ChangeLanguageSelect({className}) {
         setConfigValue('lang', lang)
     }
 
-    return <Select value={i18n.language} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
+    return <Select value={config?.lang ?? defaultLang} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
         <option value="en">
             English
         </option>
