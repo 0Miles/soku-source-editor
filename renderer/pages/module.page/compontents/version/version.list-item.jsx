@@ -2,21 +2,28 @@ import { useState } from 'react'
 import {
     Button
 } from '@fluentui/react-components'
-import * as api from '../../../common/api'
-import { useShared } from '../../../contexts/shared'
-import CollapsibleItem from '../../../common/collapsible-item'
-import EditVersionNotesDialog from './edit-version-notes.dialog'
-import DirectoryTreeView from '../../../common/directory-tree-view'
+import * as api from '../../../../common/api'
+import { useShared } from '../../../../contexts/shared'
+import CollapsibleItem from '../../../../common/collapsible-item'
+import EditVersionNotesDialog from '../version/edit-version-notes.dialog'
+import DirectoryTreeView from '../../../../common/directory-tree-view'
 import HTMLReactParser from 'html-react-parser'
 
-import boxIcon from '../../../icons/box.icon'
+import boxIcon from '../../../../icons/box.icon'
 
-import { marked } from 'marked'
-import { getI18nProperty } from '../../../common/i18n-property'
+import { Renderer, marked } from 'marked'
+import { getI18nProperty } from '../../../../common/i18n-property'
 import { useTranslation } from 'react-i18next'
-import EditVersionContentDialog from './edit-version-content.dialog'
-import EditVersionDownloadLinksDialog from './edit-version-download-links.dialog'
-import VersionDownloadLink from './version-download-link'
+import EditVersionContentDialog from '../version/edit-version-content.dialog'
+import EditVersionDownloadLinksDialog from '../version/edit-version-download-links.dialog'
+import VersionDownloadLink from '../version/version-download-link'
+
+const renderer = new Renderer()
+const linkRenderer = renderer.link
+renderer.link = (href, title, text) => {
+    const html = linkRenderer.call(renderer, href, title, text);
+    return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
+}
 
 export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
     const { primarySourceName } = useShared()
@@ -112,7 +119,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                 <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                     {
                         HTMLReactParser(
-                            marked.parse(getI18nProperty(versionInfoForDisplay, 'notes', i18n.language))
+                            marked.parse(getI18nProperty(versionInfoForDisplay, 'notes', i18n.language), { renderer })
                         )
                     }
                 </div>

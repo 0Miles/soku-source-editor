@@ -16,12 +16,12 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import plusIcon from '../../../icons/plus.icon'
+import plusIcon from '../../../../icons/plus.icon'
 
-import * as api from '../../../common/api'
-import Dropzone from '../../../common/dropzone'
-import DirectoryTreeView from '../../../common/directory-tree-view'
-import ComboBox from '../../../common/combo-box'
+import * as api from '../../../../common/api'
+import Dropzone from '../../../../common/dropzone'
+import DirectoryTreeView from '../../../../common/directory-tree-view'
+import ComboBox from '../../../../common/combo-box'
 
 export default function AddVersionDialog({ sourceName, moduleName, modVersions, onCompleted }) {
     const { t } = useTranslation()

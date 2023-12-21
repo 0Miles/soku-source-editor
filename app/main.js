@@ -71,6 +71,10 @@ ipcMain.handle('post', async (_, message) => {
                 return sourceManager.getSource(message[1]).getModule(message[2]).copyAndReplaceImage(message[3], 'banner')
             case 'exportZip':
                 return await openSaveDialogAndExportZip(message[1], message[2], message[3])
+            case 'githubRelease':
+                return await sourceManager.getSource(message[1]).getModule(message[2]).createGithubTagAndRelease(message[3], message[4], configManager.getConfig('githubToken'))
+            case 'giteeRelease':
+                return await sourceManager.getSource(message[1]).getModule(message[2]).createGiteeTagAndRelease(message[3], message[4], configManager.getConfig('giteeToken'))
         }
     }
 })

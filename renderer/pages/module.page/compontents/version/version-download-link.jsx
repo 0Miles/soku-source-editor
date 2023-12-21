@@ -1,6 +1,6 @@
-import giteeIcon from '../../../icons/gitee.icon'
-import githubIcon from '../../../icons/github.icon'
-import linkIcon from '../../../icons/link.icon'
+import giteeIcon from '../../../../icons/gitee.icon'
+import githubIcon from '../../../../icons/github.icon'
+import linkIcon from '../../../../icons/link.icon'
 
 export default function VersionDownloadLink({downloadLink, className}) {
     return <div className={`${className} flex p:8 r:3 bg:#141414@dark bg:#f5f5f5@light align-items:center my:4`}>

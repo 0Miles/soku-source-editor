@@ -6,6 +6,7 @@ const { DirectoryJsonElement } = require('./directory-json-element')
 const { ModuleVersion } = require('./version')
 const compareVersions = require('../common/compare-versions')
 const findFileAndGetUri = require('../common/find-file-and-get-uri')
+const { Octokit } = require('@octokit/rest')
 
 class Module {
     constructor(sourceName, moduleName) {
@@ -189,6 +190,111 @@ class Module {
         }
 
         await archive.finalize()
+    }
+
+    async createGithubTagAndRelease(versionNum, repository, githubToken) {
+        const version = this.getVersion(versionNum)
+        const versionJson = version.getData()
+
+        const octokit = new Octokit({
+            auth: githubToken
+        })
+
+        const headCommitResponse = await octokit.git.getRef({
+            owner: repository.owner,
+            repo: repository.repo,
+            ref: `heads/${repository.branch ?? 'main'}`,
+        })
+
+        const headCommitSha = headCommitResponse.data.object.sha
+
+        const tagResponse = await octokit.git.createTag({
+            owner: repository.owner,
+            repo: repository.repo,
+            tag: `v${versionNum}`,
+            message: `Release v${versionNum}`,
+            object: headCommitSha,
+            type: 'commit',
+        })
+
+        await octokit.git.createRef({
+            owner: repository.owner,
+            repo: repository.repo,
+            ref: `refs/tags/v${versionNum}`,
+            sha: tagResponse.data.sha,
+        })
+
+        const releaseResponse = await octokit.repos.createRelease({
+            owner: repository.owner,
+            repo: repository.repo,
+            tag_name: `v${versionNum}`,
+            name: `Release v${versionNum}`,
+            body: versionJson.notes,
+            draft: false,
+            prerelease: false,
+        })
+
+        await this.exportZip(versionNum)
+        const zipPath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        const fileStream = fs.createReadStream(zipPath)
+        const fileSize = fs.statSync(zipPath).size
+        await octokit.repos.uploadReleaseAsset({
+            owner: repository.owner,
+            repo: repository.repo,
+            release_id: releaseResponse.data.id,
+            name: `${this.moduleName}_${versionNum}.zip`,
+            data: fileStream,
+            headers: {
+                'content-type': 'application/zip',
+                'content-length': fileSize,
+            },
+        })
+    }
+
+    async createGiteeTagAndRelease(versionNum, repository, giteeToken) {
+        const version = this.getVersion(versionNum)
+        const versionJson = version.getData()
+
+        const response = await axios.get(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/branches/${repository.branch ?? 'main'}`, {
+            headers: {
+                'Authorization': `token ${giteeToken}`,
+            },
+        })
+
+        const headCommitSha = response.data.commit.id
+
+        await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/tags`, {
+            tag_name: `v${versionNum}`,
+            target: headCommitSha,
+            message: `Release v${versionNum}`,
+        }, {
+            headers: {
+                'Authorization': `token ${giteeToken}`,
+            },
+        })
+
+        const releaseResponse = await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases`, {
+            tag_name: `v${versionNum}`,
+            name: `Release v${versionNum}`,
+            description: versionJson.notes,
+        }, {
+            headers: {
+                'Authorization': `token ${giteeToken}`,
+            },
+        })
+
+        await this.exportZip(versionNum)
+        const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        const fileStream = fs.createReadStream(filePath)
+        const fileSize = fs.statSync(filePath).size
+
+        await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseResponse.data.id}/assets`, fileStream, {
+            headers: {
+                'Authorization': `token ${giteeToken}`,
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': fileSize,
+            },
+        })
     }
 }
 

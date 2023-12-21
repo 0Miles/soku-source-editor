@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import * as api from '../../../common/api'
+import * as api from '../../../../common/api'
 
 export default function EditVersionNotesDialog({ sourceName, moduleName, versionInfo, onCompleted }) {
     const { t } = useTranslation()

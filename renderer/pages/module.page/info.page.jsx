@@ -14,24 +14,15 @@ import chevronDownIcon from '../../icons/chevron-down.icon'
 import githubIcon from '../../icons/github.icon'
 
 import * as api from '../../common/api'
-import { Marked, Renderer } from 'marked'
 import I18nProperty from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useShared } from '../../contexts/shared'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
-import AddVersionDialog from './compontents/add-version.dialog'
+import AddVersionDialog from './compontents/version/add-version.dialog'
 import EditModuleDialog from './compontents/edit-module.dialog'
 import { nanoid } from 'nanoid'
-import VersionListItem from './compontents/version.list-item'
+import VersionListItem from './compontents/version/version.list-item'
 import RepoItem from './compontents/repo-item'
-
-const renderer = new Renderer()
-const linkRenderer = renderer.link
-renderer.link = (href, title, text) => {
-    const html = linkRenderer.call(renderer, href, title, text);
-    return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-}
-const marked = new Marked({ renderer })
 
 export default function ModuleInfoPage() {
     const { primarySourceName } = useShared()

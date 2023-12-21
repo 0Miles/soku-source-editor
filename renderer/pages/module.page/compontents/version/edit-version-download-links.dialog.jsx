@@ -13,11 +13,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 
-import linkIcon from '../../../icons/link.icon'
-import trashIcon from '../../../icons/trash.icon'
-import plusIcon from '../../../icons/plus.icon'
+import linkIcon from '../../../../icons/link.icon'
+import trashIcon from '../../../../icons/trash.icon'
+import plusIcon from '../../../../icons/plus.icon'
 
-import * as api from '../../../common/api'
+import * as api from '../../../../common/api'
 import VersionDownloadLink from './version-download-link'
 
 

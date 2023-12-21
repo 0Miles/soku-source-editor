@@ -95,3 +95,11 @@ export const copyModVersionFiles = async (files, sourceName, modName, version) =
 export const exportZip = async (sourceName, modName, versionNum) => {
     return await ipcRenderer.invoke('post', ['exportZip', sourceName, modName, versionNum])
 }
+
+export const githubRelease = async (sourceName, modName, versionNum, repository) => {
+    return await ipcRenderer.invoke('post', ['githubRelease', sourceName, modName, versionNum, repository])
+}
+
+export const giteeRelease = async (sourceName, modName, versionNum, repository) => {
+    return await ipcRenderer.invoke('post', ['giteeRelease', sourceName, modName, versionNum, repository])
+}

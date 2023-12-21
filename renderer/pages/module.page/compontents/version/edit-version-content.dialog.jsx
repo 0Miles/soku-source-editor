@@ -14,10 +14,10 @@ import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import * as api from '../../../common/api'
-import Dropzone from '../../../common/dropzone'
-import DirectoryTreeView from '../../../common/directory-tree-view'
-import ComboBox from '../../../common/combo-box'
+import * as api from '../../../../common/api'
+import Dropzone from '../../../../common/dropzone'
+import DirectoryTreeView from '../../../../common/directory-tree-view'
+import ComboBox from '../../../../common/combo-box'
 
 export default function EditVersionContentDialog({ sourceName, moduleName, versionInfo, onCompleted }) {
     const { t } = useTranslation()
