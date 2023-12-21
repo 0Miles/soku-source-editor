@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import EditVersionContentDialog from '../version/edit-version-content.dialog'
 import EditVersionDownloadLinksDialog from '../version/edit-version-download-links.dialog'
 import VersionDownloadLink from '../version/version-download-link'
+import ReleaseVersionDialog from './release-version.dialog'
 
 const renderer = new Renderer()
 const linkRenderer = renderer.link
@@ -26,6 +27,7 @@ renderer.link = (href, title, text) => {
 }
 
 export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
+    const { config } = useShared()
     const { primarySourceName } = useShared()
     const { t, i18n } = useTranslation()
     const [versionInfoForDisplay, setVersionInfoForDisplay] = useState(versionInfo)
@@ -53,16 +55,66 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
         content={<>
             {
                 !versionInfoForDisplay.downloadLinks?.find(x => x.type === 'github') &&
+                !!modInfo.repositories?.filter(x => x.type === 'github')?.length &&
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">
                         <div>
                             {t('Release on Github')}
                         </div>
-                        <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                            {t(`Requires logging in and setting up the module's Github Repository`)}
-                        </div>
+                        {
+                            !config.githubToken &&
+                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                {t(`Requires setup Github token`)}
+                            </div>
+                        }
                     </div>
-                    <Button disabled>{t('Release')}</Button>
+                    <ReleaseVersionDialog
+                        hostType="github"
+                        sourceName={sourceName}
+                        modInfo={modInfo}
+                        versionInfo={versionInfo}
+                        disabled={!config.githubToken}
+                        onCompleted={(newDownloadLink) => {
+                            const newDownloadLinks = [...versionInfoForDisplay.downloadLinks ?? [], newDownloadLink]
+                            setVersionInfoForDisplay({
+                                ...versionInfoForDisplay,
+                                downloadLinks: newDownloadLinks
+                            })
+                            refreshModInfo()
+                        }}
+                    />
+                </div>
+            }
+            {
+                !versionInfoForDisplay.downloadLinks?.find(x => x.type === 'gitee') &&
+                !!modInfo.repositories?.filter(x => x.type === 'gitee')?.length &&
+                <div className="flex align-items:center justify-content:space-between">
+                    <div className="mr:16 my:2>div">
+                        <div>
+                            {t('Release on Gitee')}
+                        </div>
+                        {
+                            !config.giteeToken &&
+                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                {t(`Requires setup Gitee token`)}
+                            </div>
+                        }
+                    </div>
+                        <ReleaseVersionDialog
+                            hostType="gitee"
+                            sourceName={sourceName}
+                            modInfo={modInfo}
+                            versionInfo={versionInfo}
+                            disabled={!config.giteeToken}
+                            onCompleted={(newDownloadLink) => {
+                                const newDownloadLinks = [...versionInfoForDisplay.downloadLinks ?? [], newDownloadLink]
+                                setVersionInfoForDisplay({
+                                    ...versionInfoForDisplay,
+                                    downloadLinks: newDownloadLinks
+                                })
+                                refreshModInfo()
+                            }}
+                        />
                 </div>
             }
             <div>
@@ -103,7 +155,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
             <div>
                 <div className="flex align-items:center justify-content:space-between mb:16">
                     <div>
-                        {t('Release Notes')}
+                        {t('Release notes')}
                     </div>
                     <EditVersionNotesDialog
                         sourceName={sourceName ?? primarySourceName}

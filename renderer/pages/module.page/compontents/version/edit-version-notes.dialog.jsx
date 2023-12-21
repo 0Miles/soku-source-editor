@@ -57,7 +57,7 @@ export default function EditVersionNotesDialog({ sourceName, moduleName, version
             <form onSubmit={handleSubmit(handleSubmitAction)}>
                 <DialogBody>
                     <DialogTitle className="user-select:none">
-                        v{versionInfo.version} - {t('Release Notes')}
+                        v{versionInfo.version} - {t('Release notes')}
                     </DialogTitle>
                     <DialogContent>
                         {

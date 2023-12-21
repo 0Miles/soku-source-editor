@@ -123,7 +123,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                 </Label>
                                 <Input id="version" defaultValue={recommendedVersionNumber} {...register('version', { required: 'Version is required', validate: validateVersion })} appearance="filled-darker" placeholder={recommendedVersionNumber} />
                                 <Label htmlFor="notes">
-                                    {t('Release Notes')}
+                                    {t('Release notes')}
                                 </Label>
                                 <Textarea id="notes" {...register('notes')} resize="vertical" appearance="filled-darker" />
 

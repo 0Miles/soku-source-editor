@@ -121,7 +121,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                 <Input id="author" defaultValue={modInfo.author} {...register('author')} appearance="filled-darker" />
 
                                 <Label htmlFor="priority">
-                                    {t('Module Priority')}
+                                    {t('Module priority')}
                                 </Label>
                                 <SpinButton id="priority" defaultValue={modInfo.priority} min={-100} max={100} {...register('priority')} appearance="filled-darker" />
 
@@ -139,7 +139,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                                 owner: match[2],
                                                 repo: match[3]
                                             }
-                                            return <RepoItem className="flex flex:1 w:0 mr:8 align-items:center" repo={repo} />
+                                            return <RepoItem className="flex:1 w:0 p:8 mr:8 align-items:center r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />
                                         }
                                     }
                                     matchRegex={repoUrlRegex}

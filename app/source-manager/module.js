@@ -7,6 +7,8 @@ const { ModuleVersion } = require('./version')
 const compareVersions = require('../common/compare-versions')
 const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
+const axios = require('axios')
+const mime = require('mime')
 
 class Module {
     constructor(sourceName, moduleName) {
@@ -190,6 +192,7 @@ class Module {
         }
 
         await archive.finalize()
+        await new Promise(resolve => setTimeout(resolve, 1000))
     }
 
     async createGithubTagAndRelease(versionNum, repository, githubToken) {
@@ -208,47 +211,62 @@ class Module {
 
         const headCommitSha = headCommitResponse.data.object.sha
 
-        const tagResponse = await octokit.git.createTag({
-            owner: repository.owner,
-            repo: repository.repo,
-            tag: `v${versionNum}`,
-            message: `Release v${versionNum}`,
-            object: headCommitSha,
-            type: 'commit',
-        })
+        try {
+            const tagResponse = await octokit.git.createTag({
+                owner: repository.owner,
+                repo: repository.repo,
+                tag: `v${versionNum}`,
+                message: `Release v${versionNum}`,
+                object: headCommitSha,
+                type: 'commit',
+            })
 
-        await octokit.git.createRef({
-            owner: repository.owner,
-            repo: repository.repo,
-            ref: `refs/tags/v${versionNum}`,
-            sha: tagResponse.data.sha,
-        })
+            await octokit.git.createRef({
+                owner: repository.owner,
+                repo: repository.repo,
+                ref: `refs/tags/v${versionNum}`,
+                sha: tagResponse.data.sha,
+            })
+        } catch (ex) {
+            console.log(ex)
+        }
 
-        const releaseResponse = await octokit.repos.createRelease({
-            owner: repository.owner,
-            repo: repository.repo,
-            tag_name: `v${versionNum}`,
-            name: `Release v${versionNum}`,
-            body: versionJson.notes,
-            draft: false,
-            prerelease: false,
-        })
+        let releaseResponse
+        try {
+            releaseResponse = await octokit.repos.createRelease({
+                owner: repository.owner,
+                repo: repository.repo,
+                tag_name: `v${versionNum}`,
+                name: `v${versionNum}`,
+                body: versionJson.notes,
+                draft: false,
+                prerelease: false,
+            })
+        } catch (ex) {
+            if (ex.status !== 422) throw ex
+            releaseResponse = await octokit.repos.getReleaseByTag({
+                owner: repository.owner,
+                repo: repository.repo,
+                tag: `v${versionNum}`,
+            })
+        }
 
         await this.exportZip(versionNum)
+
         const zipPath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        const fileStream = fs.createReadStream(zipPath)
-        const fileSize = fs.statSync(zipPath).size
-        await octokit.repos.uploadReleaseAsset({
+        const fileData = fs.readFileSync(zipPath)
+        const uploadResponse = await octokit.repos.uploadReleaseAsset({
             owner: repository.owner,
             repo: repository.repo,
             release_id: releaseResponse.data.id,
             name: `${this.moduleName}_${versionNum}.zip`,
-            data: fileStream,
+            data: fileData,
             headers: {
-                'content-type': 'application/zip',
-                'content-length': fileSize,
-            },
+                'Content-Type': mime.getType(zipPath) || 'application/octet-stream',
+            }
         })
+
+        return uploadResponse.data.browser_download_url
     }
 
     async createGiteeTagAndRelease(versionNum, repository, giteeToken) {
@@ -284,17 +302,22 @@ class Module {
         })
 
         await this.exportZip(versionNum)
-        const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        const fileStream = fs.createReadStream(filePath)
-        const fileSize = fs.statSync(filePath).size
 
-        await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseResponse.data.id}/assets`, fileStream, {
-            headers: {
-                'Authorization': `token ${giteeToken}`,
-                'Content-Type': 'application/octet-stream',
-                'Content-Length': fileSize,
-            },
-        })
+        const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        const fileData = fs.readFileSync(filePath)
+
+        const uploadResponse = await axios.post(
+            `https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseResponse.data.id}/assets`,
+            fileData,
+            {
+                headers: {
+                    'Authorization': `token ${giteeToken}`,
+                    'Content-Type': mime.getType(zipPath) || 'application/octet-stream',
+                },
+            }
+        )
+
+        return uploadResponse.data.url
     }
 }
 

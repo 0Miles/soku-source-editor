@@ -8,7 +8,7 @@
     "Edit": "編輯",
     "Delete": "刪除",
     "Author": "作者",
-    "Module Priority": "模組優先度",
+    "Module priority": "模組優先度",
     "Repository": "儲存庫",
     "No repository configured": "未設定儲存庫",
     "Unknown": "未知",
@@ -21,7 +21,7 @@
     "Release on Github": "發佈到 Github",
     "Requires logging in and setting up the module's Github Repository": "需先登入並設定模組的 Github Repository",
     "Release": "發佈",
-    "Release Notes": "發佈說明",
+    "Release notes": "發佈說明",
     "Export compressed file": "匯出壓縮檔",
     "Generates a zip file that can be imported in SokuLauncher": "產生可在 SokuLauncher 導入的 zip 檔案",
     "Export": "匯出",
@@ -80,5 +80,13 @@
     "Invalid URL": "不合法的URL",
     "The same URL has been added": "已加入過相同的 URL",
     "Invalid input": "不合法的輸入",
-    "The same value has been added": "已加入過相同的值"
+    "The same value has been added": "已加入過相同的值",
+    "Requires setup Github token": "需先設定 Github token",
+    "Requires setup Gitee token": "需先設定 Gitee token",
+    "Release on Gitee": "發佈到 Gitee",
+    "Releasing...": "正在發佈...",
+    "Adding download link...": "正在新增下載連結...",
+    "Updating recommended version...": "正在更新推薦版本...",
+    "Set this version as the recommended version after releasing": "發佈後將此版本設為推薦版本",
+    "Target repository": "目標儲存庫"
 }

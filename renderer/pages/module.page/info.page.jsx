@@ -152,7 +152,7 @@ export default function ModuleInfoPage() {
                         </div>
                         <div className="flex flex:col flex:1">
                             <div className="mt:16 f:bold">
-                                {t('Module Priority')}
+                                {t('Module priority')}
                             </div>
                             <div className="my:6">
                                 {modInfo.priority ?? '0'}
@@ -165,7 +165,7 @@ export default function ModuleInfoPage() {
                             <div className="my:6 flex flex-wrap:wrap">
                                 {
                                     !!modInfo.repositories?.length &&
-                                    modInfo.repositories.map((repo, i) => <RepoItem key={i} className="flex align-items:center mr:8" repo={repo} />)
+                                    modInfo.repositories.map((repo, i) => <RepoItem key={i} className="align-items:center p:8 mr:8 r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />)
                                 }
                                 {
                                     !modInfo.repositories?.length &&

@@ -75,6 +75,12 @@ ipcMain.handle('post', async (_, message) => {
                 return await sourceManager.getSource(message[1]).getModule(message[2]).createGithubTagAndRelease(message[3], message[4], configManager.getConfig('githubToken'))
             case 'giteeRelease':
                 return await sourceManager.getSource(message[1]).getModule(message[2]).createGiteeTagAndRelease(message[3], message[4], configManager.getConfig('giteeToken'))
+            case 'modVersionDownloadLink':
+                const version = sourceManager.getSource(message[1]).getModule(message[2]).getVersion(message[3])
+                const downloadLinks = version.element.info?.downloadLinks ?? []
+                downloadLinks.push(message[4])
+                version.element.updateInfo({ downloadLinks })
+                break
         }
     }
 })

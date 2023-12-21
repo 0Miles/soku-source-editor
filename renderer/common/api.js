@@ -103,3 +103,7 @@ export const githubRelease = async (sourceName, modName, versionNum, repository)
 export const giteeRelease = async (sourceName, modName, versionNum, repository) => {
     return await ipcRenderer.invoke('post', ['giteeRelease', sourceName, modName, versionNum, repository])
 }
+
+export const addModVersionDownloadLink = async (sourceName, modName, version, downloadLink) => {
+    return await ipcRenderer.invoke('post', ['modVersionDownloadLink', sourceName, modName, version, downloadLink])
+}
