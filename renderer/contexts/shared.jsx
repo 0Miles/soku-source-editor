@@ -26,6 +26,7 @@ export const SharedProvider = ({ children }) => {
 
     const refreshSources = async () => {
         const data = await api.getSources()
+        const primarySourceName = await ipcRenderer.invoke('get-config', 'primarySourceName')
         if (data?.length && !data.find(x => x.name === primarySourceName)) {
             setPrimarySourceName('')
             setConfigValue('primarySourceName', '')
@@ -33,15 +34,15 @@ export const SharedProvider = ({ children }) => {
         setSources(data)
     }
 
-    const changePrimarySource = (value) => {
-        setConfigValue('primarySourceName', value ?? '')
+    const changePrimarySource = async (value) => {
+        await setConfigValue('primarySourceName', value ?? '')
         setPrimarySourceName(value)
     }
 
     const addSource = async (sourceUrl, sourceName) => {
         await api.cloneModSource(sourceUrl, sourceName)
         if (!sources?.length) {
-            changePrimarySource(sourceName)
+            await changePrimarySource(sourceName)
         }
     }
 
