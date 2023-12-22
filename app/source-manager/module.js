@@ -9,6 +9,7 @@ const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
 const axios = require('axios')
 const mime = require('mime')
+const { shell } = require('electron')
 
 class Module {
     constructor(sourceName, moduleName) {
@@ -273,51 +274,64 @@ class Module {
         const version = this.getVersion(versionNum)
         const versionJson = version.getData()
 
-        const response = await axios.get(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/branches/${repository.branch ?? 'main'}`, {
-            headers: {
-                'Authorization': `token ${giteeToken}`,
-            },
-        })
+        try {
+            await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/tags`, {
+                tag_name: `v${versionNum}`,
+                refs: `${repository.branch ?? 'master'}`,
+                message: `v${versionNum}`,
+            }, {
+                headers: {
+                    'Authorization': `token ${giteeToken}`,
+                },
+            })
+        } catch (ex) {
+            console.log(ex)
+        }
 
-        const headCommitSha = response.data.commit.id
-
-        await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/tags`, {
-            tag_name: `v${versionNum}`,
-            target: headCommitSha,
-            message: `Release v${versionNum}`,
-        }, {
-            headers: {
-                'Authorization': `token ${giteeToken}`,
-            },
-        })
-
-        const releaseResponse = await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases`, {
-            tag_name: `v${versionNum}`,
-            name: `Release v${versionNum}`,
-            description: versionJson.notes,
-        }, {
-            headers: {
-                'Authorization': `token ${giteeToken}`,
-            },
-        })
+        let releaseId
+        try {
+            const releaseResponse = await axios.get(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/tags/v${versionNum}`, {
+                headers: {
+                    'Authorization': `token ${giteeToken}`,
+                },
+            })
+            releaseId = releaseResponse.data.id
+        } catch { }
+        
+        if (!releaseId) {
+            const releaseResponse = await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases`, {
+                tag_name: `v${versionNum}`,
+                name: `v${versionNum}`,
+                body: versionJson.notes,
+                target_commitish: `${repository.branch ?? 'master'}`
+            }, {
+                headers: {
+                    'Authorization': `token ${giteeToken}`,
+                },
+            })
+            releaseId = releaseResponse.data.id
+        }
 
         await this.exportZip(versionNum)
 
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        const fileData = fs.readFileSync(filePath)
+        // const fileData = fs.readFileSync(filePath)
 
-        const uploadResponse = await axios.post(
-            `https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseResponse.data.id}/assets`,
-            fileData,
-            {
-                headers: {
-                    'Authorization': `token ${giteeToken}`,
-                    'Content-Type': mime.getType(zipPath) || 'application/octet-stream',
-                },
-            }
-        )
+        // const uploadResponse = await axios.post(
+        //     `https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseId}/assets`,
+        //     fileData,
+        //     {
+        //         headers: {
+        //             'Authorization': `token ${giteeToken}`,
+        //             'Content-Type': mime.getType(filePath) || 'application/octet-stream',
+        //         },
+        //     }
+        // )
 
-        return uploadResponse.data.url
+        shell.openExternal(`https://gitee.com/${repository.owner}/${repository.repo}/releases/v${versionNum}/edit`)
+        shell.showItemInFolder(filePath)
+
+        return `https://gitee.com/${repository.owner}/${repository.repo}/releases/download/v${versionNum}/${this.moduleName}_${versionNum}.zip`
     }
 }
 

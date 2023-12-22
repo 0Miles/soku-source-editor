@@ -88,6 +88,7 @@
     "Adding download link...": "正在添加下载链接...",
     "Updating recommended version...": "正在更新推荐版本...",
     "Set this version as the recommended version after releasing": "发布后将此版本设置为推荐版本",
-    "Target repository": "目标储存库"
+    "Target repository": "目标储存库",
+    "Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.": "Gitee无法通过API上传文件。请手动上传输出的zip文件到打开的Gitee发布页面并点击确认。"
 
 }

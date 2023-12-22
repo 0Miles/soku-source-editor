@@ -30,10 +30,14 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
     const [repositories, setRepositories] = useState([])
     const [selectedRepository, setSelectedRepository] = useState()
     const [updateRecommendedVersion, setUpdateRecommendedVersion] = useState(true)
+    const [waitManualUpload, setWaitManualUpload] = useState(false)
+    const [newDownloadLink, setNewDownloadLink] = useState()
 
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
+        setWaitManualUpload(false)
+        setNewDownloadLink()
 
         switch (hostType) {
             case 'github':
@@ -50,7 +54,7 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
         setOpen(true)
     }
 
-    const handleSubmitAction = async (data) => {
+    const handleSubmitAction = async () => {
         setIsDoing(true)
         try {
             setDoingMessage(t(`Releasing...`))
@@ -67,6 +71,8 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
 
             setDoingMessage(t(`Adding download link...`))
             const newDownloadLink = { type: hostType, url: downloadUrl }
+            setNewDownloadLink(newDownloadLink)
+
             await api.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
 
             if (updateRecommendedVersion) {
@@ -76,13 +82,24 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
                 })
             }
 
-            setOpen(false)
-            onCompleted && onCompleted(newDownloadLink)
+            if (hostType === 'gitee') {
+                setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
+                setWaitManualUpload(true)
+            } else {
+                setOpen(false)
+                onCompleted && onCompleted(newDownloadLink)
+            }
+
         }
         catch (ex) {
             setErrorMsg(ex.message)
             setIsDoing(false)
         }
+    }
+
+    const closeAndCompleted = () => {
+        setOpen(false)
+        onCompleted && onCompleted(newDownloadLink)
     }
 
     return <Dialog open={open}>
@@ -141,6 +158,13 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
                         !isDoing && !errorMsg &&
                         <>
                             <Button onClick={handleSubmitAction} appearance="primary">{t('Release')}</Button>
+                            <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
+                        </>
+                    }
+                    {
+                        waitManualUpload &&
+                        <>
+                            <Button onClick={closeAndCompleted} appearance="primary">{t('OK')}</Button>
                             <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
                         </>
                     }
