@@ -68,11 +68,7 @@
             ],
             "icon": "resources/icon.ico",
             "publish": [
-                {
-                    "provider": "github",
-                    "owner": "0Miles",
-                    "repo": "soku-source-editor"
-                }
+                "github"
             ]
         },
         "linux": {
@@ -81,11 +77,7 @@
             ],
             "icon": "resources/icon.png",
             "publish": [
-                {
-                    "provider": "github",
-                    "owner": "0Miles",
-                    "repo": "soku-source-editor"
-                }
+                "github"
             ]
         },
         "publish": [
