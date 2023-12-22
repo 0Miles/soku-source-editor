@@ -1,7 +1,7 @@
 {
     "name": "soku-source-editor",
     "description": "Soku source editor",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "author": "Miles",
     "scripts": {
         "dev:vite": "set BROWSER=none && vite",
@@ -61,6 +61,32 @@
         "directories": {
             "buildResources": "resources",
             "output": "pack"
+        },
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "icon": "resources/icon.ico",
+            "publish": [
+                {
+                    "provider": "github",
+                    "owner": "0Miles",
+                    "repo": "soku-source-editor"
+                }
+            ]
+        },
+        "linux": {
+            "target": [
+                "deb"
+            ],
+            "icon": "resources/icon.png",
+            "publish": [
+                {
+                    "provider": "github",
+                    "owner": "0Miles",
+                    "repo": "soku-source-editor"
+                }
+            ]
         },
         "publish": [
             {
