@@ -2,7 +2,7 @@
     "name": "soku-source-editor",
     "description": "Soku source editor",
     "version": "1.0.0",
-    "author": "Miles",
+    "author": "Miles <inbox@miles.tw>",
     "scripts": {
         "dev:vite": "set BROWSER=none && vite",
         "dev:electron": "wait-on tcp:5173 && electron .",
