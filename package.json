@@ -1,66 +1,80 @@
 {
-  "name": "soku-source-editor",
-  "description": "Soku source editor",
-  "version": "0.0.0",
-  "author": "Miles",
-  "scripts": {
-    "dev:vite": "set BROWSER=none && vite",
-    "dev:electron": "wait-on tcp:5173 && electron .",
-    "wait-dev:vite": "wait-on tcp:5173",
-    "build": "vite build",
-    "serve": "vite preview",
-    "lint": "eslint .",
-    "pack": "npm run build && electron-builder --dir"
-  },
-  "dependencies": {
-    "@fluentui/react-components": "^9.43.2",
-    "@master/css": "^1.37.8",
-    "@master/css.react": "^2.0.0-beta.174",
-    "@master/keyframes.css": "^2.0.0-beta.84",
-    "@octokit/rest": "^20.0.2",
-    "archiver": "^6.0.1",
-    "axios": "^1.6.2",
-    "chokidar": "^3.5.3",
-    "electron-is-dev": "^2.0.0",
-    "electron-squirrel-startup": "^1.0.0",
-    "html-react-parser": "^4.2.5",
-    "i18next": "^23.5.1",
-    "marked": "^9.1.2",
-    "nanoid": "^5.0.3",
-    "react": "^18.2.0",
-    "react-accessible-treeview": "^2.8.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.48.2",
-    "react-i18next": "^13.2.2",
-    "react-icons": "^4.12.0",
-    "react-router-dom": "^6.16.0",
-    "simple-git": "^3.20.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react-swc": "^3.0.0",
-    "electron": "^26.3.0",
-    "electron-builder": "^24.6.4",
-    "eslint": "^8.29.0",
-    "eslint-plugin-react": "^7.31.11",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "typescript": "^5.0.4",
-    "vite": "^4.0.0",
-    "wait-on": "^7.0.1"
-  },
-  "main": "app/main.js",
-  "build": {
-    "appId": "com.soku-source-editor.app",
-    "productName": "SokuSourceEditor",
-    "directories": {
-      "buildResources": "resources",
-      "output": "pack"
+    "name": "soku-source-editor",
+    "description": "Soku source editor",
+    "version": "0.0.1",
+    "author": "Miles",
+    "scripts": {
+        "dev:vite": "set BROWSER=none && vite",
+        "dev:electron": "wait-on tcp:5173 && electron .",
+        "wait-dev:vite": "wait-on tcp:5173",
+        "build": "vite build",
+        "serve": "vite preview",
+        "lint": "eslint .",
+        "pack": "npm run build && electron-builder --dir",
+        "publish": "npm run build && electron-builder --win --linux --publish always"
     },
-    "files": [
-      "**/*",
-      "!.vscode",
-      "renderer/",
-      "dist/"
-    ],
-    "asar": false
-  }
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0Miles/soku-source-editor.git"
+    },
+    "dependencies": {
+        "@fluentui/react-components": "^9.43.2",
+        "@master/css": "^1.37.8",
+        "@master/css.react": "^2.0.0-beta.174",
+        "@master/keyframes.css": "^2.0.0-beta.84",
+        "@octokit/rest": "^20.0.2",
+        "archiver": "^6.0.1",
+        "axios": "^1.6.2",
+        "chokidar": "^3.5.3",
+        "electron-is-dev": "^2.0.0",
+        "electron-log": "^5.0.1",
+        "electron-squirrel-startup": "^1.0.0",
+        "electron-updater": "^6.1.7",
+        "html-react-parser": "^4.2.5",
+        "i18next": "^23.5.1",
+        "marked": "^9.1.2",
+        "nanoid": "^5.0.3",
+        "react": "^18.2.0",
+        "react-accessible-treeview": "^2.8.0",
+        "react-dom": "^18.2.0",
+        "react-hook-form": "^7.48.2",
+        "react-i18next": "^13.2.2",
+        "react-icons": "^4.12.0",
+        "react-router-dom": "^6.16.0",
+        "simple-git": "^3.20.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react-swc": "^3.0.0",
+        "electron": "^26.3.0",
+        "electron-builder": "^24.6.4",
+        "eslint": "^8.29.0",
+        "eslint-plugin-react": "^7.31.11",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "typescript": "^5.0.4",
+        "vite": "^4.0.0",
+        "wait-on": "^7.0.1"
+    },
+    "main": "app/main.js",
+    "build": {
+        "appId": "com.soku-source-editor.app",
+        "productName": "SokuSourceEditor",
+        "directories": {
+            "buildResources": "resources",
+            "output": "pack"
+        },
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "0Miles",
+                "repo": "soku-source-editor"
+            }
+        ],
+        "files": [
+            "**/*",
+            "!.vscode",
+            "renderer/",
+            "dist/"
+        ],
+        "asar": false
+    }
 }

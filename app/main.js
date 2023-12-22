@@ -1,4 +1,5 @@
-const { app, BrowserWindow, ipcMain, nativeTheme, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, dialog, autoUpdater } = require('electron')
+const log = require('electron-log')
 const path = require('node:path')
 const createMainWindow = require('./window/main.window')
 
@@ -9,6 +10,34 @@ const { SourceManager } = require('./source-manager/source-manager')
 const sourceManager = new SourceManager()
 
 const getFilesTree = require('./common/get-files-tree')
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update available',
+        message: 'A new version of the application is available. Do you want to download and install it now?',
+        buttons: ['Yes', 'No'],
+    }, (buttonIndex) => {
+        if (buttonIndex === 0) {
+            autoUpdater.downloadUpdate()
+        }
+    })
+})
+
+autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update has been downloaded',
+        message: 'The update has been downloaded. Do you want to install it now?',
+        buttons: ['Yes', 'No'],
+    }, (buttonIndex) => {
+        if (buttonIndex === 0) {
+            autoUpdater.quitAndInstall()
+        }
+    })
+})
 
 nativeTheme.themeSource = configManager.getConfig('theme') ?? 'system'
 
@@ -126,6 +155,7 @@ ipcMain.handle('delete', async (_, message) => {
 })
 
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify()
     createMainWindow()
 
     app.on('activate', function () {
