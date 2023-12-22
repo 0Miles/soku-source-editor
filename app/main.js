@@ -155,8 +155,11 @@ ipcMain.handle('delete', async (_, message) => {
 })
 
 app.whenReady().then(() => {
-    autoUpdater.checkForUpdatesAndNotify()
     createMainWindow()
+
+    app.on('ready', () => {
+        autoUpdater.checkForUpdatesAndNotify()
+    })
 
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow()

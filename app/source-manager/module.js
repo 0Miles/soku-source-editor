@@ -8,7 +8,6 @@ const compareVersions = require('../common/compare-versions')
 const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
 const axios = require('axios')
-const mime = require('mime')
 const { shell } = require('electron')
 
 class Module {
@@ -263,7 +262,7 @@ class Module {
             name: `${this.moduleName}_${versionNum}.zip`,
             data: fileData,
             headers: {
-                'Content-Type': mime.getType(zipPath) || 'application/octet-stream',
+                'Content-Type': 'application/zip',
             }
         })
 
@@ -315,18 +314,6 @@ class Module {
         await this.exportZip(versionNum)
 
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        // const fileData = fs.readFileSync(filePath)
-
-        // const uploadResponse = await axios.post(
-        //     `https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseId}/assets`,
-        //     fileData,
-        //     {
-        //         headers: {
-        //             'Authorization': `token ${giteeToken}`,
-        //             'Content-Type': mime.getType(filePath) || 'application/octet-stream',
-        //         },
-        //     }
-        // )
 
         shell.openExternal(`https://gitee.com/${repository.owner}/${repository.repo}/releases/v${versionNum}/edit`)
         shell.showItemInFolder(filePath)
