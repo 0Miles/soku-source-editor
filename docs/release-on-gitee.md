@@ -26,7 +26,7 @@
 ### 手动上传模组zip包
 
  Gitee没有提供上传附件的API，只能手动上传  
-会自动打开浏览器和output目录，把zip拖到Gitee的上传框就行了  
+会自动打开浏览器和output目录，把zip拖到Gitee的上传框后按更新就行了  
 ![upload](./upload-asset.png)
 
 ### 发布完成
