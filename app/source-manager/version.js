@@ -3,6 +3,7 @@ const fs = require('fs')
 const { DirectoryJsonElement } = require('./directory-json-element')
 const url = require('url')
 const getFilesTree = require('../common/get-files-tree')
+const { app } = require('electron')
 
 class ModuleVersion {
     constructor(sourceName, moduleName, version) {
@@ -10,7 +11,7 @@ class ModuleVersion {
         this.moduleName = moduleName
         this.version = version
 
-        this.dirname = path.resolve(process.cwd(), 'sources', sourceName, 'modules', moduleName, 'versions', version)
+        this.dirname = path.join(app.getAppPath(), 'sources', sourceName, 'modules', moduleName, 'versions', version)
         this.element = new DirectoryJsonElement(this.dirname, 'version.json')
         this.refreshModVersionFiles()
     }

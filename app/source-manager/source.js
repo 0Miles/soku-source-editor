@@ -4,6 +4,7 @@ const { Module } = require('./module')
 const { default: simpleGit } = require('simple-git')
 const { DirectoryJsonElement } = require('./directory-json-element')
 const chokidar = require('chokidar')
+const { app } = require('electron')
 
 class Source {
     constructor(sourceName) {
@@ -67,7 +68,7 @@ class Source {
     }
 
     init() {
-        this.dirname = path.resolve(process.cwd(), 'sources', this.sourceName)
+        this.dirname = path.join(app.getAppPath(), 'sources', this.sourceName)
         this.git = simpleGit(this.dirname)
         this.element = new DirectoryJsonElement(this.dirname, 'soku-mod-source.json')
         this.refreshModules()

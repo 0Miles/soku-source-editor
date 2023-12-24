@@ -2,10 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const { default: simpleGit } = require('simple-git')
 const { Source } = require('./source')
+const { app } = require('electron')
 
 class SourceManager {
     constructor() {
-        this.sourcesDir = path.resolve(process.cwd(), 'sources')
+        this.sourcesDir = path.join(app.getAppPath(), 'sources')
         if (!fs.existsSync(this.sourcesDir)) {
             fs.mkdirSync(this.sourcesDir)
         }

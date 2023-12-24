@@ -8,7 +8,7 @@ const compareVersions = require('../common/compare-versions')
 const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
 const axios = require('axios')
-const { shell } = require('electron')
+const { shell, app } = require('electron')
 
 class Module {
     constructor(sourceName, moduleName) {
@@ -18,7 +18,7 @@ class Module {
     }
 
     init() {
-        this.dirname = path.resolve(process.cwd(), 'sources', this.sourceName, 'modules', this.moduleName)
+        this.dirname = path.join(app.getAppPath(), 'sources', this.sourceName, 'modules', this.moduleName)
         this.element = new DirectoryJsonElement(this.dirname, 'mod.json')
         this.refreshIconAndBanner()
         this.refreshVersions()
