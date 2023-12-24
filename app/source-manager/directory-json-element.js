@@ -3,7 +3,7 @@ const path = require('path')
 
 class DirectoryJsonElement {
     constructor(dirname, fileName) {
-        this.dirname = path.resolve(dirname)
+        this.dirname = dirname
         this.fileName = fileName
 
         this.ensureDirectoryExistence()
@@ -13,6 +13,10 @@ class DirectoryJsonElement {
 
     ensureDirectoryExistence() {
         const directories = this.dirname.split(path.sep);
+
+        if (path.sep === '/') {
+            directories.unshift('/')
+        }
 
         let currentPath = directories.shift()
         for (const directory of directories) {
