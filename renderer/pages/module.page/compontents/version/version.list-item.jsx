@@ -26,11 +26,11 @@ renderer.link = (href, title, text) => {
     return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
 }
 
-export default function VersionListItem({ sourceName, modInfo, versionInfo, defaultOpen, allowOpen, refreshModInfo }) {
+export default function VersionListItem({ sourceName, modInfo, defaultVersionInfo, defaultOpen, allowOpen, refreshModInfo }) {
     const { config } = useShared()
     const { primarySourceName } = useShared()
     const { t, i18n } = useTranslation()
-    const [versionInfoForDisplay, setVersionInfoForDisplay] = useState(versionInfo)
+    const [versionInfo, setVersionInfo] = useState(defaultVersionInfo)
 
     return <CollapsibleItem
         defaultOpen={defaultOpen}
@@ -50,11 +50,11 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
             </>
         }
         desc={
-            !versionInfoForDisplay.downloadLinks?.length && t('Not yet released')
+            !versionInfo.downloadLinks?.length && t('Not yet released')
         }
         content={<>
             {
-                !versionInfoForDisplay.downloadLinks?.find(x => x.type === 'github') &&
+                !versionInfo.downloadLinks?.find(x => x.type === 'github') &&
                 !!modInfo.repositories?.filter(x => x.type === 'github')?.length &&
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">
@@ -75,9 +75,9 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         versionInfo={versionInfo}
                         disabled={!config.githubToken}
                         onCompleted={(newDownloadLink) => {
-                            const newDownloadLinks = [...versionInfoForDisplay.downloadLinks ?? [], newDownloadLink]
-                            setVersionInfoForDisplay({
-                                ...versionInfoForDisplay,
+                            const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
+                            setVersionInfo({
+                                ...versionInfo,
                                 downloadLinks: newDownloadLinks
                             })
                             refreshModInfo()
@@ -86,7 +86,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                 </div>
             }
             {
-                !versionInfoForDisplay.downloadLinks?.find(x => x.type === 'gitee') &&
+                !versionInfo.downloadLinks?.find(x => x.type === 'gitee') &&
                 !!modInfo.repositories?.filter(x => x.type === 'gitee')?.length &&
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">
@@ -100,21 +100,21 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                             </div>
                         }
                     </div>
-                        <ReleaseVersionDialog
-                            hostType="gitee"
-                            sourceName={sourceName}
-                            modInfo={modInfo}
-                            versionInfo={versionInfo}
-                            disabled={!config.giteeToken}
-                            onCompleted={(newDownloadLink) => {
-                                const newDownloadLinks = [...versionInfoForDisplay.downloadLinks ?? [], newDownloadLink]
-                                setVersionInfoForDisplay({
-                                    ...versionInfoForDisplay,
-                                    downloadLinks: newDownloadLinks
-                                })
-                                refreshModInfo()
-                            }}
-                        />
+                    <ReleaseVersionDialog
+                        hostType="gitee"
+                        sourceName={sourceName}
+                        modInfo={modInfo}
+                        versionInfo={versionInfo}
+                        disabled={!config.giteeToken}
+                        onCompleted={(newDownloadLink) => {
+                            const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
+                            setVersionInfo({
+                                ...versionInfo,
+                                downloadLinks: newDownloadLinks
+                            })
+                            refreshModInfo()
+                        }}
+                    />
                 </div>
             }
             <div>
@@ -125,7 +125,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         </div>
                         <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                             {
-                                !versionInfoForDisplay.downloadLinks?.length &&
+                                !versionInfo.downloadLinks?.length &&
                                 t('No download link has been released yet')
                             }
                         </div>
@@ -133,19 +133,19 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     <EditVersionDownloadLinksDialog
                         sourceName={sourceName ?? primarySourceName}
                         moduleName={modInfo.name}
-                        versionInfo={versionInfoForDisplay}
+                        versionInfo={versionInfo}
                         onCompleted={(data) => {
-                            setVersionInfoForDisplay({
-                                ...versionInfoForDisplay,
+                            setVersionInfo({
+                                ...versionInfo,
                                 ...data
                             })
                         }} />
                 </div>
                 {
-                    !!versionInfoForDisplay.downloadLinks?.length &&
+                    !!versionInfo.downloadLinks?.length &&
                     <div className="mt:16">
                         {
-                            versionInfoForDisplay.downloadLinks?.map(
+                            versionInfo.downloadLinks?.map(
                                 (downloadLink, i) => <VersionDownloadLink key={i} downloadLink={downloadLink} />
                             )
                         }
@@ -160,10 +160,10 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     <EditVersionNotesDialog
                         sourceName={sourceName ?? primarySourceName}
                         moduleName={modInfo.name}
-                        versionInfo={versionInfoForDisplay}
+                        versionInfo={versionInfo}
                         onCompleted={(data) => {
-                            setVersionInfoForDisplay({
-                                ...versionInfoForDisplay,
+                            setVersionInfo({
+                                ...versionInfo,
                                 notes: data.notes
                             })
                         }} />
@@ -171,7 +171,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                 <div className="r:3 my:8>p color:#5db0d7>*>a@dark color:blue>*>a@light user-select:text">
                     {
                         HTMLReactParser(
-                            marked.parse(getI18nProperty(versionInfoForDisplay, 'notes', i18n.language), { renderer })
+                            marked.parse(getI18nProperty(versionInfo, 'notes', i18n.language), { renderer })
                         )
                     }
                 </div>
@@ -184,10 +184,10 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     <EditVersionContentDialog
                         sourceName={sourceName ?? primarySourceName}
                         moduleName={modInfo.name}
-                        versionInfo={versionInfoForDisplay}
+                        versionInfo={versionInfo}
                         onCompleted={(data) => {
-                            setVersionInfoForDisplay({
-                                ...versionInfoForDisplay,
+                            setVersionInfo({
+                                ...versionInfo,
                                 ...data
                             })
                         }} />
@@ -197,15 +197,15 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         {t('Main file')}:
                     </div>
                     <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
-                        {versionInfoForDisplay.main}
+                        {versionInfo.main}
                     </div>
                     <div className="grid-col:1">
                         {t('Config files')}:
                     </div>
                     <div className="grid-col:3 f:16 color:#CFCFCF@dark user-select:text">
                         {
-                            !!versionInfoForDisplay.configFiles?.length &&
-                            versionInfoForDisplay.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
+                            !!versionInfo.configFiles?.length &&
+                            versionInfo.configFiles.map((fileName, i) => <div key={i}>{fileName}</div>)
                         }
                     </div>
                     <div className="grid-col:1 mt:8">
@@ -213,11 +213,11 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     </div>
                     <div className="grid-col:3 mt:8 f:14 color:#CFCFCF@dark user-select:text">
                         {
-                            !!versionInfoForDisplay.moduleFiles?.children?.length &&
-                            <DirectoryTreeView className="bg:#141414@dark bg:#f5f5f5@light r:3 p:4 ml:-8" folder={versionInfoForDisplay.moduleFiles} />
+                            !!versionInfo.moduleFiles?.children?.length &&
+                            <DirectoryTreeView className="bg:#141414@dark bg:#f5f5f5@light r:3 p:4 ml:-8" folder={versionInfo.moduleFiles} />
                         }
                         {
-                            !versionInfoForDisplay.moduleFiles?.children?.length &&
+                            !versionInfo.moduleFiles?.children?.length &&
                             t('Module files not imported')
                         }
                     </div>
@@ -230,15 +230,15 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                     </div>
                     <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                         {
-                            !!versionInfoForDisplay.moduleFiles?.children?.length &&
+                            !!versionInfo.moduleFiles?.children?.length &&
                             t('Generates a zip file that can be imported in SokuLauncher')}
                         {
-                            !versionInfoForDisplay.moduleFiles?.children?.length &&
+                            !versionInfo.moduleFiles?.children?.length &&
                             t('Requires import module files')
                         }
                     </div>
                 </div>
-                <Button onClick={() => api.exportZip(sourceName, modInfo.name, versionInfo.version)} disabled={!versionInfoForDisplay.moduleFiles?.children?.length}>{t('Export')}</Button>
+                <Button onClick={() => api.exportZip(sourceName, modInfo.name, versionInfo.version)} disabled={!versionInfo.moduleFiles?.children?.length}>{t('Export')}</Button>
             </div>
             {
                 versionInfo.version !== modInfo.recommendedVersionNumber &&
@@ -249,7 +249,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                         </div>
                         <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                             {
-                                !versionInfoForDisplay.downloadLinks?.length &&
+                                !versionInfo.downloadLinks?.length &&
                                 t(`Requires publish and get download link`)
                             }
                         </div>
@@ -263,7 +263,7 @@ export default function VersionListItem({ sourceName, modInfo, versionInfo, defa
                                 refreshModInfo()
                             }
                         }
-                        disabled={!versionInfoForDisplay.downloadLinks?.length}>
+                        disabled={!versionInfo.downloadLinks?.length}>
                         {t('Set')}
                     </Button>
                 </div>

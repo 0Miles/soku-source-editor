@@ -199,7 +199,7 @@ export default function ModuleInfoPage() {
                                 className={`w:full`}
                                 sourceName={sourceName ?? primarySourceName}
                                 modInfo={modInfo}
-                                versionInfo={versionInfo}
+                                defaultVersionInfo={versionInfo}
                                 refreshModInfo={refreshModInfo}
                             />
                         }

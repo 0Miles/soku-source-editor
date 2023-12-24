@@ -9,6 +9,7 @@ const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
 const axios = require('axios')
 const { shell, app } = require('electron')
+const { release } = require('os')
 
 class Module {
     constructor(sourceName, moduleName) {
@@ -195,7 +196,7 @@ class Module {
         await new Promise(resolve => setTimeout(resolve, 1000))
     }
 
-    async createGithubTagAndRelease(versionNum, repository, githubToken) {
+    async createGithubTagAndRelease(versionNum, repository, githubToken, draft = false, prerelease = false) {
         const version = this.getVersion(versionNum)
         const versionJson = version.getData()
 
@@ -239,28 +240,49 @@ class Module {
                 tag_name: `v${versionNum}`,
                 name: `v${versionNum}`,
                 body: versionJson.notes,
-                draft: false,
-                prerelease: false,
+                draft,
+                prerelease,
             })
         } catch (ex) {
             if (ex.status !== 422) throw ex
-            releaseResponse = await octokit.repos.getReleaseByTag({
+            await octokit.repos.updateRelease({
                 owner: repository.owner,
                 repo: repository.repo,
-                tag: `v${versionNum}`,
+                release_id: releaseResponse.data.id,
+                tag_name: `v${versionNum}`,
+                name: `v${versionNum}`,
+                body: versionJson.notes,
+                draft,
+                prerelease,
             })
         }
 
         await this.exportZip(versionNum)
 
-        const zipPath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        const fileData = fs.readFileSync(zipPath)
+        const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        
+        const oldAssetResonse = await octokit.repos.listAssetsForRelease({
+            owner: repository.owner,
+            repo: repository.repo,
+            release_id: releaseResponse.data.id,
+        })
+
+        for (const asset of oldAssetResonse.data) {
+            if (asset.name === `${this.moduleName}_${versionNum}.zip`) {
+                await octokit.repos.deleteReleaseAsset({
+                    owner: repository.owner,
+                    repo: repository.repo,
+                    asset_id: asset.id,
+                })
+            }
+        }
+
         const uploadResponse = await octokit.repos.uploadReleaseAsset({
             owner: repository.owner,
             repo: repository.repo,
             release_id: releaseResponse.data.id,
             name: `${this.moduleName}_${versionNum}.zip`,
-            data: fileData,
+            data: fs.readFileSync(filePath),
             headers: {
                 'Content-Type': 'application/zip',
             }
@@ -269,7 +291,7 @@ class Module {
         return uploadResponse.data.browser_download_url
     }
 
-    async createGiteeTagAndRelease(versionNum, repository, giteeToken) {
+    async createGiteeTagAndRelease(versionNum, repository, giteeToken, prerelease = false) {
         const version = this.getVersion(versionNum)
         const versionJson = version.getData()
 
@@ -278,6 +300,7 @@ class Module {
                 tag_name: `v${versionNum}`,
                 refs: `${repository.branch ?? 'master'}`,
                 message: `v${versionNum}`,
+                prerelease
             }, {
                 headers: {
                     'Authorization': `token ${giteeToken}`,
@@ -295,6 +318,18 @@ class Module {
                 },
             })
             releaseId = releaseResponse.data.id
+
+            await axios.patch(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases/${releaseId}`, {
+                tag_name: `v${versionNum}`,
+                name: `v${versionNum}`,
+                body: versionJson.notes,
+                target_commitish: `${repository.branch ?? 'master'}`,
+                prerelease
+            }, {
+                headers: {
+                    'Authorization': `token ${giteeToken}`,
+                },
+            })
         } catch { }
         
         if (!releaseId) {
@@ -302,7 +337,8 @@ class Module {
                 tag_name: `v${versionNum}`,
                 name: `v${versionNum}`,
                 body: versionJson.notes,
-                target_commitish: `${repository.branch ?? 'master'}`
+                target_commitish: `${repository.branch ?? 'master'}`,
+                prerelease
             }, {
                 headers: {
                     'Authorization': `token ${giteeToken}`,

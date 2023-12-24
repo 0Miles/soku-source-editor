@@ -13,7 +13,7 @@ import {
     Switch
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import * as api from '../../../../common/api'
 import RepoItem from '../repo-item'
@@ -31,13 +31,14 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
     const [selectedRepository, setSelectedRepository] = useState()
     const [updateRecommendedVersion, setUpdateRecommendedVersion] = useState(true)
     const [waitManualUpload, setWaitManualUpload] = useState(false)
-    const [newDownloadLink, setNewDownloadLink] = useState()
+
+    const okButtonResolve = useRef()
 
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
         setWaitManualUpload(false)
-        setNewDownloadLink()
+        okButtonResolve.current = null
 
         switch (hostType) {
             case 'github':
@@ -71,7 +72,12 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
 
             setDoingMessage(t(`Adding download link...`))
             const newDownloadLink = { type: hostType, url: downloadUrl }
-            setNewDownloadLink(newDownloadLink)
+
+            if (hostType === 'gitee') {
+                setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
+                setWaitManualUpload(true)
+                await new Promise(resolve => okButtonResolve.current = resolve)
+            }
 
             await api.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
 
@@ -81,15 +87,9 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
                     recommendedVersionNumber: versionInfo.version
                 })
             }
-
-            if (hostType === 'gitee') {
-                setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
-                setWaitManualUpload(true)
-            } else {
-                setOpen(false)
-                onCompleted && onCompleted(newDownloadLink)
-            }
-
+            
+            setOpen(false)
+            onCompleted && onCompleted(newDownloadLink)
         }
         catch (ex) {
             setErrorMsg(ex.message)
@@ -98,8 +98,7 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
     }
 
     const closeAndCompleted = () => {
-        setOpen(false)
-        onCompleted && onCompleted(newDownloadLink)
+        okButtonResolve.current && okButtonResolve.current()
     }
 
     return <Dialog open={open}>
