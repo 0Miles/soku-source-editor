@@ -14,7 +14,7 @@ class DirectoryJsonElement {
     ensureDirectoryExistence() {
         const directories = this.dirname.split(path.sep);
 
-        if (path.sep === '/') {
+        if (!directories[0].endswith(':')) {
             directories.unshift('/')
         }
 
