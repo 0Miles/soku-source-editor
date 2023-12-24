@@ -27,7 +27,6 @@ renderer.link = (href, title, text) => {
 }
 
 export default function VersionListItem({ sourceName, modInfo, defaultVersionInfo, defaultOpen, allowOpen, refreshModInfo }) {
-    const { config } = useShared()
     const { primarySourceName } = useShared()
     const { t, i18n } = useTranslation()
     const [versionInfo, setVersionInfo] = useState(defaultVersionInfo)
@@ -53,82 +52,32 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
             !versionInfo.downloadLinks?.length && t('Not yet released')
         }
         content={<>
-            {
-                !versionInfo.downloadLinks?.find(x => x.type === 'github') &&
-                !!modInfo.repositories?.filter(x => x.type === 'github')?.length &&
-                <div className="flex align-items:center justify-content:space-between">
-                    <div className="mr:16 my:2>div">
-                        <div>
-                            {t('Release on Github')}
-                        </div>
-                        {
-                            !config.githubToken &&
-                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                                {t(`Requires setup Github token`)}
-                            </div>
-                        }
-                        {
-                            !versionInfo.moduleFiles?.children?.length &&
-                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                                {t('Requires import module files')}
-                            </div>
-                        }
+            <div className="flex align-items:center justify-content:space-between">
+                <div className="mr:16 my:2>div">
+                    <div>
+                        {t('Release on repository')}
                     </div>
-                    <ReleaseVersionDialog
-                        hostType="github"
-                        sourceName={sourceName}
-                        modInfo={modInfo}
-                        versionInfo={versionInfo}
-                        disabled={!config.githubToken || !versionInfo.moduleFiles?.children?.length}
-                        onCompleted={(newDownloadLink) => {
-                            const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
-                            setVersionInfo({
-                                ...versionInfo,
-                                downloadLinks: newDownloadLinks
-                            })
-                            refreshModInfo()
-                        }}
-                    />
-                </div>
-            }
-            {
-                !versionInfo.downloadLinks?.find(x => x.type === 'gitee') &&
-                !!modInfo.repositories?.filter(x => x.type === 'gitee')?.length &&
-                <div className="flex align-items:center justify-content:space-between">
-                    <div className="mr:16 my:2>div">
-                        <div>
-                            {t('Release on Gitee')}
+                    {
+                        !versionInfo.moduleFiles?.children?.length &&
+                        <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                            {t('Requires import module files')}
                         </div>
-                        {
-                            !config.giteeToken &&
-                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                                {t(`Requires setup Gitee token`)}
-                            </div>
-                        }
-                        {
-                            !versionInfo.moduleFiles?.children?.length &&
-                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
-                                {t('Requires import module files')}
-                            </div>
-                        }
-                    </div>
-                    <ReleaseVersionDialog
-                        hostType="gitee"
-                        sourceName={sourceName}
-                        modInfo={modInfo}
-                        versionInfo={versionInfo}
-                        disabled={!config.giteeToken || !versionInfo.moduleFiles?.children?.length}
-                        onCompleted={(newDownloadLink) => {
-                            const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
-                            setVersionInfo({
-                                ...versionInfo,
-                                downloadLinks: newDownloadLinks
-                            })
-                            refreshModInfo()
-                        }}
-                    />
+                    }
                 </div>
-            }
+                <ReleaseVersionDialog
+                    sourceName={sourceName}
+                    modInfo={modInfo}
+                    versionInfo={versionInfo}
+                    disabled={!versionInfo.moduleFiles?.children?.length}
+                    onCompleted={(newDownloadLinks) => {
+                        setVersionInfo({
+                            ...versionInfo,
+                            downloadLinks: [...versionInfo.downloadLinks ?? [], ...newDownloadLinks]
+                        })
+                        refreshModInfo()
+                    }}
+                />
+            </div>
             <div>
                 <div className="flex align-items:center justify-content:space-between">
                     <div className="mr:16 my:2>div">

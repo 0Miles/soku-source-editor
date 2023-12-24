@@ -204,10 +204,16 @@ class Module {
             auth: githubToken
         })
 
+        const defaultBranchResponse = await octokit.repos.get({
+            owner: repository.owner,
+            repo: repository.repo,
+        })
+        const defaultBranch = defaultBranchResponse.data.default_branch
+
         const headCommitResponse = await octokit.git.getRef({
             owner: repository.owner,
             repo: repository.repo,
-            ref: `heads/${repository.branch ?? 'main'}`,
+            ref: `heads/${repository.branch ?? defaultBranch}`,
         })
 
         const headCommitSha = headCommitResponse.data.object.sha
@@ -267,7 +273,7 @@ class Module {
         await this.exportZip(versionNum)
 
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
-        
+
         const oldAssetResonse = await octokit.repos.listReleaseAssets({
             owner: repository.owner,
             repo: repository.repo,
@@ -303,9 +309,14 @@ class Module {
         const versionJson = version.getData()
 
         try {
+            const defaultBranchResponse = await axios.get(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}`, {
+                headers: { 'Authorization': `token ${giteeToken}` }
+            })
+            const branch = defaultBranchResponse.data.default_branch
+
             await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/tags`, {
                 tag_name: `v${versionNum}`,
-                refs: `${repository.branch ?? 'master'}`,
+                refs: `${repository.branch ?? branch}`,
                 message: `v${versionNum}`,
                 prerelease
             }, {
@@ -313,9 +324,7 @@ class Module {
                     'Authorization': `token ${giteeToken}`,
                 },
             })
-        } catch (ex) {
-            console.log(ex)
-        }
+        } catch { }
 
         let releaseId
         try {
@@ -330,7 +339,7 @@ class Module {
                 tag_name: `v${versionNum}`,
                 name: `v${versionNum}`,
                 body: versionJson.notes,
-                target_commitish: `${repository.branch ?? 'master'}`,
+                target_commitish: `${repository.branch ?? 'main'}`,
                 prerelease
             }, {
                 headers: {
@@ -338,13 +347,13 @@ class Module {
                 },
             })
         } catch { }
-        
+
         if (!releaseId) {
             const releaseResponse = await axios.post(`https://gitee.com/api/v5/repos/${repository.owner}/${repository.repo}/releases`, {
                 tag_name: `v${versionNum}`,
                 name: `v${versionNum}`,
-                body: versionJson.notes,
-                target_commitish: `${repository.branch ?? 'master'}`,
+                body: !!versionJson.notes ? versionJson.notes : `v${versionNum}`,
+                target_commitish: `${repository.branch ?? 'main'}`,
                 prerelease
             }, {
                 headers: {

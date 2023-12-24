@@ -107,8 +107,10 @@ ipcMain.handle('post', async (_, message) => {
             case 'modVersionDownloadLink':
                 const version = sourceManager.getSource(message[1]).getModule(message[2]).getVersion(message[3])
                 const downloadLinks = version.element.info?.downloadLinks ?? []
-                downloadLinks.push(message[4])
-                version.element.updateInfo({ downloadLinks })
+                if (!downloadLinks.find(x => x.type === message[4].type && x.url === message[4].url)) {
+                    downloadLinks.push(message[4])
+                    version.element.updateInfo({ downloadLinks })
+                }
                 break
         }
     }

@@ -166,7 +166,7 @@ export default function ModuleInfoPage() {
                                 <div className="my:6 flex flex-wrap:wrap">
                                     {
                                         !!modInfo.repositories?.length &&
-                                        modInfo.repositories.map((repo, i) => <RepoItem key={i} className="align-items:center p:8 mr:8 r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />)
+                                        modInfo.repositories.map((repo, i) => <RepoItem key={i} className="align-items:center p:8 mr:8 mb:8 r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />)
                                     }
                                     {
                                         !modInfo.repositories?.length &&

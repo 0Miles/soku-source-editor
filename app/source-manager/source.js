@@ -35,7 +35,7 @@ class Source {
                         try {
                             await this.git.add(addAndChangeFile.path)
                         } catch (ex) {
-                            console.log(ex)
+                            // console.log(ex)
                         }
                     }
                 }
@@ -45,7 +45,7 @@ class Source {
                         try {
                             await this.git.add(removeFile.path)
                         } catch (ex) {
-                            console.log(ex)
+                            // console.log(ex)
                         }
                     }
                 }

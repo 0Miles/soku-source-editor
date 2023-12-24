@@ -10,7 +10,8 @@ import {
     DialogContent,
     Dropdown,
     Option,
-    Switch
+    Switch,
+    Checkbox
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useRef, useState } from 'react'
@@ -18,7 +19,7 @@ import { useRef, useState } from 'react'
 import * as api from '../../../../common/api'
 import RepoItem from '../repo-item'
 
-export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, versionInfo, onCompleted, disabled }) {
+export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo, onCompleted, disabled, openFunc }) {
     const { t } = useTranslation()
 
     const [open, setOpen] = useState(false)
@@ -26,30 +27,26 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
     const [doingMessage, setDoingMessage] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
 
-    const [title, setTitle] = useState('Release on Github')
     const [repositories, setRepositories] = useState([])
-    const [selectedRepository, setSelectedRepository] = useState()
+    const [selectedRepositories, setSelectedRepositories] = useState([])
     const [updateRecommendedVersion, setUpdateRecommendedVersion] = useState(true)
     const [waitManualUpload, setWaitManualUpload] = useState(false)
 
+    
+    const onClose = useRef()
     const okButtonResolve = useRef()
+    const okButtonReject = useRef()
 
     const openDialog = () => {
         setErrorMsg('')
         setIsDoing(false)
         setWaitManualUpload(false)
         okButtonResolve.current = null
+        okButtonReject.current = null
+        onClose.current = null
 
-        switch (hostType) {
-            case 'github':
-                setTitle('Release on Github')
-                break
-            case 'gitee':
-                setTitle('Release on Gitee')
-                break
-        }
-        setRepositories(modInfo.repositories?.filter(x => x.type === hostType) ?? [])
-        setSelectedRepository(modInfo.repositories?.find(x => x.type === hostType))
+        setRepositories(modInfo.repositories ?? [])
+        setSelectedRepositories(modInfo.repositories ?? [])
         setUpdateRecommendedVersion(true)
 
         setOpen(true)
@@ -57,124 +54,153 @@ export default function ReleaseVersionDialog({ hostType, sourceName, modInfo, ve
 
     const handleSubmitAction = async () => {
         setIsDoing(true)
-        try {
-            setDoingMessage(t(`Releasing...`))
+        const errorMessages = []
+        const newDownloadLinks = []
+        for (const repository of selectedRepositories) {
+            try {
+                setDoingMessage(`${repository.owner}/${repository.repo} ${t(`Releasing...`)}`)
 
-            let downloadUrl
-            switch (hostType) {
-                case 'github':
-                    downloadUrl = await api.githubRelease(sourceName, modInfo.name, versionInfo.version, selectedRepository)
-                    break
-                case 'gitee':
-                    downloadUrl = await api.giteeRelease(sourceName, modInfo.name, versionInfo.version, selectedRepository)
-                    break
+                let downloadUrl
+                switch (repository.type) {
+                    case 'github':
+                        downloadUrl = await api.githubRelease(sourceName, modInfo.name, versionInfo.version, repository)
+                        break
+                    case 'gitee':
+                        downloadUrl = await api.giteeRelease(sourceName, modInfo.name, versionInfo.version, repository)
+                        break
+                }
+
+                if (!downloadUrl) {
+                    throw new Error('Upload asset failed.')
+                }
+
+                setDoingMessage(`${repository.owner}/${repository.repo} ${t(`Adding download link...`)}`)
+                const newDownloadLink = { type: repository.type, url: downloadUrl }
+
+                if (repository.type === 'gitee') {
+                    setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
+                    setWaitManualUpload(true)
+                    await new Promise((resolve, reject) => {
+                        okButtonResolve.current = resolve
+                        okButtonReject.current = reject
+                    })
+                    setWaitManualUpload(false)
+                }
+
+                await api.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
+                newDownloadLinks.push(newDownloadLink)
             }
-
-            setDoingMessage(t(`Adding download link...`))
-            const newDownloadLink = { type: hostType, url: downloadUrl }
-
-            if (hostType === 'gitee') {
-                setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
-                setWaitManualUpload(true)
-                await new Promise(resolve => okButtonResolve.current = resolve)
+            catch (ex) {
+                errorMessages.push(`${repository.owner}/${repository.repo}: ${ex.message}`)
             }
+        }
 
-            await api.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
+        setIsDoing(false)
 
+        if (newDownloadLinks.length > 0) {
             if (updateRecommendedVersion) {
                 setDoingMessage(t(`Updating recommended version...`))
                 await api.updateMod(sourceName, modInfo.name, {
                     recommendedVersionNumber: versionInfo.version
                 })
             }
-            
+            onCompleted && onCompleted(newDownloadLinks)
+        }
+
+        if (errorMessages.length > 0) {
+            setErrorMsg(errorMessages.join('\n'))
+        } else {
             setOpen(false)
-            onCompleted && onCompleted(newDownloadLink)
-        }
-        catch (ex) {
-            setErrorMsg(ex.message)
-            setIsDoing(false)
         }
     }
 
-    const closeAndCompleted = () => {
-        okButtonResolve.current && okButtonResolve.current()
+    const repositoryCheckboxChangeHandle = (checked, repository) => {
+        if (checked) {
+            setSelectedRepositories([...selectedRepositories, repository])
+        } else {
+            setSelectedRepositories(selectedRepositories.filter(x => x !== repository))
+        }
     }
 
-    return <Dialog open={open}>
-        <DialogTrigger>
-            <Button onClick={openDialog} disabled={disabled}>{t('Release')}</Button>
-        </DialogTrigger>
-        <DialogSurface>
-            <DialogBody>
-                <DialogTitle className="user-select:none">
-                    v{versionInfo.version} - {t(title)}
-                </DialogTitle>
-                <DialogContent>
-                    {
-                        !isDoing && !errorMsg &&
-                        <div className="flex flex:col pr:8 mb:16 mt:16>label mb:8>label">
-                            <label htmlFor="repositoriesDropdown">{t('Target repository')}</label>
-                            <Dropdown
-                                defaultValue={`${selectedRepository?.owner}/${selectedRepository?.repo}`}
-                                onOptionSelect={(_, data) => setSelectedRepository(data.optionValue)}
-                                id="repositoriesDropdown"
-                            >
-                                {repositories.map((repository, index) => (
-                                    <Option as="div" key={index} value={repository} text={`${repository?.owner}/${repository?.repo}`}>
-                                        <RepoItem className="w:full" repo={repository} />
-                                    </Option>
-                                ))}
-                            </Dropdown>
-                            <div className="mt:16 flex align-items:center justify-content:end user-select:none">
-                                <Switch id="updateRecommendedVersion" checked={updateRecommendedVersion} onChange={(_, data) => setUpdateRecommendedVersion(data.checked)} />
+    openFunc && openFunc(openDialog)
+
+    return <>
+        <Dialog open={open}>
+            <DialogTrigger>
+                <Button onClick={openDialog} disabled={disabled}>{t('Release')}</Button>
+            </DialogTrigger>
+            <DialogSurface>
+                <DialogBody>
+                    <DialogTitle className="user-select:none">
+                        v{versionInfo.version} - {t('Release on repository')}
+                    </DialogTitle>
+                    <DialogContent>
+                        {
+                            !isDoing && !errorMsg &&
+                            <div className="flex flex:col pr:8 mb:16">
+                                <div className="mb:8 mt:16">{t('Target repository')}</div>
+                                <div className="max-h:500 overflow-y:auto">
+                                    {repositories.map((repository, index) => (
+                                        <div key={index} className="flex align-items:center my:4">
+                                            <Checkbox id={`repository-${index}`} className="mr:8" defaultChecked={selectedRepositories.includes(repository)} onChange={(_, data) => repositoryCheckboxChangeHandle(data.checked, repository)} />
+                                            <label htmlFor={`repository-${index}`} className="flex:1">
+                                                <RepoItem className="w:full r:3 bg:#141414@dark bg:#f5f5f5@light p:8" repo={repository} />
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt:16 flex align-items:center justify-content:end user-select:none">
+                                    <Switch id="updateRecommendedVersion" checked={updateRecommendedVersion} onChange={(_, data) => setUpdateRecommendedVersion(data.checked)} />
                                     <label htmlFor="updateRecommendedVersion">{t('Set this version as the recommended version after releasing')}</label>
+                                </div>
                             </div>
-                        </div>
-                    }
-                    {
-                        isDoing &&
-                        <div className="flex flex:col overflow:clip">
-                            <Spinner />
-                            <div className="center my:16">
-                                {doingMessage}
+                        }
+                        {
+                            isDoing &&
+                            <div className="flex flex:col overflow:clip">
+                                <Spinner />
+                                <div className="center my:16">
+                                    {doingMessage}
+                                </div>
                             </div>
-                        </div>
-                    }
-                    {
-                        !!errorMsg &&
-                        <div className="mt:16">
-                            {t('An error occurred')}
-                            <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
-                                {errorMsg}
+                        }
+                        {
+                            !!errorMsg &&
+                            <div className="mt:16">
+                                {t('An error occurred')}
+                                <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
+                                    {
+                                        errorMsg.split('\n').map((line, index) => <p key={index}>{line}</p>)
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    }
-                </DialogContent>
+                        }
+                    </DialogContent>
 
-                <DialogActions className="user-select:none">
-                    {
-                        !isDoing && !errorMsg &&
-                        <>
-                            <Button onClick={handleSubmitAction} appearance="primary">{t('Release')}</Button>
-                            <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
-                        </>
-                    }
-                    {
-                        waitManualUpload &&
-                        <>
-                            <Button onClick={closeAndCompleted} appearance="primary">{t('OK')}</Button>
-                            <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
-                        </>
-                    }
-                    {
-                        errorMsg &&
-                        <>
-                            <Button onClick={() => setOpen(false)} appearance="primary">{t('OK')}</Button>
-                        </>
-                    }
-                </DialogActions>
-            </DialogBody>
-        </DialogSurface>
-    </Dialog>
+                    <DialogActions className="user-select:none">
+                        {
+                            !isDoing && !errorMsg &&
+                            <>
+                                <Button onClick={handleSubmitAction} appearance="primary">{t('Release')}</Button>
+                                <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
+                            </>
+                        }
+                        {
+                            waitManualUpload && !errorMsg &&
+                            <>
+                                <Button onClick={() => okButtonResolve.current && okButtonResolve.current()} appearance="primary">{t('OK')}</Button>
+                                <Button onClick={() => okButtonReject.current && okButtonReject.current('Cancelled')} appearance="subtle">{t('Cancel')}</Button>
+                            </>
+                        }
+                        {
+                            errorMsg &&
+                            <>
+                                <Button onClick={() => setOpen(false)} appearance="primary">{t('OK')}</Button>
+                            </>
+                        }
+                    </DialogActions>
+                </DialogBody>
+            </DialogSurface>
+        </Dialog>
+    </>
 }
