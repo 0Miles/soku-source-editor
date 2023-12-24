@@ -10,7 +10,7 @@ import plusIcon from '../../icons/plus.icon'
 import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
 import trashIcon from '../../icons/trash.icon'
-import I18nProperty from '../../common/i18n-property'
+import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import { useShared } from '../../contexts/shared'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CommonItem from '../../common/common-item'
@@ -18,6 +18,10 @@ import AddModuleDialog from './compontents/add-module.dialog'
 import SelectableList from '../../common/selectable-list'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
 import { nanoid } from 'nanoid'
+import HTMLReactParser from 'html-react-parser'
+import { marked } from 'marked'
+import renderer from '../../common/markdown-link-renderer'
+import innerText from 'react-innertext'
 
 export default function ModuleListPage() {
     const navigate = useNavigate()
@@ -126,7 +130,13 @@ export default function ModuleListPage() {
                                     </>
                                 }
                                 title={modInfo.name}
-                                desc={<I18nProperty root={modInfo} property={'description'} lang={i18n.language} />}
+                                desc={
+                                    innerText(
+                                        HTMLReactParser(
+                                            marked.parse(getI18nProperty(modInfo, 'description', i18n.language), { renderer })
+                                        )
+                                    )
+                                }
                                 end={chevronRightIcon}
                             />
                         }

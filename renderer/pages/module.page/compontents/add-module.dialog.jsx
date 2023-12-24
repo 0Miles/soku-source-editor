@@ -10,7 +10,8 @@ import {
     DialogContent,
     Input,
     Label,
-    SpinButton
+    SpinButton,
+    Textarea
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useState, useMemo } from 'react'
@@ -131,8 +132,8 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
                                 <Label htmlFor="description">
                                     {t('Description')}
                                 </Label>
-                                <Input id="description" {...register('description')} appearance="filled-darker" />
-
+                                <Textarea id="description" {...register('description')} resize="vertical" appearance="filled-darker" />
+                                
                                 <Label htmlFor="author">
                                     {t('Author')}
                                 </Label>

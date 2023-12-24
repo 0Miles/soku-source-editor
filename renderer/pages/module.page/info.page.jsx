@@ -14,7 +14,7 @@ import chevronDownIcon from '../../icons/chevron-down.icon'
 import githubIcon from '../../icons/github.icon'
 
 import * as api from '../../common/api'
-import I18nProperty from '../../common/i18n-property'
+import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useShared } from '../../contexts/shared'
 import { useMessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult } from '../../contexts/message-box'
@@ -24,6 +24,9 @@ import { nanoid } from 'nanoid'
 import VersionListItem from './compontents/version/version.list-item'
 import RepoItem from './compontents/repo-item'
 import ReleaseVersionDialog from './compontents/version/release-version.dialog'
+import renderer from '../../common/markdown-link-renderer'
+import HTMLReactParser from 'html-react-parser'
+import { marked } from 'marked'
 
 export default function ModuleInfoPage() {
     const { primarySourceName } = useShared()
@@ -132,12 +135,16 @@ export default function ModuleInfoPage() {
                                     </div>
                                 }
                             </div>
-                            <div className="flex flex:1 w:0 flex:col text-align:left mx:24 {white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
-                                <div className="f:32 line-height:normal font-weight:bold">
+                            <div className="flex flex:1 w:0 flex:col text-align:left mx:24">
+                                <div className="f:32 line-height:normal font-weight:bold white-space:nowrap overflow:clip text-overflow:ellipsis">
                                     {modInfo.name}
                                 </div>
-                                <div className="my:8 font-weight:normal">
-                                    <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
+                                <div className="my:8 font-weight:normal overflow:clip text-overflow:ellipsis display:-webkit-box {-webkit-line-clamp:2} {-webkit-box-orient:vertical}">
+                                    {
+                                        HTMLReactParser(
+                                            marked.parse(getI18nProperty(modInfo, 'description', i18n.language), { renderer })
+                                        )
+                                    }
                                 </div>
                             </div>
                             <EditModuleDialog

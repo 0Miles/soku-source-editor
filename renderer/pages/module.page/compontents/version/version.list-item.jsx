@@ -11,20 +11,14 @@ import HTMLReactParser from 'html-react-parser'
 
 import boxIcon from '../../../../icons/box.icon'
 
-import { Renderer, marked } from 'marked'
+import { marked } from 'marked'
 import { getI18nProperty } from '../../../../common/i18n-property'
 import { useTranslation } from 'react-i18next'
 import EditVersionContentDialog from '../version/edit-version-content.dialog'
 import EditVersionDownloadLinksDialog from '../version/edit-version-download-links.dialog'
 import VersionDownloadLink from '../version/version-download-link'
 import ReleaseVersionDialog from './release-version.dialog'
-
-const renderer = new Renderer()
-const linkRenderer = renderer.link
-renderer.link = (href, title, text) => {
-    const html = linkRenderer.call(renderer, href, title, text);
-    return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-}
+import renderer from '../../../../common/markdown-link-renderer'
 
 export default function VersionListItem({ sourceName, modInfo, defaultVersionInfo, defaultOpen, allowOpen, refreshModInfo }) {
     const { primarySourceName } = useShared()
