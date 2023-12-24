@@ -107,111 +107,115 @@ export default function ModuleInfoPage() {
         {
             !!modInfo &&
             <>
-                <div className={`rel w:full pt:30 px:24 user-select:none`}>
-                    {
-                        !!modInfo.banner &&
-                        <img src={modInfo.banner + '?' + nanoid()} className="abs z:-1 border-radius:6|6|0|0 top:0 left:0 w:full h:full max-h:250 object-fit:cover" />
-                    }
-                    <div className="abs z:-1 border-radius:6|6|0|0 top:0 left:-1 w:calc(100%+2px) h:full max-h:250 bg:linear-gradient(rgba(0,0,0,.65)|0%,rgba(32,32,32,.9)|60%,rgba(32,32,32,1)|75%)@dark bg:linear-gradient(rgba(200,200,200,.65)|0%,rgba(255,255,255,.85)|60%,rgba(255,255,255,1)|75%)@light"></div>
-                    <div className="flex w:full align-items:center justify-content:center">
-                        <div className="flex aspect:1/1 flex:0|0|120px h:full overflow:hidden align-items:center justify-content:center bg:gray/.2">
-                            {
-                                !!modInfo.icon &&
-                                <img src={modInfo.icon + '?' + nanoid()} className="obj:cover w:full h:full" />
-                            }
-                            {
-                                !modInfo.icon &&
-                                <div className="flex w:full h:full align-items:center justify-content:center bg:gray/.2">
-                                    {gearIcon}
-                                </div>
-                            }
-                        </div>
-                        <div className="flex flex:1 w:0 flex:col text-align:left mx:24 {white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
-                            <div className="f:32 line-height:normal font-weight:bold">
-                                {modInfo.name}
-                            </div>
-                            <div className="my:8 font-weight:normal">
-                                <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
-                            </div>
-                        </div>
-                        <EditModuleDialog
-                            sourceName={sourceName ?? primarySourceName}
-                            modInfo={modInfo}
-                            className="abs top:60 right:35"
-                            onCompleted={refreshModInfo} />
-                    </div>
-
-                    <div className={`overflow:hidden ~max-height|.5s|ease ${open ? 'max-h:350' : 'max-h:0'} flex flex-wrap:wrap`}>
-                        <div className="flex flex:col flex:1">
-                            <div className="mt:16 f:bold">
-                                {t('Author')}
-                            </div>
-                            <div className="my:6">
-                                {modInfo.author ?? t('Unknown')}
-                            </div>
-                        </div>
-                        <div className="flex flex:col flex:1">
-                            <div className="mt:16 f:bold">
-                                {t('Module priority')}
-                            </div>
-                            <div className="my:6">
-                                {modInfo.priority ?? '0'}
-                            </div>
-                        </div>
-                        <div className="flex flex:col w:full">
-                            <div className="mt:16 f:bold">
-                                {t('Repository')}
-                            </div>
-                            <div className="my:6 flex flex-wrap:wrap">
+                <div className="{view-transition-name:modInfoCard}">
+                    <div className={`rel w:full pt:30 px:24 user-select:none`}>
+                        {
+                            !!modInfo.banner &&
+                            <img src={modInfo.banner + '?' + nanoid()} className="abs z:-1 border-radius:6|6|0|0 top:0 left:0 w:full h:full max-h:250 object-fit:cover" />
+                        }
+                        <div className="abs z:-1 border-radius:6|6|0|0 top:0 left:-1 w:calc(100%+2px) h:full max-h:250 bg:linear-gradient(rgba(0,0,0,.65)|0%,rgba(32,32,32,.9)|60%,rgba(32,32,32,1)|75%)@dark bg:linear-gradient(rgba(200,200,200,.65)|0%,rgba(255,255,255,.85)|60%,rgba(255,255,255,1)|75%)@light"></div>
+                        <div className="flex w:full align-items:center justify-content:center">
+                            <div className="flex aspect:1/1 flex:0|0|120px h:full overflow:hidden align-items:center justify-content:center bg:gray/.2">
                                 {
-                                    !!modInfo.repositories?.length &&
-                                    modInfo.repositories.map((repo, i) => <RepoItem key={i} className="align-items:center p:8 mr:8 r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />)
+                                    !!modInfo.icon &&
+                                    <img src={modInfo.icon + '?' + nanoid()} className="obj:cover w:full h:full" />
                                 }
                                 {
-                                    !modInfo.repositories?.length &&
-                                    <div>
-                                        {t('No repository configured')}
+                                    !modInfo.icon &&
+                                    <div className="flex w:full h:full align-items:center justify-content:center bg:gray/.2">
+                                        {gearIcon}
                                     </div>
                                 }
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex:col mt:8">
-                    <Button onClick={() => setOpen(!open)} className="r:0|0|6|6!" appearance="subtle">
-                        {
-                            !open && chevronDownIcon
-                        }
-                        {
-                            open && chevronUpIcon
-                        }
-                    </Button>
-                </div>
-                <SelectableList
-                    className="mt:16"
-                    loading={versionsLoading}
-                    items={versions}
-                    itemTemplate={
-                        (versionInfo, selectMode, index) => {
-                            return <VersionListItem
-                                defaultOpen={index === 0 && !versionInfo.downloadLinks?.length}
-                                allowOpen={!selectMode}
-                                className={`w:full`}
+                            <div className="flex flex:1 w:0 flex:col text-align:left mx:24 {white-space:nowrap;overflow:hidden;text-overflow:ellipsis}>div">
+                                <div className="f:32 line-height:normal font-weight:bold">
+                                    {modInfo.name}
+                                </div>
+                                <div className="my:8 font-weight:normal">
+                                    <I18nProperty root={modInfo} property={'description'} lang={i18n.language} />
+                                </div>
+                            </div>
+                            <EditModuleDialog
                                 sourceName={sourceName ?? primarySourceName}
                                 modInfo={modInfo}
-                                defaultVersionInfo={versionInfo}
-                                refreshModInfo={refreshModInfo}
-                            />
+                                className="abs top:60 right:35"
+                                onCompleted={refreshModInfo} />
+                        </div>
+
+                        <div className={`overflow:hidden ~max-height|.5s|ease ${open ? 'max-h:350' : 'max-h:0'} flex flex-wrap:wrap`}>
+                            <div className="flex flex:col flex:1">
+                                <div className="mt:16 f:bold">
+                                    {t('Author')}
+                                </div>
+                                <div className="my:6">
+                                    {modInfo.author ?? t('Unknown')}
+                                </div>
+                            </div>
+                            <div className="flex flex:col flex:1">
+                                <div className="mt:16 f:bold">
+                                    {t('Module priority')}
+                                </div>
+                                <div className="my:6">
+                                    {modInfo.priority ?? '0'}
+                                </div>
+                            </div>
+                            <div className="flex flex:col w:full">
+                                <div className="mt:16 f:bold">
+                                    {t('Repository')}
+                                </div>
+                                <div className="my:6 flex flex-wrap:wrap">
+                                    {
+                                        !!modInfo.repositories?.length &&
+                                        modInfo.repositories.map((repo, i) => <RepoItem key={i} className="align-items:center p:8 mr:8 r:3 bg:#141414@dark bg:#f5f5f5@light" repo={repo} />)
+                                    }
+                                    {
+                                        !modInfo.repositories?.length &&
+                                        <div>
+                                            {t('No repository configured')}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex:col mt:8">
+                        <Button onClick={() => setOpen(!open)} className="r:0|0|6|6!" appearance="subtle">
+                            {
+                                !open && chevronDownIcon
+                            }
+                            {
+                                open && chevronUpIcon
+                            }
+                        </Button>
+                    </div>
+                </div>
+                <div className="mt:16 {view-transition-name:versionSelectableList}">
+                    <SelectableList
+                        className=""
+                        loading={versionsLoading}
+                        items={versions}
+                        itemTemplate={
+                            (versionInfo, selectMode, index) => {
+                                return <VersionListItem
+                                    defaultOpen={index === 0 && !versionInfo.downloadLinks?.length}
+                                    allowOpen={!selectMode}
+                                    className={`w:full`}
+                                    sourceName={sourceName ?? primarySourceName}
+                                    modInfo={modInfo}
+                                    defaultVersionInfo={versionInfo}
+                                    refreshModInfo={refreshModInfo}
+                                />
+                            }
                         }
-                    }
-                    toolbar={
-                        <AddVersionDialog sourceName={sourceName ?? primarySourceName} moduleName={modInfo.name} modVersions={versions} onCompleted={refreshVersions} />
-                    }
-                    selectModeToolbar={
-                        <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>
-                    }
-                    selectedChange={selectedVersionChangeHandle}
-                />
+                        toolbar={
+                            <AddVersionDialog sourceName={sourceName ?? primarySourceName} moduleName={modInfo.name} modVersions={versions} onCompleted={refreshVersions} />
+                        }
+                        selectModeToolbar={
+                            <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>
+                        }
+                        selectedChange={selectedVersionChangeHandle}
+                    />
+                </div>
             </>
         }
     </PageContainer>

@@ -67,13 +67,19 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
                                 {t(`Requires setup Github token`)}
                             </div>
                         }
+                        {
+                            !versionInfo.moduleFiles?.children?.length &&
+                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                {t('Requires import module files')}
+                            </div>
+                        }
                     </div>
                     <ReleaseVersionDialog
                         hostType="github"
                         sourceName={sourceName}
                         modInfo={modInfo}
                         versionInfo={versionInfo}
-                        disabled={!config.githubToken}
+                        disabled={!config.githubToken || !versionInfo.moduleFiles?.children?.length}
                         onCompleted={(newDownloadLink) => {
                             const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
                             setVersionInfo({
@@ -99,13 +105,19 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
                                 {t(`Requires setup Gitee token`)}
                             </div>
                         }
+                        {
+                            !versionInfo.moduleFiles?.children?.length &&
+                            <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                                {t('Requires import module files')}
+                            </div>
+                        }
                     </div>
                     <ReleaseVersionDialog
                         hostType="gitee"
                         sourceName={sourceName}
                         modInfo={modInfo}
                         versionInfo={versionInfo}
-                        disabled={!config.giteeToken}
+                        disabled={!config.giteeToken || !versionInfo.moduleFiles?.children?.length}
                         onCompleted={(newDownloadLink) => {
                             const newDownloadLinks = [...versionInfo.downloadLinks ?? [], newDownloadLink]
                             setVersionInfo({
