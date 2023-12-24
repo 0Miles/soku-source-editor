@@ -245,6 +245,13 @@ class Module {
             })
         } catch (ex) {
             if (ex.status !== 422) throw ex
+
+            releaseResponse = await octokit.repos.getReleaseByTag({
+                owner: repository.owner,
+                repo: repository.repo,
+                tag: `v${versionNum}`,
+            })
+
             await octokit.repos.updateRelease({
                 owner: repository.owner,
                 repo: repository.repo,
@@ -261,7 +268,7 @@ class Module {
 
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
         
-        const oldAssetResonse = await octokit.repos.listAssetsForRelease({
+        const oldAssetResonse = await octokit.repos.listReleaseAssets({
             owner: repository.owner,
             repo: repository.repo,
             release_id: releaseResponse.data.id,
