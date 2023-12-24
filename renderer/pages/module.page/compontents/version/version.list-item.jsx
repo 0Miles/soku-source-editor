@@ -119,7 +119,8 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
                         onCompleted={(data) => {
                             setVersionInfo({
                                 ...versionInfo,
-                                notes: data.notes
+                                notes: data.notes,
+                                notesI18n: data.notesI18n
                             })
                         }} />
                 </div>

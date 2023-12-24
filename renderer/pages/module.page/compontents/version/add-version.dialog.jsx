@@ -15,7 +15,7 @@ import {
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 
 import plusIcon from '../../../../icons/plus.icon'
 
@@ -23,6 +23,7 @@ import * as api from '../../../../common/api'
 import Dropzone from '../../../../common/dropzone'
 import DirectoryTreeView from '../../../../common/directory-tree-view'
 import ComboBox from '../../../../common/combo-box'
+import I18nPropertyTextarea from '../../../../common/i18n-property-textarea'
 
 export default function AddVersionDialog({ sourceName, moduleName, modVersions, onCompleted }) {
     const { t } = useTranslation()
@@ -42,6 +43,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
     const [moduleFiles, setModuleFiles] = useState()
     const [moduleFilesTopLevelFilenames, setModuleFilesTopLevelFilenames] = useState([])
     const [releaseImmediately, setReleaseImmediately] = useState(true)
+    const [notesValues, setNotesValues] = useState({ default: '' })
 
     const openDialog = () => {
         setErrorMsg('')
@@ -55,6 +57,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setModuleFiles()
         setModuleFilesTopLevelFilenames([])
         setReleaseImmediately(true)
+        setNotesValues({ default: '' })
 
         reset()
         setOpen(true)
@@ -64,6 +67,10 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setIsDoing(true)
         try {
             setDoingMessage(t('Generating version information file...'))
+
+            data.notes = notesValues.default ?? ''
+            data.notesI18n = Object.entries(notesValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
+
             const versionInfo = {
                 ...data,
                 configFiles: selectedConfigFiles
@@ -126,10 +133,8 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     <span className="color:red">*</span>
                                 </Label>
                                 <Input id="version" defaultValue={recommendedVersionNumber} {...register('version', { required: 'Version is required', validate: validateVersion })} appearance="filled-darker" placeholder={recommendedVersionNumber} />
-                                <Label htmlFor="notes">
-                                    {t('Release notes')}
-                                </Label>
-                                <Textarea id="notes" {...register('notes')} resize="vertical" appearance="filled-darker" />
+                                
+                                <I18nPropertyTextarea propertyName={'notes'} label={t('Release notes')} defaultLang={'default'} defaultValues={notesValues} onChange={(values) => setNotesValues(values)} />
 
                                 <Label htmlFor="notes">
                                     {t('Module files')}

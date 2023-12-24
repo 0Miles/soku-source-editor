@@ -29,6 +29,7 @@ import giteeIcon from '../../../icons/gitee.icon'
 import RepoItem from './repo-item'
 import trashIcon from '../../../icons/trash.icon'
 import MultipleItemInput from '../../../common/multiple-item.input'
+import I18nPropertyTextarea from '../../../common/i18n-property-textarea'
 
 export default function AddModuleDialog({ sourceName, sourceMods, onCompleted }) {
     const { t } = useTranslation()
@@ -42,6 +43,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
     const [iconUrl, setIconUrl] = useState(false)
     const [bannerUrl, setBannerUrl] = useState(false)
     const [repositories, setRepositories] = useState([])
+    const [descriptionValues, setDescriptionValues] = useState({ default: '' })
 
     const openDialog = () => {
         setErrorMsg('')
@@ -49,6 +51,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
         setIconUrl()
         setBannerUrl()
         setRepositories([])
+        setDescriptionValues({ default: '' })
         reset()
 
         setOpen(true)
@@ -60,6 +63,8 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
             data.icon = iconUrl
             data.banner = bannerUrl
             data.repositories = repositories
+            data.description = descriptionValues.default ?? ''
+            data.descriptionI18n = Object.entries(descriptionValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
             await api.addMod(sourceName, data.name, data)
             setOpen(false)
             onCompleted && onCompleted()
@@ -129,10 +134,8 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
                                         {t('Module already exists')}
                                     </div>
                                 }
-                                <Label htmlFor="description">
-                                    {t('Description')}
-                                </Label>
-                                <Textarea id="description" {...register('description')} resize="vertical" appearance="filled-darker" />
+
+                                <I18nPropertyTextarea label={t('Description')} propertyName={'description'} defaultLang={'default'} defaultValues={descriptionValues} onChange={(values) => setDescriptionValues(values)} />
                                 
                                 <Label htmlFor="author">
                                     {t('Author')}

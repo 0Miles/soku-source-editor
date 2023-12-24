@@ -1,9 +1,11 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
+import en from './languages/en.json'
 import zhHant from './languages/zh-hant.json'
 import zhHans from './languages/zh-hans.json'
 
+export const langCodes = ['zh-Hant', 'zh-Hans', 'en']
 const systemLang = Intl.DateTimeFormat().resolvedOptions().locale
 let lang
 switch (systemLang) {
@@ -39,7 +41,9 @@ i18n.use(initReactI18next)
         fallbackLng: 'en',
         lng: defaultLang,
         resources: {
-            en: null,
+            en: {
+                translation: en
+            },
             'zh-Hant': {
                 translation: zhHant
             },

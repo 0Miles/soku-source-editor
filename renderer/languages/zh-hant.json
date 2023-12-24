@@ -92,5 +92,9 @@
     "Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.": "Gitee 無法透過 API 上傳檔案。請手動上傳輸出的 zip 檔案至開啟的 Gitee 發佈頁面，並點擊確定。",
     "Release on repository": "發佈到儲存庫",
     "Export package...": "正在匯出壓縮包...",
-    "Release immediately after creating the version": "建立版本後立即發佈"
+    "Release immediately after creating the version": "建立版本後立即發佈",
+    "default": "預設",
+    "zh-Hans": "中文 (简体)",
+    "zh-Hant": "中文 (繁體)",
+    "en": "English"
 }

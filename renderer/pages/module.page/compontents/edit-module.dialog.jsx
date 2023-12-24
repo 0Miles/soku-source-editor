@@ -25,6 +25,7 @@ import ImagePicker from '../../../common/image-picker'
 import MultipleItemInput from '../../../common/multiple-item.input'
 import RepoItem from './repo-item'
 import repoUrlRegex from '../../../utils/repo-url.regex'
+import I18nPropertyTextarea from '../../../common/i18n-property-textarea'
 
 export default function EditModuleDialog({ className, sourceName, modInfo, onCompleted, TriggerButton }) {
     const { t } = useTranslation()
@@ -39,6 +40,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
     const [bannerUrl, setBannerUrl] = useState(false)
     const [repoUrls, setRepoUrls] = useState([])
     const [repositories, setRepositories] = useState([])
+    const [descriptionValues, setDescriptionValues] = useState({default: ''})
 
     const openDialog = () => {
         setErrorMsg('')
@@ -49,6 +51,10 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
         setRepoUrls(modInfo.repositories?.map(x => `https://${x.type}.com/${x.owner}/${x.repo}`) ?? [])
         setRepositories(modInfo.repositories ?? [])
 
+        const descriptionValues = { default: modInfo.description ?? '' }
+        modInfo.descriptionI18n?.forEach(x => descriptionValues[x.language] = x.content)
+        setDescriptionValues(descriptionValues)
+
         setOpen(true)
     }
 
@@ -58,6 +64,9 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
             data.icon = iconUrl
             data.banner = bannerUrl
             data.repositories = repositories
+            data.description = descriptionValues.default ?? ''
+            data.descriptionI18n = Object.entries(descriptionValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
+
             await api.updateMod(sourceName, modInfo.name, data)
             setOpen(false)
             onCompleted && onCompleted()
@@ -111,10 +120,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
                                     </div>
                                 </div>
 
-                                <Label htmlFor="description">
-                                    {t('Description')}
-                                </Label>
-                                <Textarea id="description" defaultValue={modInfo.description} {...register('description')} resize="vertical" appearance="filled-darker" />
+                                <I18nPropertyTextarea label={t('Description')} propertyName={'description'} defaultLang={'default'} defaultValues={descriptionValues} onChange={(values) => setDescriptionValues(values)} />
 
                                 <Label htmlFor="author">
                                     {t('Author')}
