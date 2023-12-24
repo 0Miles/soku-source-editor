@@ -15,13 +15,13 @@ export default function CommonItem({ icon, fullIcon, title, desc, footer, end, o
                     {icon}
                 </div>
             }
-            <div className="flex flex:col flex:1 w:0 mx:16 py:12 {my:2;line-height:1rem;font-weight:normal}>div">
+            <div className="flex flex:col flex:1 w:0 mx:16 py:12 {my:2;line-height:1rem;font-weight:normal;white-space:nowrap;text-overflow:ellipsis;overflow:clip}>div">
                 <div>
                     {title}
                 </div>
                 {
                     !!desc &&
-                    <div className="white-space:nowrap text-overflow:ellipsis overflow:clip f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
+                    <div className="f:12 line-height:1rem color:#CFCFCF@dark color:#565656@light">
                         {desc}
                     </div>
                 }
