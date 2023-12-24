@@ -19,7 +19,7 @@ import { useRef, useState } from 'react'
 import * as api from '../../../../common/api'
 import RepoItem from '../repo-item'
 
-export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo, onCompleted, disabled, openFunc }) {
+export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo, onCompleted, onCancel, disabled, openFunc, noButton }) {
     const { t } = useTranslation()
 
     const [open, setOpen] = useState(false)
@@ -32,7 +32,6 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
     const [updateRecommendedVersion, setUpdateRecommendedVersion] = useState(true)
     const [waitManualUpload, setWaitManualUpload] = useState(false)
 
-    
     const onClose = useRef()
     const okButtonResolve = useRef()
     const okButtonReject = useRef()
@@ -56,6 +55,10 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
         setIsDoing(true)
         const errorMessages = []
         const newDownloadLinks = []
+
+        setDoingMessage(`${t(`Export package...`)}`)
+        await api.exportZipToOutput(sourceName, modInfo.name, versionInfo.version)
+
         for (const repository of selectedRepositories) {
             try {
                 setDoingMessage(`${repository.owner}/${repository.repo} ${t(`Releasing...`)}`)
@@ -122,85 +125,96 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
         }
     }
 
+    const cancel = () => {
+        setOpen(false)
+        onCancel && onCancel()
+    }
+
     openFunc && openFunc(openDialog)
 
     return <>
-        <Dialog open={open}>
-            <DialogTrigger>
-                <Button onClick={openDialog} disabled={disabled}>{t('Release')}</Button>
-            </DialogTrigger>
-            <DialogSurface>
-                <DialogBody>
-                    <DialogTitle className="user-select:none">
-                        v{versionInfo.version} - {t('Release on repository')}
-                    </DialogTitle>
-                    <DialogContent>
-                        {
-                            !isDoing && !errorMsg &&
-                            <div className="flex flex:col pr:8 mb:16">
-                                <div className="mb:8 mt:16">{t('Target repository')}</div>
-                                <div className="max-h:500 overflow-y:auto">
-                                    {repositories.map((repository, index) => (
-                                        <div key={index} className="flex align-items:center my:4">
-                                            <Checkbox id={`repository-${index}`} className="mr:8" defaultChecked={selectedRepositories.includes(repository)} onChange={(_, data) => repositoryCheckboxChangeHandle(data.checked, repository)} />
-                                            <label htmlFor={`repository-${index}`} className="flex:1">
-                                                <RepoItem className="w:full r:3 bg:#141414@dark bg:#f5f5f5@light p:8" repo={repository} />
-                                            </label>
-                                        </div>
-                                    ))}
+        {
+            !!versionInfo &&
+            <Dialog open={open}>
+                {
+                    !noButton &&
+                    <DialogTrigger>
+                        <Button onClick={openDialog} disabled={disabled}>{t('Release')}</Button>
+                    </DialogTrigger>
+                }
+                <DialogSurface>
+                    <DialogBody>
+                        <DialogTitle className="user-select:none">
+                            v{versionInfo.version} - {t('Release on repository')}
+                        </DialogTitle>
+                        <DialogContent>
+                            {
+                                !isDoing && !errorMsg &&
+                                <div className="flex flex:col pr:8 mb:16">
+                                    <div className="mb:8 mt:16">{t('Target repository')}</div>
+                                    <div className="max-h:500 overflow-y:auto">
+                                        {repositories.map((repository, index) => (
+                                            <div key={index} className="flex align-items:center my:4">
+                                                <Checkbox id={`repository-${index}`} className="mr:8" defaultChecked={selectedRepositories.includes(repository)} onChange={(_, data) => repositoryCheckboxChangeHandle(data.checked, repository)} />
+                                                <label htmlFor={`repository-${index}`} className="flex:1">
+                                                    <RepoItem className="w:full r:3 bg:#141414@dark bg:#f5f5f5@light p:8" repo={repository} />
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt:16 flex align-items:center justify-content:end user-select:none">
+                                        <Switch id="updateRecommendedVersion" checked={updateRecommendedVersion} onChange={(_, data) => setUpdateRecommendedVersion(data.checked)} />
+                                        <label htmlFor="updateRecommendedVersion">{t('Set this version as the recommended version after releasing')}</label>
+                                    </div>
                                 </div>
-                                <div className="mt:16 flex align-items:center justify-content:end user-select:none">
-                                    <Switch id="updateRecommendedVersion" checked={updateRecommendedVersion} onChange={(_, data) => setUpdateRecommendedVersion(data.checked)} />
-                                    <label htmlFor="updateRecommendedVersion">{t('Set this version as the recommended version after releasing')}</label>
+                            }
+                            {
+                                isDoing &&
+                                <div className="flex flex:col overflow:clip">
+                                    <Spinner />
+                                    <div className="center my:16">
+                                        {doingMessage}
+                                    </div>
                                 </div>
-                            </div>
-                        }
-                        {
-                            isDoing &&
-                            <div className="flex flex:col overflow:clip">
-                                <Spinner />
-                                <div className="center my:16">
-                                    {doingMessage}
+                            }
+                            {
+                                !!errorMsg &&
+                                <div className="mt:16">
+                                    {t('An error occurred')}
+                                    <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
+                                        {
+                                            errorMsg.split('\n').map((line, index) => <p key={index}>{line}</p>)
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        }
-                        {
-                            !!errorMsg &&
-                            <div className="mt:16">
-                                {t('An error occurred')}
-                                <div className="max-h:120 bg:gray-10@dark bg:gray-90 r:3 mt:8 mb:16 p:16 overflow:auto">
-                                    {
-                                        errorMsg.split('\n').map((line, index) => <p key={index}>{line}</p>)
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </DialogContent>
+                            }
+                        </DialogContent>
 
-                    <DialogActions className="user-select:none">
-                        {
-                            !isDoing && !errorMsg &&
-                            <>
-                                <Button onClick={handleSubmitAction} appearance="primary">{t('Release')}</Button>
-                                <Button onClick={() => setOpen(false)} appearance="subtle">{t('Cancel')}</Button>
-                            </>
-                        }
-                        {
-                            waitManualUpload && !errorMsg &&
-                            <>
-                                <Button onClick={() => okButtonResolve.current && okButtonResolve.current()} appearance="primary">{t('OK')}</Button>
-                                <Button onClick={() => okButtonReject.current && okButtonReject.current('Cancelled')} appearance="subtle">{t('Cancel')}</Button>
-                            </>
-                        }
-                        {
-                            errorMsg &&
-                            <>
-                                <Button onClick={() => setOpen(false)} appearance="primary">{t('OK')}</Button>
-                            </>
-                        }
-                    </DialogActions>
-                </DialogBody>
-            </DialogSurface>
-        </Dialog>
+                        <DialogActions className="user-select:none">
+                            {
+                                !isDoing && !errorMsg &&
+                                <>
+                                    <Button disabled={!selectedRepositories?.length} onClick={handleSubmitAction} appearance="primary">{t('Release')}</Button>
+                                    <Button onClick={() => cancel()} appearance="subtle">{t('Cancel')}</Button>
+                                </>
+                            }
+                            {
+                                waitManualUpload && !errorMsg &&
+                                <>
+                                    <Button onClick={() => okButtonResolve.current && okButtonResolve.current()} appearance="primary">{t('OK')}</Button>
+                                    <Button onClick={() => okButtonReject.current && okButtonReject.current('Cancelled')} appearance="subtle">{t('Cancel')}</Button>
+                                </>
+                            }
+                            {
+                                errorMsg &&
+                                <>
+                                    <Button onClick={() => cancel()} appearance="primary">{t('OK')}</Button>
+                                </>
+                            }
+                        </DialogActions>
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+        }
     </>
 }

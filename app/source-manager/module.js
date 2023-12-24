@@ -196,6 +196,14 @@ class Module {
         await new Promise(resolve => setTimeout(resolve, 1000))
     }
 
+    async exportZipToOutput(versionNum) {
+        const outputDir = path.resolve(version.dirname, 'output')
+        if (fs.existsSync(outputDir)) {
+            fs.deleteSync(outputDir, { recursive: true })
+        }
+        await exportZip(versionNum)
+    }
+
     async createGithubTagAndRelease(versionNum, repository, githubToken, draft = false, prerelease = false) {
         const version = this.getVersion(versionNum)
         const versionJson = version.getData()
@@ -270,9 +278,10 @@ class Module {
             })
         }
 
-        await this.exportZip(versionNum)
-
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        if (!fs.existsSync(filePath)) {
+            await this.exportZip(versionNum)
+        }
 
         const oldAssetResonse = await octokit.repos.listReleaseAssets({
             owner: repository.owner,
@@ -363,9 +372,10 @@ class Module {
             releaseId = releaseResponse.data.id
         }
 
-        await this.exportZip(versionNum)
-
         const filePath = path.resolve(version.dirname, 'output', `${this.moduleName}_${versionNum}.zip`)
+        if (!fs.existsSync(filePath)) {
+            await this.exportZip(versionNum)
+        }
 
         shell.openExternal(`https://gitee.com/${repository.owner}/${repository.repo}/releases/v${versionNum}/edit`)
         shell.showItemInFolder(filePath)

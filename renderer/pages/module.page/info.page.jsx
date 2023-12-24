@@ -23,6 +23,7 @@ import EditModuleDialog from './compontents/edit-module.dialog'
 import { nanoid } from 'nanoid'
 import VersionListItem from './compontents/version/version.list-item'
 import RepoItem from './compontents/repo-item'
+import ReleaseVersionDialog from './compontents/version/release-version.dialog'
 
 export default function ModuleInfoPage() {
     const { primarySourceName } = useShared()
@@ -36,6 +37,10 @@ export default function ModuleInfoPage() {
     const [versions, setVersions] = useState([])
     const [open, setOpen] = useState(false)
     const selectedVersionsRef = useRef([])
+    
+    const [releaseImmediatelyVersionInfo, setReleaseImmediatelyVersionInfo] = useState()
+    const openReleaseDialogRef = useRef()
+
 
     const refreshModInfo = useCallback(async () => {
         setLoading(true)
@@ -208,7 +213,14 @@ export default function ModuleInfoPage() {
                             }
                         }
                         toolbar={
-                            <AddVersionDialog sourceName={sourceName ?? primarySourceName} moduleName={modInfo.name} modVersions={versions} onCompleted={refreshVersions} />
+                            <AddVersionDialog sourceName={sourceName ?? primarySourceName} moduleName={modInfo.name} modVersions={versions} onCompleted={({ releaseImmediately, versionInfo }) => {
+                                if (releaseImmediately) {
+                                    setReleaseImmediatelyVersionInfo(versionInfo)
+                                    openReleaseDialogRef.current && openReleaseDialogRef.current()
+                                } else {
+                                    refreshVersions()
+                                }
+                            }} />
                         }
                         selectModeToolbar={
                             <Button onClick={deleteSelectedVersions} icon={trashIcon}>{t('Delete')}</Button>
@@ -218,5 +230,21 @@ export default function ModuleInfoPage() {
                 </div>
             </>
         }
+        
+        <ReleaseVersionDialog
+            sourceName={sourceName ?? primarySourceName}
+            modInfo={modInfo}
+            versionInfo={releaseImmediatelyVersionInfo}
+            onCompleted={() => {
+                refreshVersions()
+                refreshModInfo()
+            }}
+            onCancel={() => {
+                refreshVersions()
+                refreshModInfo()
+            }}
+            noButton={true}
+            openFunc={(openDialog) => openReleaseDialogRef.current = openDialog}
+        />
     </PageContainer>
 }

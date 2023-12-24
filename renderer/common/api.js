@@ -96,6 +96,10 @@ export const exportZip = async (sourceName, modName, versionNum) => {
     return await ipcRenderer.invoke('post', ['exportZip', sourceName, modName, versionNum])
 }
 
+export const exportZipToOutput = async (sourceName, modName, versionNum) => {
+    return await ipcRenderer.invoke('post', ['exportZipToOutput', sourceName, modName, versionNum])
+}
+
 export const githubRelease = async (sourceName, modName, versionNum, repository) => {
     return await ipcRenderer.invoke('post', ['githubRelease', sourceName, modName, versionNum, repository])
 }

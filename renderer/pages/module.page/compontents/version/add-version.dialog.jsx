@@ -10,7 +10,8 @@ import {
     DialogContent,
     Input,
     Label,
-    Textarea
+    Textarea,
+    Switch
 } from '@fluentui/react-components'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
@@ -40,6 +41,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
 
     const [moduleFiles, setModuleFiles] = useState()
     const [moduleFilesTopLevelFilenames, setModuleFilesTopLevelFilenames] = useState([])
+    const [releaseImmediately, setReleaseImmediately] = useState(true)
 
     const openDialog = () => {
         setErrorMsg('')
@@ -52,6 +54,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setSelectedConfigFiles(modVersions[0]?.configFiles ?? [])
         setModuleFiles()
         setModuleFilesTopLevelFilenames([])
+        setReleaseImmediately(true)
 
         reset()
         setOpen(true)
@@ -61,10 +64,11 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
         setIsDoing(true)
         try {
             setDoingMessage(t('Generating version information file...'))
-            await api.addModVersion(sourceName, moduleName, data.version, {
+            const versionInfo = {
                 ...data,
                 configFiles: selectedConfigFiles
-            })
+            }
+            await api.addModVersion(sourceName, moduleName, data.version, versionInfo)
 
             if (moduleFiles?.children) {
                 setDoingMessage(t('Copying module files...'))
@@ -72,7 +76,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
             }
 
             setOpen(false)
-            onCompleted && onCompleted()
+            onCompleted && onCompleted({ releaseImmediately: moduleFilesTopLevelFilenames?.length && releaseImmediately, versionInfo })
         }
         catch (ex) {
             setErrorMsg(ex.message)
@@ -152,7 +156,7 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     }
                                 </Dropzone>
 
-                                
+
                                 <Label htmlFor="main">
                                     {t('Main file')}
                                     <span className="color:red">*</span>
@@ -179,6 +183,11 @@ export default function AddVersionDialog({ sourceName, moduleName, modVersions, 
                                     }}
                                     multiselect
                                 />
+
+                                <div className="mt:16 flex align-items:center justify-content:end user-select:none">
+                                    <Switch id="releaseImmediately" checked={moduleFilesTopLevelFilenames?.length && releaseImmediately} disabled={!moduleFilesTopLevelFilenames?.length} onChange={(_, data) => setReleaseImmediately(data.checked)} />
+                                    <label htmlFor="releaseImmediately">{t('Release immediately after creating the version')}</label>
+                                </div>
                             </div>
                         }
                         {
