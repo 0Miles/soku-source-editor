@@ -154,6 +154,7 @@ class Source {
         await this.stopWatching()
         await this.git.raw(['reset', '--hard', `origin/${branch}`])
         await this.refreshGitStatus()
+        this.refreshModules()
         await this.watch()
         return this.status
     }
