@@ -1,4 +1,5 @@
-const { app, BrowserWindow, ipcMain, nativeTheme, dialog, autoUpdater } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, dialog } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const log = require('electron-log')
 const path = require('node:path')
 const createMainWindow = require('./window/main.window')
@@ -161,11 +162,8 @@ ipcMain.handle('delete', async (_, message) => {
 })
 
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify()
     createMainWindow()
-
-    app.on('ready', () => {
-        autoUpdater.checkForUpdatesAndNotify()
-    })
 
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
