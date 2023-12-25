@@ -15,7 +15,7 @@ export default function CommonItem({ icon, fullIcon, title, desc, footer, end, o
                     {icon}
                 </div>
             }
-            <div className="flex flex:col flex:1 w:0 mx:16 py:12 {my:2;line-height:1rem;font-weight:normal;white-space:nowrap;text-overflow:ellipsis;overflow:clip}>div">
+            <div className="flex flex:col flex:1 w:0 mx:16 py:12 {my:2;font-weight:normal;white-space:nowrap;text-overflow:ellipsis;overflow:clip}>div">
                 <div>
                     {title}
                 </div>

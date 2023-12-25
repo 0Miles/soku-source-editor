@@ -96,6 +96,9 @@
     "default": "默认",
     "zh-Hans": "中文 (简体)",
     "zh-Hant": "中文 (繁體)",
-    "en": "English"
+    "en": "English",
+    "Revert all changes": "撤销所有更改",
+    "Revert {0} unsynced changes": "撤销 {0} 个未同步的更改",
+    "Revert": "撤销"
 
 }

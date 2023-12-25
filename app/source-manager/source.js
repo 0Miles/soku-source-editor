@@ -145,12 +145,27 @@ class Source {
         this.status = await this.git.status()
     }
 
+    async revertChanges(branch) {
+
+        await this.refreshGitStatus()
+        if (!branch) {
+            branch = this.status.current
+        }
+        await this.stopWatching()
+        await this.git.raw(['reset', '--hard', `origin/${branch}`])
+        await this.refreshGitStatus()
+        await this.watch()
+        return this.status
+    }
+
     async pullAndMerge(branch) {
         if (!branch) {
             await this.refreshGitStatus()
             branch = this.status.current
         }
+        await this.stopWatching()
         await this.git.pull('origin', branch, { '--strategy-option': 'theirs' })
+        await this.watch()
     }
 
     async commitMissingFiles() {

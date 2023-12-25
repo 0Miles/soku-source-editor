@@ -9,6 +9,7 @@ import chevronRightIcon from '../../icons/chevron-right.icon'
 import modIcon from '../../icons/mod.icon'
 import * as api from '../../common/api'
 import GitStatus from './compontents/git-status'
+import { formatString } from '../../common/format-string'
 
 export default function SourceInfoPage() {
     const navigate = useNavigate()
@@ -19,6 +20,7 @@ export default function SourceInfoPage() {
     const [gitStatus, setGitStatus] = useState()
     const [isSyncing, setIsSyncing] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [reverting, setReverting] = useState(false)
 
     const refreshGitStatus = async (sourceInfo) => {
         const status = await api.gitFetchStatus(sourceInfo.name)
@@ -30,6 +32,13 @@ export default function SourceInfoPage() {
         const status = await api.gitSync(sourceInfo.name, sourceInfo.branch)
         setGitStatus(status)
         setIsSyncing(false)
+    }
+
+    const revertButtonHandle = async () => {
+        setReverting(true)
+        await api.gitRevertChanges(sourceInfo.name)
+        await refreshGitStatus(sourceInfo)
+        setReverting(false)
     }
 
     useMemo(async () => {
@@ -81,6 +90,18 @@ export default function SourceInfoPage() {
                             end={
                                 <Button onClick={syncButtonHandle} >
                                     <GitStatus gitStatus={gitStatus} isSyncing={isSyncing} />
+                                </Button>
+                            }
+                        ></CommonItem>
+                        <CommonItem
+                            title={t('Revert all changes')}
+                            desc={
+                                !!gitStatus?.ahead && formatString(t('Revert {0} unsynced changes'), gitStatus?.ahead)
+                            }
+                            end={
+                                <Button onClick={revertButtonHandle} disabled={!gitStatus?.ahead} >
+                                    {reverting && <Spinner appearance="inverted" size="tiny" />}
+                                    {!reverting && t('Revert')}
                                 </Button>
                             }
                         ></CommonItem>

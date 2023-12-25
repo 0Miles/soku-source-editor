@@ -96,5 +96,8 @@
     "default": "預設",
     "zh-Hans": "中文 (简体)",
     "zh-Hant": "中文 (繁體)",
-    "en": "English"
+    "en": "English",
+    "Revert all changes": "還原所有變更",
+    "Revert {0} unsynced changes": "還原 {0} 個未同步的變更",
+    "Revert": "還原"
 }

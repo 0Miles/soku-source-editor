@@ -114,6 +114,8 @@ ipcMain.handle('post', async (_, message) => {
                     version.element.updateInfo({ downloadLinks })
                 }
                 break
+            case 'gitRevertChanges':
+                return await JSON.parse(JSON.stringify(sourceManager.getSource(message[1]).revertChanges()))
         }
     }
 })

@@ -111,3 +111,7 @@ export const giteeRelease = async (sourceName, modName, versionNum, repository) 
 export const addModVersionDownloadLink = async (sourceName, modName, version, downloadLink) => {
     return await ipcRenderer.invoke('post', ['modVersionDownloadLink', sourceName, modName, version, downloadLink])
 }
+
+export const gitRevertChanges = async (sourceName) => {
+    return await ipcRenderer.invoke('post', ['gitRevertChanges', sourceName])
+}
