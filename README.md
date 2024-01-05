@@ -16,7 +16,7 @@ $ git config --global user.email "your.email@example.com"
 Clone and install dependencies:
 
 ```bash
-git clone https://github.com/0Miles/soku-mod-manager.git
+git clone https://github.com/0Miles/soku-source-editor.git
 cd soku-mod-manager
 npm install
 ```
