@@ -1,5 +1,5 @@
 # SokuSourceEditor
-Used for editing the mod source for the [SokuLauncher](https://github.com/0Miles/soku-launcher) mod store, managing and publishing mods on the source.  
+Used for editing the mod source for the [SokuLauncher](https://github.com/0Miles/soku-launcher) mod center, managing and publishing mods on the source.  
 
 ![preview](./docs/preview.png)
 
