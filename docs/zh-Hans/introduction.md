@@ -27,10 +27,10 @@ SokuLauncher模块中心中的源是使用Github Pages托管的Github存储库�
 
 ## 为什么使用Github存储库作为源
 
-Github的Pages服务是免费的，消除了维护模块更新源信息的额外费用。借助Github强大的机制，添加协作者以编辑源非常轻松。如果新开发人员想要加入但尚未获得权限，他们可以复制源存储库，进行编辑，并提交PR。此外，SokuSourceEditor提供API集成，以将模块发布到Github Releases，使模块开发人员更加方便。如果这种方法变得流行，基于Github存储库开发基于命令行的CI/CD工具将更为简单。
+Github的Pages服务是免费的，消除了维护模块更新源信息的额外费用。借助Github强大的机制，添加协作者以编辑源非常轻松。如果新开发人员想要加入但尚未获得权限，他们可以复制源存储库，进行编辑，并提交PR。此外，SokuSourceEditor提供API集成，以将模块发布到Github Releases，使模块开发人员更加方便。如果这种方法变得流行，基于Github存储库的源会让未来开发命令行的CI/CD工具将更为简单。
 
 ## 为什么使用SokuSourceEditor将模块发布到Github Releases
 
 所有发布任务仅需点击几下，SokuSourceEditor负责各种发布流程。然后，用户可以在SokuLauncher上看到更新！  
-SokuSourceEditor将模块文件打包成结构化的zip，提供了几个优势。我们可以设置炫酷的模块图标、横幅或对用户从即将推出的模块中心安装模块可见的模块描述。  
+SokuSourceEditor将模块文件打包成结构化的zip，提供了几个优势。我们可以设置炫酷的模块图标、横幅或用户模块中心安装模块时可见的模块描述。  
 此外，由于固定的包结构，SokuLauncher很容易识别模块信息，使通过SokuSourceEditor发布的每个zip都成为SokuLauncher的合法模块安装包。即使没有自动更新，用户只需将zip文件拖放到SokuLauncher上即可安装模块。
