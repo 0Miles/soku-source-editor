@@ -20,7 +20,7 @@ The "Description" field supports markdown and multiple languages. You can switch
   
 The "Repository" field can be filled with the Github repo used to store releases.  
 - If you're a module author, you can use your own module repository.  
-- If you're a Source maintainer, it's recommended to use the [package-template](https://github.com/soku-cn/package-template) to create an organization repository with an README.md indicating the original module repository's location for storing releases.
+- If you're a Source maintainer, it's recommended to use the [package-template](https://github.com/soku-cn/package-template) to create an organization repository with an README.md indicating the original module repository's location.
 
 ## Modify Module Information
 Go to the module page you want to modify and click the pencil icon on the module card.
