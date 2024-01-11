@@ -7,17 +7,13 @@ English | [中文](../zh-Hans/getting-started.md)
 - [Release Version](./release-version.md)
 - [Release on Gitee](./release-on-gitee.md)
 
-## Create a Source
-In the [source-template](https://github.com/soku-cn/source-template), click on the "Use this template" button > "Create a new repository"  
-![getting-started1](./getting-started(1).png)
+## Acquiring Source
+Anyone can use SokuSourceEditor to read public sources, but direct editing requires joining the organization or obtaining permission from an administrator.  
+For example, [SokuCN's main Source](https://github.com/soku-cn/main-source).
 
-Enter the necessary repository information and click the "Create repository" button to successfully create a brand new Source!  
-![getting-started2](./getting-started(2).png)
+If you want to start with an existing source, you can skip this section and go directly to [Source in SokuSourceEditor](#source-in-sokusourceeditor).  
 
-If you later want to distribute this new Source to your users, you'll need to set up Github pages.
-Please refer to https://pages.github.com/.
-
-## Fork Source
+### Fork Source
 Unless you're a manager of a large group, creating your own Source may not make much sense.  
 If you want to help maintain a community Source or if you've developed a cool new module to share with everyone, you can try forking the Source's repo before requesting permission from the admins.  
 Forking means copying an identical repo from the original repo to your account. Any actions you take won't affect the original repo until you submit a pull request (PR) and it's merged into the main branch by the original repo's admins.
@@ -30,8 +26,18 @@ Press the "Create fork" button.
 Done!  
 Now you've successfully forked SokuCN's main Source.
 
+### Create a Source
+In the [source-template](https://github.com/soku-cn/source-template), click on the "Use this template" button > "Create a new repository"  
+![getting-started1](./getting-started(1).png)
+
+Enter the necessary repository information and click the "Create repository" button to successfully create a brand new Source!  
+![getting-started2](./getting-started(2).png)
+
+If you later want to distribute this new Source to your users, you'll need to set up Github pages.
+Please refer to https://pages.github.com/.
+
 ## Source in SokuSourceEditor
-Regardless of how you create the Source, you can open it in SokuSourceEditor using the same method.  
+Regardless of how you acquire the Source, you can open it in SokuSourceEditor using the same method.  
 Click the green "Code" button.
 Copy the URL.  
 ![getting-started5](./getting-started(5).png)
