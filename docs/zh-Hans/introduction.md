@@ -19,7 +19,7 @@ SokuLauncher模块中心中的源是使用Github Pages托管的Github存储库�
 - ``modules.json`` 记录包含模块的信息
 - ``modules`` 文件夹用于存储模块和版本信息文件
 
-源不包含任何模块的库文件或可执行文件。这些文件应该使用SokuSourceEditor打包成zip，并通过各自的Github发布发布。
+源不包含任何模块的库文件或可执行文件。这些文件应该使用SokuSourceEditor打包成zip，并通过各自仓库的Github Releases頁发布。
 
 ## SokuSourceEditor的工作原理
 
