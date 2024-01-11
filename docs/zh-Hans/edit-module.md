@@ -20,7 +20,7 @@
   
 "存储库"字段可以填写用于存储发布的Github仓库。  
 - 如果您是模块作者，可以使用自己的模块存储库。  
-- 如果您是源代码维护者，建议使用[package-template](https://github.com/soku-cn/package-template)创建一个包含README.md的组织存储库，并指示原始模块存储库的位置以存储发布。
+- 如果您是源代码维护者，建议使用[package-template](https://github.com/soku-cn/package-template)创建一个包含README.md的组织存储库，并在README.md中标示原作者的模块存储库。
 
 ## 修改模块信息
 转到要修改的模块页面，然后点击模块卡上的铅笔图标。
