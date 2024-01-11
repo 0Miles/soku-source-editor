@@ -90,10 +90,11 @@
             }
         ],
         "files": [
-            "**/*",
-            "!.vscode",
-            "renderer/",
-            "dist/"
+            "app/",
+            "dist/",
+            "resources/",
+            "package.json",
+            "package-lock.json"
         ],
         "asar": false
     }

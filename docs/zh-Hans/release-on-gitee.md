@@ -1,4 +1,11 @@
 # 发布到Gitee
+[English](../en/release-on-gitee.md) | 中文  
+  
+- [介绍](./introduction.md)
+- [开始使用](./getting-started.md)
+- [编辑模块](./edit-module.md)
+- [发布版本](./release-version.md)
+- 发布到Gitee
 
 ## 前置
 ### 生成 Gitee token

@@ -3,6 +3,14 @@ Used for editing the mod source for the [SokuLauncher](https://github.com/0Miles
 
 ![preview](./docs/preview.png)
 
+## Document
+
+- [Introduction](./docs/en/introduction.md)
+- [Getting Started](./docs/en/getting-started.md)
+- [Edit Module](./docs/en/edit-module.md)
+- [Release Version](./docs/en/release-version.md)
+- [Release on Gitee](./docs/en/release-on-gitee.md)
+
 ## Install Git  
 This tool requires [git](https://git-scm.com/), please install it and complete the basic setup.
 1. Refer to [https://git-scm.com/downloads](https://git-scm.com/downloads) for the completion of the git installation.
