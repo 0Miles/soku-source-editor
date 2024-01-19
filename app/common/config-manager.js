@@ -1,6 +1,7 @@
 const { app } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const os = require('os')
 
 const configPath = path.join(os.homedir(), '.' + path.basename(app.getPath('exe')) + '.json')
 
