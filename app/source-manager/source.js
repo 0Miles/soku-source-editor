@@ -51,9 +51,6 @@ class Source {
                 }
                 
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
-                this.refreshModules()
-                await this.checkAndUpdateModulesJson()
-                await this.checkAndUpdateModulesCacheJson()
                 this.pendingChanges = []
             }, 1000)
         })
@@ -209,6 +206,11 @@ class Source {
             await this.refreshGitStatus()
             branch = this.status.current
         }
+        
+        this.refreshModules()
+        await this.checkAndUpdateModulesJson()
+        await this.checkAndUpdateModulesCacheJson()
+
         await this.commitMissingFiles()
         await this.git.fetch()
         await this.pullAndMerge(branch)
