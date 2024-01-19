@@ -207,13 +207,14 @@ class Source {
             branch = this.status.current
         }
         
+        await this.git.fetch()
+        await this.pullAndMerge(branch)
+
         this.refreshModules()
         await this.checkAndUpdateModulesJson()
         await this.checkAndUpdateModulesCacheJson()
-
         await this.commitMissingFiles()
-        await this.git.fetch()
-        await this.pullAndMerge(branch)
+
         await this.git.push('origin', branch)
         await this.refreshGitStatus()
         this.refreshModules()
