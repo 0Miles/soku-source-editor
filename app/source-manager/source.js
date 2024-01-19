@@ -111,7 +111,7 @@ class Source {
                 const info = x.getData()
                 return {
                     ...info,
-                    name: info.moduleName,
+                    name: info.name,
                     icon: info.icon && path.basename(info.icon),
                     banner: info.banner && path.basename(info.banner),
                     recommendedVersion: x.versions?.find(v => v.version == info.recommendedVersionNumber)?.getData()
