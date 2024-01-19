@@ -102,7 +102,7 @@ class Source {
         }
     }
 
-    async checkAndUpdateModulesCacheJson() {
+    async checkAndUpdateModulesSnapshotJson() {
         const modulesJsonString = JSON.stringify(
             this.modules.map(x => {
                 const info = x.getData()
@@ -116,7 +116,7 @@ class Source {
             })
         )
 
-        const jsonFilename = path.join(this.dirname, 'modules-cache.json')
+        const jsonFilename = path.join(this.dirname, 'modules-snapshot.json')
         let oldJsonString = ''
         if (fs.existsSync(jsonFilename)) {
             oldJsonString = fs.readFileSync(jsonFilename, { encoding: 'utf-8' })
@@ -124,7 +124,7 @@ class Source {
         if (modulesJsonString != oldJsonString) {
             fs.writeFileSync(jsonFilename, modulesJsonString, { encoding: 'utf-8' })
             await this.git.add(jsonFilename)
-            await this.git.commit('Update modules-cache.json')
+            await this.git.commit('Update modules-snapshot.json')
         }
     }
 
@@ -212,7 +212,7 @@ class Source {
 
         this.refreshModules()
         await this.checkAndUpdateModulesJson()
-        await this.checkAndUpdateModulesCacheJson()
+        await this.checkAndUpdateModulesSnapshotJson()
         await this.commitMissingFiles()
 
         await this.git.push('origin', branch)
