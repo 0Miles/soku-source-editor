@@ -51,7 +51,9 @@ class Source {
                 }
                 
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
-                await this.checkAndUpdateSourceModulesJson()
+                this.refreshModules()
+                await this.checkAndUpdateModulesJson()
+                await checkAndUpdateModulesCacheJson()
                 this.pendingChanges = []
             }, 1000)
         })
@@ -82,8 +84,7 @@ class Source {
         }
     }
 
-    async checkAndUpdateSourceModulesJson() {
-        this.refreshModules()
+    async checkAndUpdateModulesJson() {
         const modulesJsonString = JSON.stringify(
             this.modules.map(x => ({
                 name: x.moduleName,
@@ -101,6 +102,32 @@ class Source {
             fs.writeFileSync(modulesJsonFilename, modulesJsonString, { encoding: 'utf-8'})
             await this.git.add(modulesJsonFilename)
             await this.git.commit('Update modules.json')
+        }
+    }
+
+    async checkAndUpdateModulesCacheJson() {
+        const modulesJsonString = JSON.stringify(
+            this.modules.map(x => {
+                x.refreshVersions()
+                return {
+                    ...x.getData(),
+                    name: x.moduleName,
+                    icon: x.icon && path.basename(x.icon),
+                    banner: x.banner && path.basename(x.banner),
+                    recommendedVersion: versions.find(x => x.version == x.element.info.recommendedVersion)
+                }
+            })
+        )
+
+        const jsonFilename = path.join(this.dirname, 'modules-cache.json')
+        let oldJsonString = ''
+        if (fs.existsSync(jsonFilename)) {
+            oldJsonString = fs.readFileSync(jsonFilename, { encoding: 'utf-8' })
+        }
+        if (modulesJsonString != oldJsonString) {
+            fs.writeFileSync(jsonFilename, modulesJsonString, { encoding: 'utf-8' })
+            await this.git.add(jsonFilename)
+            await this.git.commit('Update modules-cache.json')
         }
     }
 
