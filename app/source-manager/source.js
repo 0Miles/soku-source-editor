@@ -53,7 +53,7 @@ class Source {
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
                 this.refreshModules()
                 await this.checkAndUpdateModulesJson()
-                await checkAndUpdateModulesCacheJson()
+                await this.checkAndUpdateModulesCacheJson()
                 this.pendingChanges = []
             }, 1000)
         })
@@ -108,13 +108,13 @@ class Source {
     async checkAndUpdateModulesCacheJson() {
         const modulesJsonString = JSON.stringify(
             this.modules.map(x => {
-                x.refreshVersions()
+                const info = x.getData()
                 return {
-                    ...x.getData(),
-                    name: x.moduleName,
-                    icon: x.icon && path.basename(x.icon),
-                    banner: x.banner && path.basename(x.banner),
-                    recommendedVersion: versions.find(x => x.version == x.element.info.recommendedVersion)
+                    ...info,
+                    name: info.moduleName,
+                    icon: info.icon && path.basename(info.icon),
+                    banner: info.banner && path.basename(info.banner),
+                    recommendedVersion: x.versions?.find(v => v.version == info.recommendedVersionNumber)?.getData()
                 }
             })
         )
