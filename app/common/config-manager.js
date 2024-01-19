@@ -2,7 +2,7 @@ const { app } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
-const configPath = path.join(app.getAppPath(), path.basename(app.getPath('exe')) + '.json')
+const configPath = path.join(os.homedir(), '.' + path.basename(app.getPath('exe')) + '.json')
 
 class ConfigManager {
     constructor() {
