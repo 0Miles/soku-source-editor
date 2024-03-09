@@ -166,6 +166,17 @@ class Module {
             compressed: true
         }), { name: 'version.json' })
 
+        // Add module_data files to the moduleName directory in the ZIP file
+        const moduleDataDir = path.join(version.dirname, 'module_data')
+        
+        // filter out mod.json
+        const filteredFiles = fs.readdirSync(moduleDataDir).filter(file => file !== 'mod.json');
+
+        if (fs.existsSync(moduleDataDir)) {
+            archive.directory(moduleDataDir, `/${lowercaseModuleName}`, file => file.name !== 'mod.json')
+        }
+
+        // Add mod.json to the moduleName directory in the ZIP file
         archive.append(JSON.stringify({
             ...modJson,
             icon: modJson.icon ? path.basename(url.fileURLToPath(modJson.icon)) : null,
@@ -174,13 +185,6 @@ class Module {
             main: versionJson.main,
             configFiles: versionJson.configFiles
         }), { name: `${lowercaseModuleName}/mod.json` })
-
-        // Add module_data files to the moduleName directory in the ZIP file
-        const moduleDataDir = path.join(version.dirname, 'module_data')
-
-        if (fs.existsSync(moduleDataDir)) {
-            archive.directory(moduleDataDir, `/${lowercaseModuleName}`)
-        }
 
         // Add icon and banner files to the moduleName directory in the ZIP file
         if (this.icon) {
