@@ -180,7 +180,7 @@ class Module {
             updateWorkingDir: `.`,
             fromLocalArchive: true,
             compressed: true
-        }), { name: `mod.json` })
+        }), { name: `/${moduleName}/mod.json` })
 
         // Add icon and banner files to the moduleName directory in the ZIP file
         if (this.icon) {
