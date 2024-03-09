@@ -126,7 +126,6 @@ class Module {
 
     async exportZip(versionNum, outputDir = null, filename = null) {
         const version = this.getVersion(versionNum)
-        const lowercaseModuleName = this.moduleName.toLowerCase()
 
         outputDir = !outputDir ? path.resolve(version.dirname, 'output') : path.resolve(outputDir)
         filename = !filename ? `${this.moduleName}_${versionNum}.zip` : filename
@@ -152,20 +151,6 @@ class Module {
         const modJson = this.getData()
         const versionJson = version.getData()
 
-        archive.append(JSON.stringify({
-            name: modJson.name,
-            description: modJson.description,
-            descriptionI18n: modJson.descriptionI18n,
-            notes: versionJson.notes,
-            notesI18n: versionJson.notesI18n,
-            version: versionJson.version,
-            fileName: versionJson.main,
-            configFiles: versionJson.configFiles,
-            updateWorkingDir: `./${lowercaseModuleName}`,
-            fromLocalArchive: true,
-            compressed: true
-        }), { name: 'version.json' })
-
         // Add module_data files to the moduleName directory in the ZIP file
         const moduleDataDir = path.join(version.dirname, 'module_data')
         
@@ -173,27 +158,37 @@ class Module {
         const filteredFiles = fs.readdirSync(moduleDataDir).filter(file => file !== 'mod.json');
 
         if (fs.existsSync(moduleDataDir)) {
-            archive.directory(moduleDataDir, `/${lowercaseModuleName}`, file => file.name !== 'mod.json')
+            archive.directory(moduleDataDir, `/`, filteredFiles)
         }
 
         // Add mod.json to the moduleName directory in the ZIP file
         archive.append(JSON.stringify({
-            ...modJson,
+            name: modJson.name,
+            author: modJson.author,
+            priority: modJson.priority,
+            description: modJson.description,
+            descriptionI18n: modJson.descriptionI18n,
             icon: modJson.icon ? path.basename(url.fileURLToPath(modJson.icon)) : null,
             banner: modJson.banner ? path.basename(url.fileURLToPath(modJson.banner)) : null,
+            notes: versionJson.notes,
+            notesI18n: versionJson.notesI18n,
             version: versionJson.version,
             main: versionJson.main,
-            configFiles: versionJson.configFiles
-        }), { name: `${lowercaseModuleName}/mod.json` })
+            fileName: versionJson.main,
+            configFiles: versionJson.configFiles,
+            updateWorkingDir: `.`,
+            fromLocalArchive: true,
+            compressed: true
+        }), { name: `mod.json` })
 
         // Add icon and banner files to the moduleName directory in the ZIP file
         if (this.icon) {
             const iconPath = url.fileURLToPath(this.icon)
-            archive.file(iconPath, { name: `/${lowercaseModuleName}/${path.basename(iconPath)}` })
+            archive.file(iconPath, { name: `/${path.basename(iconPath)}` })
         }
         if (this.banner) {
             const bannerPath = url.fileURLToPath(this.banner)
-            archive.file(bannerPath, { name: `/${lowercaseModuleName}/${path.basename(bannerPath)}` })
+            archive.file(bannerPath, { name: `/${path.basename(bannerPath)}` })
         }
 
         await archive.finalize()
