@@ -5,10 +5,12 @@ const { default: simpleGit } = require('simple-git')
 const { DirectoryJsonElement } = require('./directory-json-element')
 const chokidar = require('chokidar')
 const { app } = require('electron')
+const { SOURCES_DIR } = require('./source-manager')
 
 class Source {
-    constructor(sourceName) {
+    constructor(sourceName, sourcesDir) {
         this.sourceName = sourceName
+        this.sourcesDir = sourcesDir
         this.pendingChanges = []
         this.init()
         this.watch()
@@ -67,7 +69,7 @@ class Source {
     }
 
     init() {
-        this.dirname = path.join(app.getAppPath(), 'sources', this.sourceName)
+        this.dirname = path.join(this.sourcesDir, this.sourceName)
         this.git = simpleGit(this.dirname)
         this.element = new DirectoryJsonElement(this.dirname, 'soku-mod-source.json')
         this.refreshModules()
@@ -139,7 +141,7 @@ class Source {
             .map(dirContent => {
                 const stat = fs.statSync(path.join(modulesDir, dirContent))
                 if (stat.isDirectory()) {
-                    return new Module(this.sourceName, dirContent)
+                    return new Module(this.sourceName, dirContent, this.sourcesDir)
                 }
                 return null
             })
@@ -152,7 +154,7 @@ class Source {
     }
 
     addModule(moduleName, moduleInfo) {
-        const newModule = new Module(this.sourceName, moduleName)
+        const newModule = new Module(this.sourceName, moduleName, this.sourcesDir)
         newModule.element.putInfo(moduleInfo)
         this.modules.unshift(newModule)
     }

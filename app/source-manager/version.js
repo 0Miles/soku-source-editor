@@ -6,12 +6,13 @@ const getFilesTree = require('../common/get-files-tree')
 const { app } = require('electron')
 
 class ModuleVersion {
-    constructor(sourceName, moduleName, version) {
+    constructor(sourceName, moduleName, version, sourcesDir) {
         this.sourceName = sourceName
         this.moduleName = moduleName
+        this.sourcesDir = sourcesDir
         this.version = version
 
-        this.dirname = path.join(app.getAppPath(), 'sources', sourceName, 'modules', moduleName, 'versions', version)
+        this.dirname = path.join(this.sourcesDir, sourceName, 'modules', moduleName, 'versions', version)
         this.element = new DirectoryJsonElement(this.dirname, 'version.json')
         this.refreshModVersionFiles()
     }

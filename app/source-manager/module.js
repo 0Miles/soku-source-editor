@@ -9,17 +9,17 @@ const findFileAndGetUri = require('../common/find-file-and-get-uri')
 const { Octokit } = require('@octokit/rest')
 const axios = require('axios')
 const { shell, app } = require('electron')
-const { release } = require('os')
 
 class Module {
-    constructor(sourceName, moduleName) {
+    constructor(sourceName, moduleName, sourcesDir) {
+        this.sourcesDir = sourcesDir
         this.sourceName = sourceName
         this.moduleName = moduleName
         this.init()
     }
 
     init() {
-        this.dirname = path.join(app.getAppPath(), 'sources', this.sourceName, 'modules', this.moduleName)
+        this.dirname = path.join(this.sourcesDir, this.sourceName, 'modules', this.moduleName)
         this.element = new DirectoryJsonElement(this.dirname, 'mod.json')
         this.refreshIconAndBanner()
         this.refreshVersions()
@@ -62,7 +62,7 @@ class Module {
                 .map(dirContent => {
                     const stat = fs.statSync(path.join(versionsDir, dirContent))
                     if (stat.isDirectory()) {
-                        return new ModuleVersion(this.sourceName, this.moduleName, dirContent)
+                        return new ModuleVersion(this.sourceName, this.moduleName, dirContent, this.sourcesDir)
                     }
                     return null
                 })
@@ -91,7 +91,7 @@ class Module {
     }
 
     addVersion(versionNum, versionInfo) {
-        const newVersion = new ModuleVersion(this.sourceName, this.moduleName, versionNum)
+        const newVersion = new ModuleVersion(this.sourceName, this.moduleName, versionNum, this.sourcesDir)
         newVersion.element.putInfo(versionInfo)
         this.versions.unshift(newVersion)
         this.updateVersionNumbers()

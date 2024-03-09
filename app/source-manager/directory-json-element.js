@@ -1,31 +1,15 @@
 const fs = require('fs')
 const path = require('path')
+const ensureDirectoryExistence = require('../common/ensure-directory-existence')
 
 class DirectoryJsonElement {
     constructor(dirname, fileName) {
         this.dirname = dirname
         this.fileName = fileName
 
-        this.ensureDirectoryExistence()
+        ensureDirectoryExistence(this.dirname)
         this.refreshInfo()
         this.refreshModifiedAt()
-    }
-
-    ensureDirectoryExistence() {
-        const directories = this.dirname.split(path.sep);
-
-        if (!directories[0].endsWith(':')) {
-            directories.unshift('/')
-        }
-
-        let currentPath = directories.shift()
-        for (const directory of directories) {
-            currentPath = path.join(currentPath, directory)
-            
-            if (!fs.existsSync(currentPath)) {
-                fs.mkdirSync(currentPath)
-            }
-        }
     }
 
     refreshModifiedAt() {

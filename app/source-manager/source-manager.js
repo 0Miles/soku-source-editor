@@ -2,14 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const { default: simpleGit } = require('simple-git')
 const { Source } = require('./source')
-const { app } = require('electron')
+const ensureDirectoryExistence = require('../common/ensure-directory-existence')
+const os = require('os')
 
 class SourceManager {
     constructor() {
-        this.sourcesDir = path.join(app.getAppPath(), 'sources')
-        if (!fs.existsSync(this.sourcesDir)) {
-            fs.mkdirSync(this.sourcesDir)
-        }
+        this.sourcesDir = path.join(os.homedir(), 'soku-source-manager', 'sources')
+        ensureDirectoryExistence(this.sourcesDir)
+
         this.refreshSources()
     }
 
@@ -19,7 +19,7 @@ class SourceManager {
             .map(dirContent => {
                 const stat = fs.statSync(path.join(this.sourcesDir, dirContent))
                 if (stat.isDirectory()) {
-                    return new Source(dirContent)
+                    return new Source(dirContent, this.sourcesDir)
                 }
                 return null
             })
