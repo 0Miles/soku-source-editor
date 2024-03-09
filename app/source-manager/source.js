@@ -109,11 +109,17 @@ class Source {
             this.modules.map(x => {
                 const info = x.getData()
                 return {
-                    ...info,
                     name: info.name,
+                    author: info.author,
+                    priority: info.priority,
+                    repositories: info.repositories,
+                    description: info.description,
+                    descriptionI18n: info.descriptionI18n,
+                    versionNumbers: info.versions,
                     icon: info.icon && path.basename(info.icon),
                     banner: info.banner && path.basename(info.banner),
-                    recommendedVersion: x.versions?.find(v => v.version == info.recommendedVersionNumber)?.getData()
+                    recommendedVersionNumber: info.recommendedVersionNumber,
+                    recommendedVersion: x.versions?.find(v => v.version === info.recommendedVersionNumber)?.getData()
                 }
             })
         )
