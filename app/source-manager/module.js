@@ -126,6 +126,7 @@ class Module {
 
     async exportZip(versionNum, outputDir = null, filename = null) {
         const version = this.getVersion(versionNum)
+        const moduleName = this.moduleName
 
         outputDir = !outputDir ? path.resolve(version.dirname, 'output') : path.resolve(outputDir)
         filename = !filename ? `${this.moduleName}_${versionNum}.zip` : filename
@@ -158,7 +159,7 @@ class Module {
         const filteredFiles = fs.readdirSync(moduleDataDir).filter(file => file !== 'mod.json');
 
         if (fs.existsSync(moduleDataDir)) {
-            archive.directory(moduleDataDir, `/`, filteredFiles)
+            archive.directory(moduleDataDir, `/${moduleName}`, filteredFiles)
         }
 
         // Add mod.json to the moduleName directory in the ZIP file
@@ -184,11 +185,11 @@ class Module {
         // Add icon and banner files to the moduleName directory in the ZIP file
         if (this.icon) {
             const iconPath = url.fileURLToPath(this.icon)
-            archive.file(iconPath, { name: `/${path.basename(iconPath)}` })
+            archive.file(iconPath, { name: `/${moduleName}/${path.basename(iconPath)}` })
         }
         if (this.banner) {
             const bannerPath = url.fileURLToPath(this.banner)
-            archive.file(bannerPath, { name: `/${path.basename(bannerPath)}` })
+            archive.file(bannerPath, { name: `/${moduleName}/${path.basename(bannerPath)}` })
         }
 
         await archive.finalize()
