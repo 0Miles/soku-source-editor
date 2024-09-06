@@ -51,7 +51,7 @@ class Source {
                         }
                     }
                 }
-                
+
                 await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
                 this.pendingChanges = []
             }, 1000)
@@ -95,10 +95,10 @@ class Source {
         const modulesJsonFilename = path.join(this.dirname, 'modules.json')
         let oldJsonString = ''
         if (fs.existsSync(modulesJsonFilename)) {
-            oldJsonString = fs.readFileSync(modulesJsonFilename, { encoding: 'utf-8'})
+            oldJsonString = fs.readFileSync(modulesJsonFilename, { encoding: 'utf-8' })
         }
         if (modulesJsonString != oldJsonString) {
-            fs.writeFileSync(modulesJsonFilename, modulesJsonString, { encoding: 'utf-8'})
+            fs.writeFileSync(modulesJsonFilename, modulesJsonString, { encoding: 'utf-8' })
             await this.git.add(modulesJsonFilename)
             await this.git.commit('Update modules.json')
         }
@@ -108,6 +108,7 @@ class Source {
         const modulesJsonString = JSON.stringify(
             this.modules.map(x => {
                 const info = x.getData()
+                const recommendedVersion = x.versions?.find(v => v.version === info.recommendedVersionNumber)?.getData()
                 return {
                     name: info.name,
                     author: info.author,
@@ -119,7 +120,14 @@ class Source {
                     icon: info.icon && path.basename(info.icon),
                     banner: info.banner && path.basename(info.banner),
                     recommendedVersionNumber: info.recommendedVersionNumber,
-                    recommendedVersion: x.versions?.find(v => v.version === info.recommendedVersionNumber)?.getData()
+                    recommendedVersion: {
+                        version: recommendedVersion?.version,
+                        notes: recommendedVersion?.notes,
+                        notesI18n: recommendedVersion?.notesI18n,
+                        main: recommendedVersion?.main,
+                        configFiles: recommendedVersion?.configFiles,
+                        downloadLinks: recommendedVersion?.downloadLinks,
+                    }
                 }
             })
         )
@@ -214,7 +222,7 @@ class Source {
             await this.refreshGitStatus()
             branch = this.status.current
         }
-        
+
         await this.git.fetch()
         await this.pullAndMerge(branch)
 
