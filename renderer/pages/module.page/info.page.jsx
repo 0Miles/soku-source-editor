@@ -13,7 +13,6 @@ import chevronUpIcon from '../../icons/chevron-up.icon'
 import chevronDownIcon from '../../icons/chevron-down.icon'
 import githubIcon from '../../icons/github.icon'
 
-import * as api from '../../common/api'
 import I18nProperty, { getI18nProperty } from '../../common/i18n-property'
 import SelectableList from '../../common/selectable-list'
 import { useShared } from '../../contexts/shared'
@@ -47,7 +46,7 @@ export default function ModuleInfoPage() {
 
     const refreshModInfo = useCallback(async () => {
         setLoading(true)
-        setModInfo(await api.getMod(sourceName ?? primarySourceName, modName))
+        setModInfo(await window.ipcApi.getMod(sourceName ?? primarySourceName, modName))
         setLoading(false)
     }, [modName, primarySourceName, sourceName])
 
@@ -57,7 +56,7 @@ export default function ModuleInfoPage() {
 
     const refreshVersions = useCallback(async () => {
         setVersionsLoading(true)
-        setVersions(await api.getModVersions(sourceName ?? primarySourceName, modName))
+        setVersions(await window.ipcApi.getModVersions(sourceName ?? primarySourceName, modName))
         setVersionsLoading(false)
     }, [modName, primarySourceName, sourceName])
 
@@ -88,7 +87,7 @@ export default function ModuleInfoPage() {
         ) {
             try {
                 for (const selectedVersion of selectedVersionsRef.current) {
-                    await api.deleteModVersion(sourceName ?? primarySourceName, modInfo.name, selectedVersion.version)
+                    await window.ipcApi.deleteModVersion(sourceName ?? primarySourceName, modInfo.name, selectedVersion.version)
                 }
             } catch (ex) {
                 showMessageBox(

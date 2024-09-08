@@ -1,19 +1,34 @@
-const fs = require('fs')
-const path = require('path')
-const url = require('url')
+import fs from 'node:fs'
+import path from 'node:path'
+import url from 'node:url'
 
-module.exports = getFilesTree = (paths) => {
-    let result = []
+type FileNode = {
+    type: 'file'
+    name: string
+    url: string
+}
+
+type DirNode = {
+    type: 'directory'
+    name: string
+    url: string
+    children?: FileTree[]
+}
+
+type FileTree = FileNode | DirNode
+
+export const getFileTree = (paths: string[]) => {
+    let result: FileTree[] = []
     for (const originPath of paths) {
         const absPath = path.resolve(originPath)
         const absPathStat = fs.statSync(absPath)
         if (absPathStat.isDirectory()) {
-            const dir = {
+            const dir: DirNode = {
                 type: 'directory',
                 name: path.basename(absPath),
                 url: url.pathToFileURL(absPath).href
             }
-            dir.children = getFilesTree(fs.readdirSync(absPath).map(x => path.resolve(absPath, x)))
+            dir.children = getFileTree(fs.readdirSync(absPath).map(x => path.resolve(absPath, x)))
             result.push(dir)
         } else {
             result.push({

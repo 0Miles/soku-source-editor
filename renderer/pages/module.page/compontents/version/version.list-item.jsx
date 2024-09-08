@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {
     Button
 } from '@fluentui/react-components'
-import * as api from '../../../../common/api'
 import { useShared } from '../../../../contexts/shared'
 import CollapsibleItem from '../../../../common/collapsible-item'
 import EditVersionNotesDialog from '../version/edit-version-notes.dialog'
@@ -194,7 +193,7 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
                         }
                     </div>
                 </div>
-                <Button onClick={() => api.exportZip(sourceName, modInfo.name, versionInfo.version)} disabled={!versionInfo.moduleFiles?.children?.length}>{t('Export')}</Button>
+                <Button onClick={() => window.ipcApi.exportZip(sourceName, modInfo.name, versionInfo.version)} disabled={!versionInfo.moduleFiles?.children?.length}>{t('Export')}</Button>
             </div>
             {
                 versionInfo.version !== modInfo.recommendedVersionNumber &&
@@ -213,7 +212,7 @@ export default function VersionListItem({ sourceName, modInfo, defaultVersionInf
                     <Button
                         onClick={
                             async () => {
-                                await api.updateMod(sourceName ?? primarySourceName, modInfo.name, {
+                                await window.ipcApi.updateMod(sourceName ?? primarySourceName, modInfo.name, {
                                     recommendedVersionNumber: versionInfo.version
                                 })
                                 refreshModInfo()

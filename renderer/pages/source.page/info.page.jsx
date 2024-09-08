@@ -7,7 +7,6 @@ import CommonItem from '../../common/common-item'
 import { useNavigate, useParams } from 'react-router-dom'
 import chevronRightIcon from '../../icons/chevron-right.icon'
 import modIcon from '../../icons/mod.icon'
-import * as api from '../../common/api'
 import GitStatus from './compontents/git-status'
 import { formatString } from '../../common/format-string'
 
@@ -23,20 +22,20 @@ export default function SourceInfoPage() {
     const [reverting, setReverting] = useState(false)
 
     const refreshGitStatus = async (sourceInfo) => {
-        const status = await api.gitFetchStatus(sourceInfo.name)
+        const status = await window.ipcApi.gitFetchStatus(sourceInfo.name)
         setGitStatus(status)
     }
 
     const syncButtonHandle = async () => {
         setIsSyncing(true)
-        const status = await api.gitSync(sourceInfo.name, sourceInfo.branch)
+        const status = await window.ipcApi.gitSync(sourceInfo.name, sourceInfo.branch)
         setGitStatus(status)
         setIsSyncing(false)
     }
 
     const revertButtonHandle = async () => {
         setReverting(true)
-        await api.gitRevertChanges(sourceInfo.name)
+        await window.ipcApi.gitRevertChanges(sourceInfo.name)
         await refreshGitStatus(sourceInfo)
         setReverting(false)
     }

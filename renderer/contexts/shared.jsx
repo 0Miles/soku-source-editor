@@ -1,6 +1,5 @@
 
 import { createContext, useState, useContext, useMemo } from 'react'
-import * as api from '../common/api'
 import { useTranslation } from 'react-i18next'
 
 export const SharedContext = createContext()
@@ -12,7 +11,7 @@ export const SharedProvider = ({ children }) => {
     const [primarySourceName, setPrimarySourceName] = useState('')
 
     useMemo(() => {
-        ipcRenderer.invoke('get-config').then((config) => {
+        window.ipcApi.getConfig().then(config => {
             setConfig(config)
             config.lang && i18n.changeLanguage(config.lang)
             setPrimarySourceName(config.primarySourceName ?? '')
@@ -20,13 +19,13 @@ export const SharedProvider = ({ children }) => {
     }, [i18n])
 
     const setConfigValue = async (key, value) => {
-        await ipcRenderer.invoke('update-config', { [key]: value })
-        setConfig(await ipcRenderer.invoke('get-config'))
+        await window.ipcApi.updateConfig({ [key]: value })
+        setConfig(await window.ipcApi.getConfig())
     }
 
     const refreshSources = async () => {
-        const data = await api.getSources()
-        const primarySourceName = await ipcRenderer.invoke('get-config', 'primarySourceName')
+        const data = await window.ipcApi.getSources()
+        const primarySourceName = await window.ipcApi.getConfig('primarySourceName')
         if (data?.length && !data.find(x => x.name === primarySourceName)) {
             setPrimarySourceName('')
             setConfigValue('primarySourceName', '')
@@ -40,7 +39,7 @@ export const SharedProvider = ({ children }) => {
     }
 
     const addSource = async (sourceUrl, sourceName) => {
-        await api.cloneModSource(sourceUrl, sourceName)
+        await window.ipcApi.cloneModSource(sourceUrl, sourceName)
         if (!sources?.length) {
             await changePrimarySource(sourceName)
         }
@@ -54,7 +53,7 @@ export const SharedProvider = ({ children }) => {
                 changePrimarySource('')
             }
         }
-        await api.deleteSource(sourceName)
+        await window.ipcApi.deleteSource(sourceName)
     }
 
     return (

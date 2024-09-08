@@ -39,7 +39,7 @@ export const ThemeProvider = ({ children }) => {
         if (!theme) return
 
         (async () => {
-            await ipcRenderer.invoke('switch-native-theme', theme)
+            await window.ipcApi.switchNativeTheme(theme)
             if (theme === 'system') {
                 const isDark = MatchMediaDark?.matches
                 setCurrent(isDark ? 'dark' : 'light')

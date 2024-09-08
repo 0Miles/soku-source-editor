@@ -1,14 +1,14 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'node:fs'
+import path from 'node:path'
 
-module.exports = ensureDirectoryExistence = (dirname) => {
+export const ensureDirectoryExistence = (dirname: string) => {
     const directories = dirname.split(path.sep)
 
     if (!directories[0].endsWith(':')) {
         directories.unshift('/')
     }
 
-    let currentPath = directories.shift()
+    let currentPath = directories.shift() ?? ''
     for (const directory of directories) {
         currentPath = path.join(currentPath, directory)
 

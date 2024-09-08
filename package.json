@@ -5,9 +5,9 @@
     "author": "Miles <inbox@miles.tw>",
     "scripts": {
         "dev:vite": "set BROWSER=none && vite",
-        "dev:electron": "wait-on tcp:5173 && electron .",
+        "dev:electron": "wait-on tcp:5173 && tsc && electron .",
         "wait-dev:vite": "wait-on tcp:5173",
-        "build": "vite build",
+        "build": "tsc && vite build",
         "serve": "vite preview",
         "lint": "eslint .",
         "pack": "npm run build && electron-builder --dir",
@@ -45,17 +45,21 @@
         "simple-git": "^3.20.0"
     },
     "devDependencies": {
+        "@types/archiver": "^6.0.2",
+        "@types/node": "^22.5.4",
+        "@types/react": "^18.3.5",
+        "@types/react-dom": "^18.3.0",
         "@vitejs/plugin-react-swc": "^3.0.0",
         "electron": "^26.3.0",
         "electron-builder": "^24.6.4",
         "eslint": "^8.29.0",
         "eslint-plugin-react": "^7.31.11",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "typescript": "^5.0.4",
+        "typescript": "^5.5.4",
         "vite": "^4.0.0",
         "wait-on": "^7.0.1"
     },
-    "main": "app/main.js",
+    "main": "dist/app/main.js",
     "build": {
         "appId": "com.soku-source-editor.app",
         "productName": "SokuSourceEditor",

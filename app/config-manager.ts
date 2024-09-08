@@ -1,16 +1,18 @@
-const { app } = require('electron')
-const path = require('path')
-const fs = require('fs')
-const os = require('os')
+import { app } from 'electron'
+import path from 'node:path'
+import fs from 'node:fs'
+import os from 'node:os'
 
 const configPath = path.join(os.homedir(), '.' + path.basename(app.getPath('exe')) + '.json')
 
-class ConfigManager {
+export class ConfigManager<T extends Record<string, any> = Record<string, any>> {
+    config: T = {} as T
+
     constructor() {
         this.loadConfig()
     }
 
-    getConfig(key) {
+    getConfig(key: string) {
         if (key) {
             return this.config[key]
         } else {
@@ -18,7 +20,7 @@ class ConfigManager {
         }
     }  
 
-    updateConfig(patch) {
+    updateConfig(patch: Partial<T>) {
         this.config = Object.assign(this.config, patch)
         this.saveConfig()
     }
@@ -35,12 +37,10 @@ class ConfigManager {
             }
             else
             {
-                this.config = {}
+                this.config = {} as T
             }
         } catch (ex) {
             console.log(ex)
         }
     }
 }
-
-module.exports = { ConfigManager }

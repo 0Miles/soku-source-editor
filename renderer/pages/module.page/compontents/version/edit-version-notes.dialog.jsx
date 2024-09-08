@@ -13,7 +13,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 
-import * as api from '../../../../common/api'
 import I18nPropertyTextarea from '../../../../common/i18n-property-textarea'
 
 export default function EditVersionNotesDialog({ sourceName, moduleName, versionInfo, onCompleted }) {
@@ -42,7 +41,7 @@ export default function EditVersionNotesDialog({ sourceName, moduleName, version
             const data = {}
             data.notes = notesValues.default ?? ''
             data.notesI18n = Object.entries(notesValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
-            await api.updateModVersion(sourceName, moduleName, versionInfo.version, data)
+            await window.ipcApi.updateModVersion(sourceName, moduleName, versionInfo.version, data)
 
             setOpen(false)
             onCompleted && onCompleted(data)

@@ -20,7 +20,6 @@ import { useForm } from 'react-hook-form'
 import pencilIcon from '../../../icons/pencil.icon'
 import gearIcon from '../../../icons/gear.icon'
 
-import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
 import MultipleItemInput from '../../../common/multiple-item.input'
 import RepoItem from './repo-item'
@@ -67,7 +66,7 @@ export default function EditModuleDialog({ className, sourceName, modInfo, onCom
             data.description = descriptionValues.default ?? ''
             data.descriptionI18n = Object.entries(descriptionValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
 
-            await api.updateMod(sourceName, modInfo.name, data)
+            await window.ipcApi.updateMod(sourceName, modInfo.name, data)
             setOpen(false)
             onCompleted && onCompleted()
         }

@@ -17,7 +17,6 @@ import linkIcon from '../../../../icons/link.icon'
 import trashIcon from '../../../../icons/trash.icon'
 import plusIcon from '../../../../icons/plus.icon'
 
-import * as api from '../../../../common/api'
 import VersionDownloadLink from './version-download-link'
 
 
@@ -86,7 +85,7 @@ export default function EditVersionDownloadLinksDialog({ sourceName, moduleName,
         setIsDoing(true)
         try {
             setDoingMessage(t('Updating version information file...'))
-            await api.updateModVersion(sourceName, moduleName, versionInfo.version, {
+            await window.ipcApi.updateModVersion(sourceName, moduleName, versionInfo.version, {
                 downloadLinks
             })
 

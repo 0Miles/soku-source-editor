@@ -1,8 +1,8 @@
-const { BrowserWindow } = require('electron')
-const path = require('node:path')
-const isDev = require('electron-is-dev')
+import { BrowserWindow } from 'electron'
+import path from 'node:path'
+import isDev from 'electron-is-dev'
 
-module.exports = function createMainWindow() {
+export function createMainWindow() {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 900,
@@ -11,7 +11,8 @@ module.exports = function createMainWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'main-preload.js'),
             allowRunningInsecureContent: false,
-            webSecurity: false
+            webSecurity: false,
+            sandbox: false,
         }
     })
     mainWindow.removeMenu()
@@ -22,6 +23,6 @@ module.exports = function createMainWindow() {
         mainWindow.webContents.openDevTools()
     } else {
         mainWindow.removeMenu()
-        mainWindow.loadFile('dist/index.html');
+        mainWindow.loadFile('../dist/index.html');
     }
 }

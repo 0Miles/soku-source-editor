@@ -16,7 +16,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useRef, useState } from 'react'
 
-import * as api from '../../../../common/api'
 import RepoItem from '../repo-item'
 
 export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo, onCompleted, onCancel, disabled, openFunc, noButton }) {
@@ -57,7 +56,7 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
         const newDownloadLinks = []
 
         setDoingMessage(`${t(`Export package...`)}`)
-        await api.exportZipToOutput(sourceName, modInfo.name, versionInfo.version)
+        await window.ipcApi.exportZipToOutput(sourceName, modInfo.name, versionInfo.version)
 
         for (const repository of selectedRepositories) {
             try {
@@ -66,10 +65,10 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
                 let downloadUrl
                 switch (repository.type) {
                     case 'github':
-                        downloadUrl = await api.githubRelease(sourceName, modInfo.name, versionInfo.version, repository)
+                        downloadUrl = await window.ipcApi.githubRelease(sourceName, modInfo.name, versionInfo.version, repository)
                         break
                     case 'gitee':
-                        downloadUrl = await api.giteeRelease(sourceName, modInfo.name, versionInfo.version, repository)
+                        downloadUrl = await window.ipcApi.giteeRelease(sourceName, modInfo.name, versionInfo.version, repository)
                         break
                 }
 
@@ -81,7 +80,7 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
                 const newDownloadLink = { type: repository.type, url: downloadUrl }
 
                 if (repository.type === 'gitee') {
-                    setDoingMessage(t('Gitee cannot upload files through the API. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
+                    setDoingMessage(t('Gitee cannot upload files through the window.ipcApi. Please manually upload the output zip file to the opened Gitee release page and click OK.'))
                     setWaitManualUpload(true)
                     await new Promise((resolve, reject) => {
                         okButtonResolve.current = resolve
@@ -90,7 +89,7 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
                     setWaitManualUpload(false)
                 }
 
-                await api.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
+                await window.ipcApi.addModVersionDownloadLink(sourceName, modInfo.name, versionInfo.version, newDownloadLink)
                 newDownloadLinks.push(newDownloadLink)
             }
             catch (ex) {
@@ -103,7 +102,7 @@ export default function ReleaseVersionDialog({ sourceName, modInfo, versionInfo,
         if (newDownloadLinks.length > 0) {
             if (updateRecommendedVersion) {
                 setDoingMessage(t(`Updating recommended version...`))
-                await api.updateMod(sourceName, modInfo.name, {
+                await window.ipcApi.updateMod(sourceName, modInfo.name, {
                     recommendedVersionNumber: versionInfo.version
                 })
             }

@@ -1,12 +1,21 @@
-const path = require('path')
-const fs = require('fs')
-const { DirectoryJsonElement } = require('./directory-json-element')
-const url = require('url')
-const getFilesTree = require('../common/get-files-tree')
-const { app } = require('electron')
+import path from 'path'
+import fs from 'fs'
+import { DirectoryJsonElement } from './directory-json-element'
+import url from 'url'
+import { getFileTree } from '../utils/get-file-tree'
+import { ModuleVersionInfo } from './types/module-version-info'
 
-class ModuleVersion {
-    constructor(sourceName, moduleName, version, sourcesDir) {
+export class ModuleVersion {
+    
+    sourceName: string
+    moduleName: string
+    sourcesDir: string
+    version: string
+    dirname: string
+    element: DirectoryJsonElement<ModuleVersionInfo>
+    moduleFiles?: { type: string; name: string; url: string }
+
+    constructor(sourceName: string, moduleName: string, version: string, sourcesDir: string) {
         this.sourceName = sourceName
         this.moduleName = moduleName
         this.sourcesDir = sourcesDir
@@ -27,15 +36,15 @@ class ModuleVersion {
     refreshModVersionFiles() {
         const moduleDataPath = path.resolve(this.dirname, 'module_data')
         if (fs.existsSync(moduleDataPath)) {
-            this.moduleFiles = getFilesTree([moduleDataPath]).find(_ => true)
+            this.moduleFiles = getFileTree([moduleDataPath]).find(_ => true)
         }
     }
 
-    update(versionInfoPatch) {
+    update(versionInfoPatch: Partial<ModuleVersionInfo>) {
         this.element.updateInfo(versionInfoPatch)
     }
 
-    copyModVersionFiles(files) {
+    copyModVersionFiles(files: any) {
         const versionModuleDataDir = path.resolve(this.dirname, 'module_data')
         if (fs.existsSync(versionModuleDataDir)) {
             fs.rmSync(versionModuleDataDir, { recursive: true, force: true })
@@ -48,5 +57,3 @@ class ModuleVersion {
         this.refreshModVersionFiles()
     }
 }
-
-module.exports = { ModuleVersion }

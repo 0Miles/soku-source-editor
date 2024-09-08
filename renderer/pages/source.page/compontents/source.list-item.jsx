@@ -6,7 +6,6 @@ import {
     MenuList,
     MenuPopover,
     MenuTrigger} from '@fluentui/react-components'
-import * as api from '../../../common/api'
 import { useTranslation } from 'react-i18next'
 import trashIcon from '../../../icons/trash.icon'
 import optionsIcon from '../../../icons/options.icon'
@@ -27,7 +26,7 @@ export default function SourceListItem({ sourceInfo }) {
 
     const syncButtonHandle = async () => {
         setIsSyncing(true)
-        const status = await api.gitSync(sourceInfo.name, sourceInfo.branch)
+        const status = await window.ipcApi.gitSync(sourceInfo.name, sourceInfo.branch)
         setGitStatus(status)
         setIsSyncing(false)
     }
@@ -66,7 +65,7 @@ export default function SourceListItem({ sourceInfo }) {
     useMemo(async () => {
         if (location?.pathname === '/source' || location?.pathname === '/source/') {
             setGitStatus()
-            const status = await api.gitFetchStatus(sourceInfo.name)
+            const status = await window.ipcApi.gitFetchStatus(sourceInfo.name)
             setGitStatus(status)
         }
     }, [location, sourceInfo])

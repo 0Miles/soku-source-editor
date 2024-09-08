@@ -5,7 +5,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import MultiLevelPageContainer from '../../templates/multi-level-page-container'
-import * as api from '../../common/api'
 import plusIcon from '../../icons/plus.icon'
 import chevronRightIcon from '../../icons/chevron-right.icon'
 import gearIcon from '../../icons/gear.icon'
@@ -43,7 +42,7 @@ export default function ModuleListPage() {
 
     const refreshMods = useCallback(async () => {
         setLoading(true)
-        setMods(await api.getMods(sourceName ?? primarySourceName))
+        setMods(await window.ipcApi.getMods(sourceName ?? primarySourceName))
         setLoading(false)
     }, [primarySourceName, sourceName])
 
@@ -72,7 +71,7 @@ export default function ModuleListPage() {
         ) {
             try {
                 for (const selectedMod of selectedModsRef.current) {
-                    await api.deleteMod(sourceName ?? primarySourceName, selectedMod.name)
+                    await window.ipcApi.deleteMod(sourceName ?? primarySourceName, selectedMod.name)
                 }
             } catch (ex) {
                 showMessageBox(

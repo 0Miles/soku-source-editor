@@ -1,9 +1,14 @@
-const fs = require('fs')
-const path = require('path')
-const ensureDirectoryExistence = require('../common/ensure-directory-existence')
+import fs from 'fs'
+import path from 'path'
+import { ensureDirectoryExistence } from '../utils/ensure-directory-existence'
 
-class DirectoryJsonElement {
-    constructor(dirname, fileName) {
+export class DirectoryJsonElement<T extends Record<string, any> = Record<string, any>> {
+    dirname: string
+    fileName: string
+    modifiedAt?: number
+    info: T | null = null
+    
+    constructor(dirname: string, fileName: string) {
         this.dirname = dirname
         this.fileName = fileName
 
@@ -31,13 +36,13 @@ class DirectoryJsonElement {
         }
     }
 
-    putInfo(newInfo) {
+    putInfo(newInfo: T | null) {
         this.info = newInfo
         this.saveInfo()
     }
 
-    updateInfo(patch) {
-        this.info = Object.assign(this.info, patch)
+    updateInfo(patch: Partial<T>) {
+        this.info = Object.assign(this.info ?? {} as T, patch)
         this.saveInfo()
     }
 
@@ -52,7 +57,7 @@ class DirectoryJsonElement {
         }
     }
 
-    rename(newDirName) {
+    rename(newDirName: string) {
         const parentDir = path.join(this.dirname, '..')
         const newDirPath = path.join(parentDir, newDirName)
         fs.renameSync(this.dirname, newDirPath)
@@ -60,5 +65,3 @@ class DirectoryJsonElement {
         this.refreshModifiedAt()
     }
 }
-
-module.exports = { DirectoryJsonElement }

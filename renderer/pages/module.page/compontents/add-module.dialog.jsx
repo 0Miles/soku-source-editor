@@ -21,7 +21,6 @@ import plusIcon from '../../../icons/plus.icon'
 import gearIcon from '../../../icons/gear.icon'
 import linkIcon from '../../../icons/link.icon'
 
-import * as api from '../../../common/api'
 import ImagePicker from '../../../common/image-picker'
 import repoUrlRegex from '../../../utils/repo-url.regex'
 import githubIcon from '../../../icons/github.icon'
@@ -65,7 +64,7 @@ export default function AddModuleDialog({ sourceName, sourceMods, onCompleted })
             data.repositories = repositories
             data.description = descriptionValues.default ?? ''
             data.descriptionI18n = Object.entries(descriptionValues).filter(([lang, content]) => lang !== 'default').map(([lang, content]) => ({ language: lang, content }))
-            await api.addMod(sourceName, data.name, data)
+            await window.ipcApi.addMod(sourceName, data.name, data)
             setOpen(false)
             onCompleted && onCompleted()
         }

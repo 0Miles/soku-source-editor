@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import * as api from '../../../../common/api'
 import Dropzone from '../../../../common/dropzone'
 import DirectoryTreeView from '../../../../common/directory-tree-view'
 import ComboBox from '../../../../common/combo-box'
@@ -54,14 +53,14 @@ export default function EditVersionContentDialog({ sourceName, moduleName, versi
         setIsDoing(true)
         try {
             setDoingMessage(t('Updating version information file...'))
-            await api.updateModVersion(sourceName, moduleName, versionInfo.version, {
+            await window.ipcApi.updateModVersion(sourceName, moduleName, versionInfo.version, {
                 ...data,
                 configFiles: selectedConfigFiles
             })
 
             if (moduleFiles?.children && moduleFilesDirty) {
                 setDoingMessage(t('Copying module files...'))
-                await api.copyModVersionFiles(moduleFiles?.children, sourceName, moduleName, versionInfo.version)
+                await window.ipcApi.copyModVersionFiles(moduleFiles?.children, sourceName, moduleName, versionInfo.version)
             }
 
             setOpen(false)
@@ -86,17 +85,17 @@ export default function EditVersionContentDialog({ sourceName, moduleName, versi
     const moduleFilesDropHandle = async (files) => {
         setIsDropFileLoading(true)
         const filenames = files.map(x => x.path)
-        let filesTree = await api.getFilesTree(filenames)
-        if (filesTree.length === 1 && filesTree[0].type === 'directory') {
-            filesTree = filesTree[0]
+        let fileTree = await window.ipcApi.getFileTree(filenames)
+        if (fileTree.length === 1 && fileTree[0].type === 'directory') {
+            fileTree = fileTree[0]
         } else {
-            filesTree = {
+            fileTree = {
                 name: '',
-                children: filesTree
+                children: fileTree
             }
         }
         
-        setModuleFiles(filesTree)
+        setModuleFiles(fileTree)
         setModuleFilesDirty(true)
         setIsDropFileLoading(false)
     }

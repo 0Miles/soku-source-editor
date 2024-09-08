@@ -1,6 +1,6 @@
-module.exports = compareVersions = (a, b) => {
-    const aParts = a.match(/\d+/g)
-    const bParts = b.match(/\d+/g)
+export const compareVersions = (a: string, b: string) => {
+    const aParts = a.match(/\d+/g) ?? ''
+    const bParts = b.match(/\d+/g) ?? ''
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
         const aPart = parseInt(aParts[i]) ?? 0
         const bPart = parseInt(bParts[i]) ?? 0

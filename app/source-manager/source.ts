@@ -1,14 +1,26 @@
-const fs = require('fs')
-const path = require('path')
-const { Module } = require('./module')
-const { default: simpleGit } = require('simple-git')
-const { DirectoryJsonElement } = require('./directory-json-element')
-const chokidar = require('chokidar')
-const { app } = require('electron')
-const { SOURCES_DIR } = require('./source-manager')
+import fs from 'fs'
+import path from 'path'
+import { Module } from './module'
+import { SimpleGit, default as simpleGit, StatusResult } from 'simple-git'
+import { DirectoryJsonElement } from './directory-json-element'
+import chokidar from 'chokidar'
+import { ModuleInfo } from './types/module-info'
+import { SourceInfo } from './types/source-info'
 
-class Source {
-    constructor(sourceName, sourcesDir) {
+export class Source {
+    sourceName: string
+    sourcesDir: string
+    pendingChanges: any[]
+    
+    dirname?: string
+    element?: DirectoryJsonElement<SourceInfo>
+    watcher?: chokidar.FSWatcher
+    commitTimeout: string | number | NodeJS.Timeout | undefined
+    git?: SimpleGit 
+    modules?: Module[]
+    status?: StatusResult
+
+    constructor(sourceName: string, sourcesDir: string) {
         this.sourceName = sourceName
         this.sourcesDir = sourcesDir
         this.pendingChanges = []
@@ -18,7 +30,7 @@ class Source {
 
     async watch() {
         await this.stopWatching()
-        this.watcher = chokidar.watch(path.join(this.dirname, 'modules'), {
+        this.watcher = chokidar.watch(path.join(this.dirname!, 'modules'), {
             ignored: /[\/\\]\./,
             persistent: true,
             ignoreInitial: true
@@ -35,7 +47,7 @@ class Source {
                 if (addAndChangeFiles?.length > 0) {
                     for (const addAndChangeFile of addAndChangeFiles) {
                         try {
-                            await this.git.add(addAndChangeFile.path)
+                            await this.git?.add(addAndChangeFile.path)
                         } catch (ex) {
                             // console.log(ex)
                         }
@@ -45,14 +57,14 @@ class Source {
                 if (removeFiles?.length > 0) {
                     for (const removeFile of removeFiles) {
                         try {
-                            await this.git.add(removeFile.path)
+                            await this.git?.add(removeFile.path)
                         } catch (ex) {
                             // console.log(ex)
                         }
                     }
                 }
 
-                await this.git.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
+                await this.git?.commit(this.pendingChanges.map(x => `${x.event} ${x.path.replace(this.dirname, '')}`).join(', '))
                 this.pendingChanges = []
             }, 1000)
         })
@@ -78,37 +90,37 @@ class Source {
     getData() {
         return {
             name: this.sourceName,
-            isSource: !!this.element.info,
-            info: this.element.info
+            isSource: !!this.element?.info,
+            info: this.element?.info
         }
     }
 
     async checkAndUpdateModulesJson() {
         const modulesJsonString = JSON.stringify(
-            this.modules.map(x => ({
+            this.modules?.map(x => ({
                 name: x.moduleName,
                 icon: x.icon && path.basename(x.icon),
                 banner: x.banner && path.basename(x.banner)
             }))
         )
 
-        const modulesJsonFilename = path.join(this.dirname, 'modules.json')
+        const modulesJsonFilename = path.join(this.dirname!, 'modules.json')
         let oldJsonString = ''
         if (fs.existsSync(modulesJsonFilename)) {
             oldJsonString = fs.readFileSync(modulesJsonFilename, { encoding: 'utf-8' })
         }
         if (modulesJsonString != oldJsonString) {
             fs.writeFileSync(modulesJsonFilename, modulesJsonString, { encoding: 'utf-8' })
-            await this.git.add(modulesJsonFilename)
-            await this.git.commit('Update modules.json')
+            await this.git?.add(modulesJsonFilename)
+            await this.git?.commit('Update modules.json')
         }
     }
 
     async checkAndUpdateModulesSnapshotJson() {
         const modulesJsonString = JSON.stringify(
-            this.modules.map(x => {
+            this.modules?.map(x => {
                 const info = x.getData()
-                const recommendedVersion = x.versions?.find(v => v.version === info.recommendedVersionNumber)?.getData()
+                const recommendedVersion = x.versions?.find(v => v?.version === info.recommendedVersionNumber)?.getData()
                 return {
                     name: info.name,
                     author: info.author,
@@ -116,7 +128,7 @@ class Source {
                     repositories: info.repositories,
                     description: info.description,
                     descriptionI18n: info.descriptionI18n,
-                    versionNumbers: info.versions,
+                    versionNumbers: info.versionNumbers,
                     icon: info.icon && path.basename(info.icon),
                     banner: info.banner && path.basename(info.banner),
                     recommendedVersionNumber: info.recommendedVersionNumber,
@@ -132,20 +144,20 @@ class Source {
             })
         )
 
-        const jsonFilename = path.join(this.dirname, 'modules-snapshot.json')
+        const jsonFilename = path.join(this.dirname!, 'modules-snapshot.json')
         let oldJsonString = ''
         if (fs.existsSync(jsonFilename)) {
             oldJsonString = fs.readFileSync(jsonFilename, { encoding: 'utf-8' })
         }
         if (modulesJsonString != oldJsonString) {
             fs.writeFileSync(jsonFilename, modulesJsonString, { encoding: 'utf-8' })
-            await this.git.add(jsonFilename)
-            await this.git.commit('Update modules-snapshot.json')
+            await this.git?.add(jsonFilename)
+            await this.git?.commit('Update modules-snapshot.json')
         }
     }
 
     refreshModules() {
-        const modulesDir = path.join(this.dirname, 'modules')
+        const modulesDir = path.join(this.dirname!, 'modules')
         if (!fs.existsSync(modulesDir)) {
             fs.mkdirSync(modulesDir)
         }
@@ -157,73 +169,72 @@ class Source {
                 if (stat.isDirectory()) {
                     return new Module(this.sourceName, dirContent, this.sourcesDir)
                 }
-                return null
             })
-            .filter(x => x && x.element.info)
-            .sort((a, b) => b.element.modifiedAt - a.element.modifiedAt)
+            .filter(x => !!x && x.element?.info)
+            .sort((a, b) => (b?.element?.modifiedAt ?? 0) - (a?.element?.modifiedAt ?? 0)) as Module[]
     }
 
-    getModule(moduleName) {
-        return this.modules.find(x => x.moduleName === moduleName)
+    getModule(moduleName: string) {
+        return this.modules?.find(x => x.moduleName === moduleName)
     }
 
-    addModule(moduleName, moduleInfo) {
+    addModule(moduleName: string, moduleInfo: ModuleInfo | null) {
         const newModule = new Module(this.sourceName, moduleName, this.sourcesDir)
-        newModule.element.putInfo(moduleInfo)
-        this.modules.unshift(newModule)
+        newModule.element?.putInfo(moduleInfo)
+        this.modules?.unshift(newModule)
     }
 
-    deleteModule(moduleName) {
-        const targetModuleIndex = this.modules.findIndex(x => x.moduleName === moduleName)
-        if (targetModuleIndex !== -1) {
-            this.modules[targetModuleIndex].element.delete()
-            this.modules.splice(targetModuleIndex, 1)
+    deleteModule(moduleName: string) {
+        const targetModuleIndex = this.modules?.findIndex(x => x.moduleName === moduleName)
+        if (targetModuleIndex !== undefined && targetModuleIndex !== -1) {
+            this.modules?.[targetModuleIndex].element?.delete()
+            this.modules?.splice(targetModuleIndex, 1)
         }
     }
 
     async refreshGitStatus() {
-        this.status = await this.git.status()
+        this.status = await this.git?.status()
     }
 
-    async revertChanges(branch) {
+    async revertChanges(branch?: string) {
 
         await this.refreshGitStatus()
         if (!branch) {
-            branch = this.status.current
+            branch = this.status?.current ?? 'main'
         }
         await this.stopWatching()
-        await this.git.raw(['reset', '--hard', `origin/${branch}`])
+        await this.git?.raw(['reset', '--hard', `origin/${branch}`])
         await this.refreshGitStatus()
         this.refreshModules()
         await this.watch()
         return this.status
     }
 
-    async pullAndMerge(branch) {
+    async pullAndMerge(branch?: string) {
         if (!branch) {
             await this.refreshGitStatus()
-            branch = this.status.current
+            branch = this.status?.current ?? 'main'
         }
         await this.stopWatching()
-        await this.git.pull('origin', branch, { '--strategy-option': 'theirs' })
+        await this.git?.pull('origin', branch, { '--strategy-option': 'theirs' })
         await this.watch()
     }
 
     async commitMissingFiles() {
-        const missingFiles = this.status.files
-        if (missingFiles.length > 0) {
-            await this.git.add('.')
-            await this.git.commit(`Add missing files`)
+        const missingFiles = this.status?.files
+        if (missingFiles && missingFiles.length > 0) {
+            await this.git?.add('.')
+            await this.git?.commit(`Add missing files`)
         }
     }
 
-    async sync(branch) {
+    async sync(branch?: string) {
         if (!branch) {
             await this.refreshGitStatus()
-            branch = this.status.current
+            branch = this.status?.current ?? 'main'
         }
 
-        await this.git.fetch()
+        await this.git?.fetch()
         await this.pullAndMerge(branch)
 
         this.refreshModules()
@@ -231,14 +242,12 @@ class Source {
         await this.checkAndUpdateModulesSnapshotJson()
         await this.commitMissingFiles()
 
-        await this.git.push('origin', branch)
+        await this.git?.push('origin', branch)
         await this.refreshGitStatus()
         this.refreshModules()
     }
 
     async fetchStatus() {
-        this.status = await this.git.fetch().status()
+        this.status = await this.git?.fetch().status()
     }
 }
-
-module.exports = { Source }
