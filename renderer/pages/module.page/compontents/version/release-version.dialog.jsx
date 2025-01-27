@@ -8,8 +8,6 @@ import {
     DialogBody,
     DialogActions,
     DialogContent,
-    Dropdown,
-    Option,
     Switch,
     Checkbox
 } from '@fluentui/react-components'

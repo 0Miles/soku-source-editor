@@ -37,11 +37,13 @@ export default function ComboBox({ id, defaultSelected, defaultValue, options, o
             }
         </Combobox>
 
-        <label htmlFor={id} className={`${open ? 'opacity:.2' : ''} z:9 mt:-30! h:30 flex py:4 mr:8>div pl:8 mr:30 flex-wrap:nowrap overflow:clip`}>
-            {
-                multiselect &&
-                selected.map((filename, i) => <Badge key={i}>{filename}</Badge>)
-            }
+        <label htmlFor={id} className={`${open ? 'opacity:.2' : ''} z:9 mt:-30! h:30 flex py:4 pl:8 flex-wrap:nowrap overflow:clip`}>
+            <div className="flex flex-wrap:nowrap mr:42 gap:4 overflow:clip">
+                {
+                    multiselect &&
+                    selected.map((filename, i) => <Badge key={i}>{filename}</Badge>)
+                }
+            </div>
         </label>
     </>
 }

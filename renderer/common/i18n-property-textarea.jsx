@@ -1,4 +1,4 @@
-import { Dropdown, Option, Textarea } from '@fluentui/react-components'
+import { Select, Option, Textarea } from '@fluentui/react-components'
 import { useCallback, useRef, useState } from 'react'
 import { langCodes } from '../i18n'
 import { useTranslation } from 'react-i18next'
@@ -10,8 +10,8 @@ export default function I18nPropertyTextarea({ label, propertyName, defaultLang,
     const [currentValue, setCurrentValue] = useState(valuesRef.current[currentLang] ?? '')
 
     const langChangeHandler = (_, data) => {
-        setCurrentLang(data.optionValue)
-        setCurrentValue(valuesRef.current[data.optionValue] ?? '')
+        setCurrentLang(data.value)
+        setCurrentValue(valuesRef.current[data.value] ?? '')
     }
 
     const textareaChangeHandler = useCallback((e) => {
@@ -24,13 +24,13 @@ export default function I18nPropertyTextarea({ label, propertyName, defaultLang,
     return <>
         <div className="mt:16 flex align-items:center justify-content:space-between mb:4">
             <label htmlFor={propertyName}>{label ?? t(propertyName)}</label>
-            <Dropdown tabIndex={-1} defaultValue={t(currentLang)} onOptionSelect={langChangeHandler} appearance="filled-darker">
+            <Select tabIndex={-1} appearance="filled-darker" defaultValue={currentLang} onChange={langChangeHandler}>
                 {
-                    langs.map(x => <Option key={x} value={x} text={t(x)} onClick={() => setCurrentLang(x)}>
+                    langs.map(x => <option key={x} value={x}>
                         {t(x)}
-                    </Option>)
+                    </option>)
                 }
-            </Dropdown>
+            </Select>
         </div>
         <Textarea
             id={propertyName}
