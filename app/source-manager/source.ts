@@ -186,7 +186,7 @@ export class Source {
 
     deleteModule(moduleName: string) {
         const targetModuleIndex = this.modules?.findIndex(x => x.moduleName === moduleName)
-        if (targetModuleIndex !== undefined && targetModuleIndex !== -1) {
+        if (typeof targetModuleIndex !== 'undefined' && targetModuleIndex !== -1) {
             this.modules?.[targetModuleIndex].element?.delete()
             this.modules?.splice(targetModuleIndex, 1)
         }
