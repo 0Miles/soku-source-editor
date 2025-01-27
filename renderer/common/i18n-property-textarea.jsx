@@ -35,7 +35,7 @@ export default function I18nPropertyTextarea({ label, propertyName, defaultLang,
         <Textarea
             id={propertyName}
             rows={5}
-            value={currentValue}
+            defaultValue={currentValue}
             onChange={textareaChangeHandler}
             resize="vertical"
             appearance="filled-darker" />

@@ -63,7 +63,7 @@ export default function MultipleItemInput({ defaultItems, placeholder, itemTempl
                 <Input
                     id={inputId}
                     className="flex flex:1 mr:8"
-                    value={inputValue}
+                    defaultValue={inputValue}
                     onChange={(_, data) => { setInputValue(data.value); validationInputValue(data.value) }}
                     appearance="filled-darker"
                     placeholder={placeholder}

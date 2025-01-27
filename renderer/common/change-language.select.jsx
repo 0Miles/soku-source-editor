@@ -14,7 +14,7 @@ export default function ChangeLanguageSelect({className}) {
         setConfigValue('lang', lang)
     }
 
-    return <Select value={config?.lang ?? defaultLang} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
+    return <Select defaultValue={config?.lang ?? defaultLang} onChange={(_, data) => { changeLanguage(data.value) }} className={className ?? ''}>
         {
             langCodes.map(x => <option key={x} value={x}>
                 {t(x)}

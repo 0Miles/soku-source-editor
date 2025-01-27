@@ -18,7 +18,7 @@
         "url": "https://github.com/0Miles/soku-source-editor.git"
     },
     "dependencies": {
-        "@fluentui/react-components": "^9.43.2",
+        "@fluentui/react-components": "^9.58.0",
         "@master/css": "^1.37.8",
         "@master/css.react": "^2.0.0-beta.174",
         "@master/keyframes.css": "^2.0.0-beta.84",

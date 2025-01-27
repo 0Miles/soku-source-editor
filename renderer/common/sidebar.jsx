@@ -39,7 +39,6 @@ export default function Sidebar({ onTabChange }) {
                         cursor:auto>button
                     "
             onTabSelect={(event, data) => navigate('/' + data.value)}
-            defaultSelectedValue={selectedTab}
             selectedValue={selectedTab}
             vertical>
             <Tab value="module" icon={modIcon}>{t('Module')}</Tab>

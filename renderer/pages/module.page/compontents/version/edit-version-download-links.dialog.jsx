@@ -135,7 +135,7 @@ export default function EditVersionDownloadLinksDialog({ sourceName, moduleName,
                             <div className="flex align-items:center">
                                 <Input
                                     className="flex flex:1 mr:8"
-                                    value={customLink}
+                                    defaultValue={customLink}
                                     onChange={(_, data) => { setCustomLink(data.value); validationUrl(data.value) }}
                                     contentBefore={<div className="inline-flex f:white@dark f:#242424@light my:6 ml:-4 mr:6">{linkIcon}</div>}
                                     appearance="filled-darker"
