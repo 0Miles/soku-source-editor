@@ -25,4 +25,5 @@ export function createMainWindow() {
         mainWindow.removeMenu()
         mainWindow.loadFile('../dist/index.html');
     }
+    return mainWindow
 }

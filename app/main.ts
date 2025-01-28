@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { app, BrowserWindow, ipcMain, nativeTheme, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeTheme, dialog, ipcRenderer } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { createMainWindow } from './window/main.window'
 
@@ -156,13 +156,50 @@ ipcMain.handle('git-git-revert-changes', async (_, sourceName: string) => {
     return await JSON.parse(JSON.stringify(sourceManager.getSource(sourceName)?.revertChanges()))
 })
 
-app.whenReady().then(() => {
-    autoUpdater.checkForUpdatesAndNotify()
-    createMainWindow()
+ipcMain.handle('start-download', () => {
+    autoUpdater.downloadUpdate()
+})
 
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
-    }) 
+ipcMain.handle('install-update', () => {
+    autoUpdater.quitAndInstall()
+})
+
+app.whenReady().then(() => {
+    const mainWindow = createMainWindow()
+
+    let isReady = false
+    mainWindow.webContents.once('dom-ready', () => {
+        isReady = true
+    })
+
+    const sendToMainWindow = (channel: string, ...args: any[]) => {
+        if (isReady) {
+            mainWindow.webContents.send(channel, ...args)
+        } else {
+            setTimeout(() => sendToMainWindow(channel, ...args), 500)
+        }
+    }
+
+    autoUpdater.on('update-available', () => {
+        sendToMainWindow('update-available')
+    })
+
+    autoUpdater.on('download-progress', (progressObj) => {
+        sendToMainWindow('download-progress', progressObj)
+    })
+
+    autoUpdater.on('update-downloaded', () => {
+        sendToMainWindow('update-downloaded')
+    })
+
+    autoUpdater.checkForUpdates()
+    
+
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createMainWindow()
+        }
+    })
 })
 
 app.on('window-all-closed', function () {

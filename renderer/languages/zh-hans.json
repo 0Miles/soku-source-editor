@@ -99,6 +99,11 @@
     "en": "English",
     "Revert all changes": "撤销所有更改",
     "Revert {0} unsynced changes": "撤销 {0} 个未同步的更改",
-    "Revert": "撤销"
-
+    "Revert": "撤销",
+    "Starting to download updates...": "正在开始下载更新...",
+    "A new version has been detected. Do you want to download the update?": "检测到新版本。是否要下载更新？",
+    "Downloading updates...": "正在下载更新...",
+    "Updates have been downloaded. Do you want to install them?": "更新已下载。是否要安装？",
+    "Download updates": "下载更新",
+    "Install updates": "安装更新"
 }

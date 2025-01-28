@@ -34,7 +34,7 @@
             ],
             "outputCapture": "std",
             "console": "integratedTerminal",
-            "preLaunchTask": "npm: wait-dev:vite"
+            "preLaunchTask": "npm: dev:electron"
         }
     ]
 }

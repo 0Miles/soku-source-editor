@@ -102,7 +102,13 @@ const ipcApi = {
     },
     switchNativeTheme: async (theme: string) => {
         return await ipcRenderer.invoke('switch-native-theme', theme)
-    }
+    },
+    sendToMain: (channel: string, data: any) => {
+        ipcRenderer.invoke(channel, data)
+    },
+    on: (channel: string, callback: (...args: any) => void) => {
+        ipcRenderer.on(channel, (_, ...args) => callback(...args))
+    },
 }
 
 export type IpcApi = typeof ipcApi

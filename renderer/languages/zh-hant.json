@@ -99,5 +99,11 @@
     "en": "English",
     "Revert all changes": "還原所有變更",
     "Revert {0} unsynced changes": "還原 {0} 個未同步的變更",
-    "Revert": "還原"
+    "Revert": "還原",
+    "Starting to download updates...": "正在開始下載更新...",
+    "A new version has been detected. Do you want to download the update?": "檢測到新版本。是否要下載更新？",
+    "Downloading updates...": "正在下載更新...",
+    "Updates have been downloaded. Do you want to install them?": "更新已下載。是否要安裝？",
+    "Download updates": "下載更新",
+    "Install updates": "安裝更新"
 }
