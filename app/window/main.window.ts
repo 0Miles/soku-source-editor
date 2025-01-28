@@ -23,7 +23,7 @@ export function createMainWindow() {
         mainWindow.webContents.openDevTools()
     } else {
         mainWindow.removeMenu()
-        mainWindow.loadFile('../dist/index.html');
+        mainWindow.loadFile('dist/index.html');
     }
     return mainWindow
 }
