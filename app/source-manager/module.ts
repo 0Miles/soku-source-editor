@@ -332,7 +332,7 @@ export class Module {
                 repo: repository.repo,
                 release_id: releaseResponse.data.id,
                 name: `${this.moduleName}_${versionNum}.zip`,
-                data: fs.readFileSync(filePath).toString('utf-8'),
+                data: fs.readFileSync(filePath) as any,
                 headers: {
                     'Content-Type': 'application/zip',
                 }
